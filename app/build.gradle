@@ -54,6 +54,8 @@ dependencies {
 
     //OkHttp
     implementation libs.okhttp
+    implementation libs.logging.interceptor
+
 
     //ViewModel
     implementation libs.androidx.lifecycle.viewmodel.compose
