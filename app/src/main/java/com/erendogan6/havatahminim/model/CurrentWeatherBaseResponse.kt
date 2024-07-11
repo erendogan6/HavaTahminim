@@ -1,6 +1,6 @@
 package com.erendogan6.havatahminim.model
 
-data class BaseResponse(
+data class CurrentWeatherBaseResponse(
     val weather: List<Weather>,
     val main: Main,
     val dt: Long,
