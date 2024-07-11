@@ -7,6 +7,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
@@ -17,6 +20,7 @@ import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.NetworkUtils
 import com.google.android.gms.location.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 @AndroidEntryPoint
@@ -35,31 +39,61 @@ fun HavaTahminimApp() {
         val weatherViewModel: WeatherViewModel = hiltViewModel()
         val context = LocalContext.current
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        val coroutineScope = rememberCoroutineScope()
         var locationPermissionGranted by remember { mutableStateOf(false) }
-        var latitude by remember { mutableDoubleStateOf(41.0448307) }
-        var longitude by remember { mutableDoubleStateOf(28.9743697) }
+        var showPermissionRationale by remember { mutableStateOf(false) }
+        var locationError by remember { mutableStateOf<String?>(null) }
 
-        RequestLocationPermission(
-            onPermissionGranted = { locationPermissionGranted = true },
-            onPermissionDenied = { locationPermissionGranted = false }
-        )
+        val locationPermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            locationPermissionGranted = isGranted
+            showPermissionRationale = !isGranted
+        }
+
+        LaunchedEffect(Unit) {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PermissionChecker.PERMISSION_GRANTED
+            ) {
+                locationPermissionGranted = true
+            } else {
+                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
 
         if (locationPermissionGranted) {
-            GetCurrentLocation(
-                context = context,
-                fusedLocationClient = fusedLocationClient,
-                onNewLocation = { lat, lon ->
-                    latitude = lat
-                    longitude = lon
-                    if (NetworkUtils.isNetworkAvailable(context)) {
-                        weatherViewModel.fetchWeather(lat, lon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
-                    } else {
-                        // Handle no internet connection
+            LaunchedEffect(Unit) {
+                coroutineScope.launch {
+                    getCurrentLocation(context, fusedLocationClient) { lat, lon ->
+                        if (NetworkUtils.isNetworkAvailable(context)) {
+                            weatherViewModel.fetchWeather(lat, lon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                        } else {
+                            locationError = "İnternet bağlantısı yok"
+                        }
+                    }.onFailure {
+                        locationError = it.message
                     }
                 }
+            }
+        }
+
+        if (showPermissionRationale && !locationPermissionGranted) {
+            PermissionRationaleDialog(
+                onDismiss = { showPermissionRationale = false },
+                onRequestPermission = {
+                    showPermissionRationale = false
+                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
             )
-        } else {
-            // Handle permission not granted
+        }
+
+        locationError?.let {
+            ErrorDialog(
+                message = it,
+                onDismiss = { locationError = null }
+            )
         }
 
         WeatherScreen(weatherViewModel)
@@ -67,58 +101,71 @@ fun HavaTahminimApp() {
 }
 
 @Composable
-fun RequestLocationPermission(
-    onPermissionGranted: () -> Unit,
-    onPermissionDenied: () -> Unit
+fun PermissionRationaleDialog(
+    onDismiss: () -> Unit,
+    onRequestPermission: () -> Unit
 ) {
-    val context = LocalContext.current
-    val locationPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            onPermissionGranted()
-        } else {
-            onPermissionDenied()
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Konum İzni Gerekli")
+        },
+        text = {
+            Text(text = "Bu uygulama, mevcut konumunuza göre hava durumu verilerini almak için konum izni gerektirir.")
+        },
+        confirmButton = {
+            Button(onClick = onRequestPermission) {
+                Text("İzin Ver")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Vazgeç")
+            }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PermissionChecker.PERMISSION_GRANTED
-        ) {
-            onPermissionGranted()
-        } else {
-            locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-    }
+    )
 }
 
 @Composable
-fun GetCurrentLocation(
+fun ErrorDialog(
+    message: String,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Hata")
+        },
+        text = {
+            Text(text = message)
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Tamam")
+            }
+        }
+    )
+}
+
+suspend fun getCurrentLocation(
     context: Context,
     fusedLocationClient: FusedLocationProviderClient,
     onNewLocation: (Double, Double) -> Unit
-) {
-    LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PermissionChecker.PERMISSION_GRANTED
-        ) {
-            try {
-                val location = fusedLocationClient.getCurrentLocation(
-                    Priority.PRIORITY_HIGH_ACCURACY,
-                    null
-                ).await()
+): Result<Unit> = runCatching {
+    if (ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PermissionChecker.PERMISSION_GRANTED
+    ) {
+        val location = fusedLocationClient.getCurrentLocation(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            null
+        ).await()
 
-                location?.let {
-                    onNewLocation(it.latitude, it.longitude)
-                }
-            } catch (e: Exception) {
-                // Handle exceptions
-            }
-        }
+        location?.let {
+            onNewLocation(it.latitude, it.longitude)
+        } ?: throw Exception("Konum alınamadı")
+    } else {
+        throw Exception("İzin verilmedi")
     }
 }
