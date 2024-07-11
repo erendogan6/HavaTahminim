@@ -1,6 +1,7 @@
 package com.erendogan6.havatahminim.ui.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,11 +50,19 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
                 .padding(0.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.aydinlik),
+                painter = if (weatherState != null) {
+                    painterResource(id = R.drawable.aydinlik)
+                } else {
+                    painterResource(id = R.drawable.splash)
+                },
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
-                alpha = 0.5f
+                alpha = if (weatherState != null) {
+                    0.5f
+                } else {
+                    0.7f
+                }
             )
             Column(
                 modifier = Modifier
