@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.ui.view
 
-import WeatherScreen
 import android.Manifest
 import android.content.Context
 import android.os.Bundle

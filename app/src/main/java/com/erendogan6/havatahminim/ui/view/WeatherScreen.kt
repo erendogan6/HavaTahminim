@@ -7,10 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -18,8 +22,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.painter.Painter
@@ -32,16 +38,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.R
-import com.erendogan6.havatahminim.model.BaseResponse
+import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.capitalizeWords
+import java.text.SimpleDateFormat
 import java.util.Calendar
-
+import java.util.Locale
 
 @Composable
 fun WeatherScreen(weatherViewModel: WeatherViewModel) {
     val weatherState = weatherViewModel.weatherState.collectAsState().value
     val errorMessage = weatherViewModel.errorMessage.collectAsState().value
+    val hourlyForecast by weatherViewModel.hourlyForecast.collectAsState()
 
     Surface(color = MaterialTheme.colorScheme.background) {
         Box(
@@ -86,22 +94,24 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-
                         Text(
                             text = weatherState.name,
-                                fontSize = 36.sp,
-                                    fontFamily = FontFamily(Font(R.font.merriweather)),
-                                    modifier = Modifier.padding(vertical = 12.dp),
-                                    style = TextStyle(
-                                        shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)))
+                            fontSize = 36.sp,
+                            fontFamily = FontFamily(Font(R.font.merriweather)),
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            style = TextStyle(
+                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)
+                            )
+                        )
 
                         Text(
-                            text = "${weatherState.main.temp}°C",
+                            text = "${weatherState.main.temp.toInt()}°C",
                             fontSize = 50.sp,
                             fontFamily = FontFamily(Font(R.font.roboto_medium_italic)),
                             modifier = Modifier.padding(vertical = 5.dp),
                             style = TextStyle(
-                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
+                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)
+                            )
                         )
 
                         Image(
@@ -110,25 +120,24 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
                             modifier = Modifier.size(150.dp)
                         )
 
-                        Spacer(modifier = Modifier.height(4.dp))
-
                         Text(
                             text = weatherState.weather[0].description.capitalizeWords(),
                             fontSize = 26.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily(Font(R.font.open_sans)),
-                            modifier = Modifier.padding(vertical = 4.dp),
                             style = TextStyle(
-                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
+                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)
+                            )
                         )
 
                         Text(
-                            text = "Hissedilen Sıcaklık: ${weatherState.main.feels_like}°C",
+                            text = "Hissedilen Sıcaklık: ${weatherState.main.feels_like.toInt()}°C",
                             fontSize = 22.sp,
                             fontFamily = FontFamily(Font(R.font.open_sans)),
                             modifier = Modifier.padding(vertical = 15.dp),
                             style = TextStyle(
-                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
+                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)
+                            )
                         )
                         Text(
                             text = "Nem: ${weatherState.main.humidity}%",
@@ -136,23 +145,50 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
                             fontFamily = FontFamily(Font(R.font.open_sans)),
                             modifier = Modifier.padding(vertical = 4.dp),
                             style = TextStyle(
-                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
+                                shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)
+                            )
                         )
+                        Spacer(modifier = Modifier.height(30.dp))
+                        Text(
+                            text = "Saatlik Hava Durumu",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily(Font(R.font.open_sans)),
+                            style = TextStyle(
+                                shadow = Shadow(color = Color.DarkGray, blurRadius = 1f)
+                            )
+                        )
+                        hourlyForecast?.let {
+                            LazyRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp).clip(RoundedCornerShape(15.dp))
+                                    .background(Color(0xAA80C4E9))
+                                    .padding(10.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                items(it.list.take(24)) { forecast ->
+                                    HourlyForecastItem(forecast)
+                                }
+                            }
+                        }
                     }
                     else -> {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Spacer(modifier = Modifier.height(120.dp))
+                            Spacer(modifier = Modifier.height(150.dp))
                             CircularProgressIndicator()
                             Text(
                                 text = "Gökyüzü İnceleniyor...",
-                                fontSize = 28.sp,
+                                color = Color.Black,
+                                fontSize = 38.sp,
                                 fontFamily = FontFamily(Font(R.font.open_sans)),
                                 modifier = Modifier.padding(vertical = 26.dp),
                                 style = TextStyle(
-                                    shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
+                                    shadow = Shadow(color = Color.Gray, blurRadius = 2f)
+                                )
                             )
                         }
                     }
@@ -163,7 +199,45 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
 }
 
 @Composable
-fun getWeatherIcon(weatherResponse: BaseResponse): Painter {
+fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
+    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val date = sdf.format(forecast.dt * 1000L)
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = date,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily(Font(R.font.open_sans)),
+            modifier = Modifier.padding(vertical = 3.dp),
+            style = TextStyle(
+                shadow = Shadow(color = Color.DarkGray, blurRadius = 1f)
+            )
+        )
+        val icon = getWeatherIcon(forecast)
+        Image(
+            painter = icon,
+            contentDescription = null,
+            modifier = Modifier.size(50.dp)
+        )
+        Text(
+            text = "${forecast.main.temp.toInt()}°C",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily(Font(R.font.open_sans)),
+            modifier = Modifier.padding(vertical = 3.dp),
+            style = TextStyle(
+                shadow = Shadow(color = Color.DarkGray, blurRadius = 1f)
+            )
+        )
+    }
+}
+
+@Composable
+fun getWeatherIcon(weatherResponse: CurrentWeatherBaseResponse): Painter {
     val weatherMain = weatherResponse.weather[0].main
     val currentTime = Calendar.getInstance().timeInMillis / 1000
     val isDayTime = currentTime in (weatherResponse.sys.sunrise..weatherResponse.sys.sunset)
