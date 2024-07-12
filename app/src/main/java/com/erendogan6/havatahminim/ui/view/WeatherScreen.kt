@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -23,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,10 +34,13 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.R
@@ -50,6 +56,8 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
     val weatherState = weatherViewModel.weatherState.collectAsState().value
     val errorMessage = weatherViewModel.errorMessage.collectAsState().value
     val hourlyForecast by weatherViewModel.hourlyForecast.collectAsState()
+    val weatherSuggestions by weatherViewModel.weatherSuggestions.collectAsState()
+    val isLoadingSuggestions = remember { mutableStateOf(true) }
 
     Surface(color = MaterialTheme.colorScheme.background) {
         Box(
@@ -172,6 +180,87 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
                                 }
                             }
                         }
+                        weatherSuggestions?.let {
+                            isLoadingSuggestions.value = false
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.zekai),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(250.dp).clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Text(
+                                    text = "ZekAI'nin Önerileri",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    style = TextStyle(
+                                        shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)
+                                    )
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                                    .background(Color(0xEE000000), RoundedCornerShape(12.dp))
+                                    .padding(16.dp)
+                            ) {
+                                Text(
+                                    text = buildAnnotatedString {
+                                        val parts = it.split("**")
+                                        parts.forEachIndexed { index, part ->
+                                            if (index % 2 == 1) {
+                                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                    append(part)
+                                                }
+                                            } else {
+                                                val subParts = part.split("*")
+                                                subParts.forEachIndexed { subIndex, subPart ->
+                                                    if (subIndex % 2 == 1) {
+                                                        append("\n\t-$subPart")
+                                                    } else {
+                                                        append(subPart)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    fontSize = 19.sp,
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    color = Color.White,
+                                    fontFamily = FontFamily(Font(R.font.open_sans)),
+                                    style = TextStyle(
+                                        shadow = Shadow(color = Color.Gray, blurRadius = 2f)
+                                    )
+                                )
+
+                            }
+                        } ?: run {
+                            isLoadingSuggestions.value = true
+                        }
+                        if (isLoadingSuggestions.value) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                CircularProgressIndicator()
+                                Text(
+                                    text = "ZekAI öneriler için düşünüyor...",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(vertical = 8.dp),
+                                    style = TextStyle(
+                                        shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)
+                                    )
+                                )
+                            }
+                        }
                     }
                     else -> {
                         Column(
@@ -221,7 +310,7 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
         Image(
             painter = icon,
             contentDescription = null,
-            modifier = Modifier.size(50.dp)
+            modifier = Modifier.size(50.dp),
         )
         Text(
             text = "${forecast.main.temp.toInt()}°C",
