@@ -1,5 +1,6 @@
 package com.erendogan6.havatahminim.di
 
+import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService
 import com.erendogan6.havatahminim.network.WeatherApiService
 import com.erendogan6.havatahminim.repository.WeatherRepository
@@ -52,10 +53,17 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideGeminiService(): GeminiService {
+        return GeminiService()
+    }
+
+    @Provides
+    @Singleton
     fun provideWeatherRepository(
         weatherApiService: WeatherApiService,
-        proWeatherApiService: ProWeatherApiService
+        proWeatherApiService: ProWeatherApiService,
+        geminiService: GeminiService
     ): WeatherRepository {
-        return WeatherRepository(weatherApiService, proWeatherApiService)
+        return WeatherRepository(weatherApiService, proWeatherApiService,geminiService )
     }
 }
