@@ -26,13 +26,20 @@ class WeatherViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
+    private val _weatherSuggestions = MutableStateFlow<String?>(null)
+    val weatherSuggestions: StateFlow<String?> = _weatherSuggestions
+
     fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
             try {
                 val response = repository.getWeather(lat, lon, apiKey)
                 _weatherState.value = response
                 _errorMessage.value = null
+
                 fetchHourlyForecast(lat, lon, apiKey)
+
+                fetchWeatherSuggestions(response.name, "${response.main.temp.toInt()}°C")
+
                 Log.d("WeatherViewModel", "Weather data fetched successfully")
             } catch (e: Exception) {
                 _errorMessage.value = "Veri yüklenemedi. Lütfen tekrar deneyin."
@@ -51,6 +58,17 @@ class WeatherViewModel @Inject constructor(
             } catch (e: Exception) {
                 _errorMessage.value = "Saatlik tahminler yüklenemedi. Lütfen tekrar deneyin."
                 Log.e("WeatherViewModel", "Error fetching hourly forecast data", e)
+            }
+        }
+    }
+
+    private fun fetchWeatherSuggestions(location: String, temperature: String) {
+        viewModelScope.launch {
+            try {
+                val suggestions = repository.getWeatherSuggestions(location, temperature)
+                _weatherSuggestions.value = suggestions
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
             }
         }
     }
