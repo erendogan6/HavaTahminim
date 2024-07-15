@@ -47,7 +47,7 @@ import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun WeatherScreen(weatherViewModel: WeatherViewModel) {
+fun WeatherScreen(weatherViewModel: WeatherViewModel, onLoaded: () -> Unit) {
     val weatherState by weatherViewModel.weatherState.collectAsState()
     val errorMessage by weatherViewModel.errorMessage.collectAsState()
     val hourlyForecast by weatherViewModel.hourlyForecast.collectAsState()
@@ -56,7 +56,8 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
         Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
             WeatherContent(weatherState,
                 errorMessage,
-                hourlyForecast)
+                hourlyForecast,
+                onLoaded = onLoaded)
         }
     }
 }
@@ -89,7 +90,9 @@ fun BackgroundImage(weatherState: CurrentWeatherBaseResponse?) {
 @Composable
 fun WeatherContent(weatherState: CurrentWeatherBaseResponse?,
                    errorMessage: String?,
-                   hourlyForecast: HourlyForecastBaseResponse?) {
+                   hourlyForecast: HourlyForecastBaseResponse?,
+    onLoaded: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -100,6 +103,7 @@ fun WeatherContent(weatherState: CurrentWeatherBaseResponse?,
         when {
             errorMessage != null -> ErrorMessage(errorMessage)
             weatherState != null -> {
+                onLoaded()
                 CurrentLocationCard(weatherState)
                 Spacer(modifier = Modifier.height(30.dp))
                 hourlyForecast?.let { HourlyForecastCard(it) }

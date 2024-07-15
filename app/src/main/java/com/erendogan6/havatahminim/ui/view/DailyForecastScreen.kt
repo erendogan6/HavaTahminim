@@ -40,18 +40,20 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun DailyForecastScreen(weatherViewModel: WeatherViewModel) {
+fun DailyForecastScreen(weatherViewModel: WeatherViewModel, onLoaded: () -> Unit) {
     val dailyForecast by weatherViewModel.dailyForecast.collectAsState()
     val weatherState by weatherViewModel.weatherState.collectAsState()
 
     WeatherBackgroundLayout(weatherState) {
         Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
             dailyForecast?.let {
+                onLoaded()
                 DailyForecastCard(it)
-            }
+            } ?: SplashScreen()
         }
     }
 }
+
 
 @Composable
 fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {

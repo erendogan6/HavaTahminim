@@ -58,6 +58,7 @@ fun HavaTahminimApp() {
         var showPermissionRationale by remember { mutableStateOf(false) }
         var locationError by remember { mutableStateOf<String?>(null) }
         val navController = rememberNavController()
+        var dataLoaded by remember { mutableStateOf(false) }
 
         val locationPermissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
@@ -110,15 +111,17 @@ fun HavaTahminimApp() {
                 onDismiss = { locationError = null }
             )
         }
-        Scaffold(bottomBar = { BottomNavigationBar(navController) }) { innerPadding ->
+        Scaffold(bottomBar = {
+            if (dataLoaded)
+                BottomNavigationBar(navController) }) { innerPadding ->
             NavHost(navController,
                 startDestination = Screen.Today.route,
                 modifier = Modifier.padding(innerPadding)) {
                 composable(Screen.Today.route) {
-                    WeatherScreen(weatherViewModel)
+                    WeatherScreen(weatherViewModel) { dataLoaded = true }
                 }
                 composable(Screen.Daily.route) {
-                    DailyForecastScreen(weatherViewModel)
+                    DailyForecastScreen(weatherViewModel) { dataLoaded = true }
                 }
                 composable(Screen.ZekAI.route) {
                     ZekAIScreen(weatherViewModel)
