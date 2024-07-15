@@ -7,8 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,10 +19,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.NetworkUtils
@@ -51,13 +57,14 @@ fun HavaTahminimApp() {
         var locationPermissionGranted by remember { mutableStateOf(false) }
         var showPermissionRationale by remember { mutableStateOf(false) }
         var locationError by remember { mutableStateOf<String?>(null) }
+        val navController = rememberNavController()
 
         val locationPermissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
         ) { isGranted ->
             locationPermissionGranted = isGranted
             showPermissionRationale = !isGranted
-        }
+            }
 
         LaunchedEffect(Unit) {
             if (ContextCompat.checkSelfPermission(
@@ -103,8 +110,21 @@ fun HavaTahminimApp() {
                 onDismiss = { locationError = null }
             )
         }
-
-        WeatherScreen(weatherViewModel)
+        Scaffold(bottomBar = { BottomNavigationBar(navController) }) { innerPadding ->
+            NavHost(navController,
+                startDestination = Screen.Today.route,
+                modifier = Modifier.padding(innerPadding)) {
+                composable(Screen.Today.route) {
+                    WeatherScreen(weatherViewModel)
+                }
+                composable(Screen.Daily.route) {
+                    DailyForecastScreen(weatherViewModel)
+                }
+                composable(Screen.ZekAI.route) {
+                    ZekAIScreen(weatherViewModel)
+                }
+            }
+        }
     }
 }
 
