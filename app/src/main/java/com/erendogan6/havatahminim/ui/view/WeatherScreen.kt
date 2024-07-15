@@ -24,9 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,21 +55,24 @@ fun WeatherScreen(weatherViewModel: WeatherViewModel) {
     val weatherState by weatherViewModel.weatherState.collectAsState()
     val errorMessage by weatherViewModel.errorMessage.collectAsState()
     val hourlyForecast by weatherViewModel.hourlyForecast.collectAsState()
-    val weatherSuggestions by weatherViewModel.weatherSuggestions.collectAsState()
-    var isLoadingSuggestions by remember { mutableStateOf(true) }
 
-    Surface(color = MaterialTheme.colorScheme.background) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            BackgroundImage(weatherState)
-            WeatherContent(
-                weatherState,
+    WeatherBackgroundLayout(weatherState) {
+        Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
+            WeatherContent(weatherState,
                 errorMessage,
-                hourlyForecast,
-                weatherSuggestions,
-                isLoadingSuggestions,
-                onSuggestionsLoaded = { isLoadingSuggestions = false }
-            )
+                hourlyForecast)
         }
+    }
+}
+
+@Composable
+fun WeatherBackgroundLayout(
+    weatherState: CurrentWeatherBaseResponse?,
+    content: @Composable () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        BackgroundImage(weatherState)
+        content()
     }
 }
 
@@ -91,14 +91,9 @@ fun BackgroundImage(weatherState: CurrentWeatherBaseResponse?) {
 }
 
 @Composable
-fun WeatherContent(
-    weatherState: CurrentWeatherBaseResponse?,
-    errorMessage: String?,
-    hourlyForecast: HourlyForecastBaseResponse?,
-    weatherSuggestions: String?,
-    isLoadingSuggestions: Boolean,
-    onSuggestionsLoaded: () -> Unit
-) {
+fun WeatherContent(weatherState: CurrentWeatherBaseResponse?,
+                   errorMessage: String?,
+                   hourlyForecast: HourlyForecastBaseResponse?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,14 +108,6 @@ fun WeatherContent(
                 Spacer(modifier = Modifier.height(30.dp))
                 hourlyForecast?.let { HourlyForecastCard(it) }
                 Spacer(modifier = Modifier.height(16.dp))
-                weatherSuggestions?.let {
-                    onSuggestionsLoaded()
-                    SuggestionsCard(it)
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                if (isLoadingSuggestions) {
-                    ThinkerCard()
-                }
             }
             else -> SplashScreen()
         }
@@ -160,7 +147,7 @@ fun ThinkerCard() {
         CircularProgressIndicator()
         Text(
             text = "ZekAI öneriler için düşünüyor...",
-            fontSize = 18.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 8.dp),
             style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
@@ -261,13 +248,13 @@ fun SuggestionsCard(suggestions: String) {
             painter = painterResource(id = R.drawable.zekai),
             contentDescription = null,
             modifier = Modifier
-                .size(250.dp)
+                .size(260.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
         Text(
             text = "ZekAI'nin Önerileri",
-            fontSize = 22.sp,
+            fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 8.dp),
             style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
@@ -277,7 +264,7 @@ fun SuggestionsCard(suggestions: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .background(Color(0xEE000000), RoundedCornerShape(12.dp))
+            .background(Color(0xAA80C4E9), RoundedCornerShape(12.dp))
             .padding(16.dp)
     ) {
         Text(
@@ -300,9 +287,9 @@ fun SuggestionsCard(suggestions: String) {
                     }
                 }
             },
-            fontSize = 19.sp,
-            modifier = Modifier.padding(vertical = 8.dp),
-            color = Color.White,
+            fontSize = 21.sp,
+            modifier = Modifier.padding(vertical = 4.dp),
+            color = Color.Black,
             fontFamily = FontFamily(Font(R.font.open_sans)),
             style = TextStyle(shadow = Shadow(color = Color.Gray, blurRadius = 2f))
         )
