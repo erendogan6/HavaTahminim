@@ -1,5 +1,6 @@
 package com.erendogan6.havatahminim.di
 
+import com.erendogan6.havatahminim.BuildConfig
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService
 import com.erendogan6.havatahminim.network.WeatherApiService
@@ -21,12 +22,14 @@ object AppModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+        val builder = OkHttpClient.Builder()
+        if (BuildConfig.DEBUG) {
+            val logging = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+            builder.addInterceptor(logging)
         }
-        return OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .build()
+        return builder.build()
     }
 
     @Provides
