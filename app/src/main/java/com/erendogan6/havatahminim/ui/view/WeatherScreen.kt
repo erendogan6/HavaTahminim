@@ -236,10 +236,10 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
     ) {
         Text(
             text = date,
-            fontSize = 16.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily(Font(R.font.open_sans)),
-            modifier = Modifier.padding(vertical = 3.dp),
+            modifier = Modifier.padding(vertical = 6.dp),
             style = TextStyle(
                 shadow = Shadow(color = Color.DarkGray, blurRadius = 1f)
             )
@@ -248,14 +248,14 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
         Image(
             painter = icon,
             contentDescription = null,
-            modifier = Modifier.size(50.dp),
+            modifier = Modifier.size(60.dp),
         )
         Text(
             text = "${forecast.main.temp.toInt()}°C",
-            fontSize = 15.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily(Font(R.font.open_sans)),
-            modifier = Modifier.padding(vertical = 3.dp),
+            modifier = Modifier.padding(vertical = 6.dp),
             style = TextStyle(
                 shadow = Shadow(color = Color.DarkGray, blurRadius = 1f)
             )
