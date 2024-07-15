@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,9 @@ class WeatherViewModel @Inject constructor(
     private val _weatherSuggestions = MutableStateFlow<String?>(null)
     val weatherSuggestions: StateFlow<String?> = _weatherSuggestions
 
+    private val _dailyForecast = MutableStateFlow<DailyForecastBaseResponse?>(null)
+    val dailyForecast: StateFlow<DailyForecastBaseResponse?> = _dailyForecast
+
     fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
             try {
@@ -39,6 +43,8 @@ class WeatherViewModel @Inject constructor(
                 fetchHourlyForecast(lat, lon, apiKey)
 
                 fetchWeatherSuggestions(response.name, "${response.main.temp.toInt()}°C")
+
+                fetchDailyForecast(lat, lon, apiKey)
 
                 Log.d("WeatherViewModel", "Weather data fetched successfully")
             } catch (e: Exception) {
@@ -67,6 +73,17 @@ class WeatherViewModel @Inject constructor(
             try {
                 val suggestions = repository.getWeatherSuggestions(location, temperature)
                 _weatherSuggestions.value = suggestions
+            } catch (e: Exception) {
+                _errorMessage.value = e.message
+            }
+        }
+    }
+
+    private fun fetchDailyForecast(lat: Double, lon: Double, apiKey: String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getDailyWeather(lat, lon, apiKey)
+                _dailyForecast.value = response
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             }
