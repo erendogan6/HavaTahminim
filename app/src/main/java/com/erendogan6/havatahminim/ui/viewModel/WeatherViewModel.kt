@@ -35,58 +35,90 @@ class WeatherViewModel @Inject constructor(
 
     fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
-            try {
-                val response = repository.getWeather(lat, lon, apiKey)
-                _weatherState.value = response
-                _errorMessage.value = null
-
-                fetchHourlyForecast(lat, lon, apiKey)
-
-                fetchWeatherSuggestions(response.name, "${response.main.temp.toInt()}°C")
-
-                fetchDailyForecast(lat, lon, apiKey)
-
-                Log.d("WeatherViewModel", "Weather data fetched successfully")
-            } catch (e: Exception) {
-                _errorMessage.value = "Veri yüklenemedi. Lütfen tekrar deneyin."
-                Log.e("WeatherViewModel", "Error fetching weather data", e)
-            }
+            handleApiCall(
+                call = { repository.getWeather(lat, lon, apiKey) },
+                onSuccess = { response ->
+                    _weatherState.value = response
+                    _errorMessage.value = null
+                    fetchAdditionalData(lat, lon, apiKey, response.name, "${response.main.temp.toInt()}°C")
+                    logDebug("Weather data fetched successfully", response)
+                },
+                onError = { handleError(it, "Error fetching weather data") }
+            )
         }
+    }
+
+    private fun fetchAdditionalData(lat: Double, lon: Double, apiKey: String, location: String, temperature: String) {
+        fetchHourlyForecast(lat, lon, apiKey)
+        fetchDailyForecast(lat, lon, apiKey)
+        fetchWeatherSuggestions(location, temperature)
     }
 
     private fun fetchHourlyForecast(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
-            try {
-                val response = repository.getHourlyWeather(lat, lon, apiKey)
-                _hourlyForecast.value = response
-                _errorMessage.value = null
-                Log.d("WeatherViewModel", "Hourly forecast data fetched successfully")
-            } catch (e: Exception) {
-                _errorMessage.value = "Saatlik tahminler yüklenemedi. Lütfen tekrar deneyin."
-                Log.e("WeatherViewModel", "Error fetching hourly forecast data", e)
-            }
+            handleApiCall(
+                call = { repository.getHourlyWeather(lat, lon, apiKey) },
+                onSuccess = { response ->
+                    _hourlyForecast.value = response
+                    _errorMessage.value = null
+                    logDebug("Hourly forecast data fetched successfully", response)
+                },
+                onError = { handleError(it, "Error fetching hourly forecast data") }
+            )
         }
     }
 
     private fun fetchWeatherSuggestions(location: String, temperature: String) {
         viewModelScope.launch {
-            try {
-                val suggestions = repository.getWeatherSuggestions(location, temperature)
-                _weatherSuggestions.value = suggestions
-            } catch (e: Exception) {
-                _errorMessage.value = e.message
-            }
+            handleApiCall(
+                call = { repository.getWeatherSuggestions(location, temperature) },
+                onSuccess = { suggestions ->
+                    _weatherSuggestions.value = suggestions
+                    _errorMessage.value = null
+                    logDebug("Weather suggestions fetched successfully", suggestions)
+                },
+                onError = { handleError(it, "Error fetching weather suggestions") }
+            )
         }
     }
 
     private fun fetchDailyForecast(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
-            try {
-                val response = repository.getDailyWeather(lat, lon, apiKey)
-                _dailyForecast.value = response
-            } catch (e: Exception) {
-                _errorMessage.value = e.message
-            }
+            handleApiCall(
+                call = { repository.getDailyWeather(lat, lon, apiKey) },
+                onSuccess = { response ->
+                    _dailyForecast.value = response
+                    _errorMessage.value = null
+                    logDebug("Daily forecast data fetched successfully", response)
+                },
+                onError = { handleError(it, "Error fetching daily forecast data") }
+            )
         }
+    }
+
+    private suspend fun <T> handleApiCall(
+        call: suspend () -> T,
+        onSuccess: (T) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        try {
+            val response = call()
+            onSuccess(response)
+        } catch (e: Exception) {
+            onError(e)
+        }
+    }
+
+    private fun handleError(exception: Exception, logMessage: String) {
+        _errorMessage.value = "An error occurred. Please try again."
+        logError(logMessage, exception)
+    }
+
+    private fun logDebug(message: String, data: Any?) {
+        Log.d("WeatherViewModel", "$message: $data")
+    }
+
+    private fun logError(message: String, exception: Exception) {
+        Log.e("WeatherViewModel", message, exception)
     }
 }
