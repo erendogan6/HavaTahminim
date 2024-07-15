@@ -1,6 +1,7 @@
 package com.erendogan6.havatahminim.repository
 
 import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService
@@ -22,6 +23,10 @@ class WeatherRepository @Inject constructor(
 
     suspend fun getHourlyWeather(lat: Double, lon: Double, apiKey: String): HourlyForecastBaseResponse {
         return proWeatherApiService.getHourlyWeather(lat, lon, apiKey)
+    }
+
+    suspend fun getDailyWeather(lat: Double, lon: Double, apiKey: String): DailyForecastBaseResponse {
+        return weatherApiService.getDailyWeather(lat, lon, apiKey)
     }
 
     suspend fun getWeatherSuggestions(location: String, temperature: String): String {
