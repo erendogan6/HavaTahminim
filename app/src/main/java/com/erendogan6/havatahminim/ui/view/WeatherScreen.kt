@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,13 +31,10 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.R
@@ -142,20 +138,6 @@ fun SplashScreen() {
 }
 
 @Composable
-fun ThinkerCard() {
-    CenteredColumn {
-        CircularProgressIndicator()
-        Text(
-            text = "ZekAI öneriler için düşünüyor...",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 8.dp),
-            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
-        )
-    }
-}
-
-@Composable
 fun HourlyForecastCard(hourlyForecast: HourlyForecastBaseResponse) {
     Column(
         modifier = Modifier
@@ -238,63 +220,6 @@ fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
 }
 
 
-@Composable
-fun SuggestionsCard(suggestions: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.zekai),
-            contentDescription = null,
-            modifier = Modifier
-                .size(260.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        Text(
-            text = "ZekAI'nin Önerileri",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 8.dp),
-            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
-        )
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .background(Color(0xAA80C4E9), RoundedCornerShape(12.dp))
-            .padding(16.dp)
-    ) {
-        Text(
-            text = buildAnnotatedString {
-                val parts = suggestions.split("**")
-                parts.forEachIndexed { index, part ->
-                    if (index % 2 == 1) {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append(part)
-                        }
-                    } else {
-                        val subParts = part.split("*")
-                        subParts.forEachIndexed { subIndex, subPart ->
-                            if (subIndex % 2 == 1) {
-                                append("\n\t-$subPart")
-                            } else {
-                                append(subPart)
-                            }
-                        }
-                    }
-                }
-            },
-            fontSize = 21.sp,
-            modifier = Modifier.padding(vertical = 4.dp),
-            color = Color.Black,
-            fontFamily = FontFamily(Font(R.font.open_sans)),
-            style = TextStyle(shadow = Shadow(color = Color.Gray, blurRadius = 2f))
-        )
-    }
-}
 
 @Composable
 fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
