@@ -18,15 +18,33 @@ class WeatherRepository @Inject constructor(
     private val geminiService: GeminiService
 ) {
     suspend fun getWeather(lat: Double, lon: Double, apiKey: String): CurrentWeatherBaseResponse {
-        return weatherApiService.getWeather(lat, lon, apiKey)
+        return withContext(Dispatchers.IO) {
+            try {
+                weatherApiService.getWeather(lat, lon, apiKey)
+            } catch (e: Exception) {
+                throw RuntimeException("Failed to fetch weather data", e)
+            }
+        }
     }
 
     suspend fun getHourlyWeather(lat: Double, lon: Double, apiKey: String): HourlyForecastBaseResponse {
-        return proWeatherApiService.getHourlyWeather(lat, lon, apiKey)
+        return withContext(Dispatchers.IO) {
+            try {
+                proWeatherApiService.getHourlyWeather(lat, lon, apiKey)
+            } catch (e: Exception) {
+                throw RuntimeException("Failed to fetch hourly weather data", e)
+            }
+        }
     }
 
     suspend fun getDailyWeather(lat: Double, lon: Double, apiKey: String): DailyForecastBaseResponse {
-        return weatherApiService.getDailyWeather(lat, lon, apiKey)
+        return withContext(Dispatchers.IO) {
+            try {
+                weatherApiService.getDailyWeather(lat, lon, apiKey)
+            } catch (e: Exception) {
+                throw RuntimeException("Failed to fetch daily weather data", e)
+            }
+        }
     }
 
     suspend fun getWeatherSuggestions(location: String, temperature: String): String {
@@ -35,10 +53,14 @@ class WeatherRepository @Inject constructor(
                 text("Konum: $location\nSıcaklık: $temperature")
             }
         )
-        val chat = geminiService.model.startChat(chatHistory)
         return withContext(Dispatchers.IO) {
-            val response = chat.sendMessage("INSERT_INPUT_HERE")
-            response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.asTextOrNull() ?: "No suggestions available"
+            try {
+                val chat = geminiService.model.startChat(chatHistory)
+                val response = chat.sendMessage("INSERT_INPUT_HERE")
+                response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.asTextOrNull() ?: "No suggestions available"
+            } catch (e: Exception) {
+                throw RuntimeException("Failed to fetch weather suggestions", e)
+            }
         }
     }
 }
