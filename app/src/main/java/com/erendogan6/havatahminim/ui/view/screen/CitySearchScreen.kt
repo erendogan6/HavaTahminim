@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.ui.view
+package com.erendogan6.havatahminim.ui.view.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.erendogan6.havatahminim.model.City
+import com.erendogan6.havatahminim.model.weather.DailyForecast.City
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 
 @Composable

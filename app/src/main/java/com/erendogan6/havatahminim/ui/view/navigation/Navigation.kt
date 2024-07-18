@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.ui.view
+package com.erendogan6.havatahminim.ui.view.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -31,8 +31,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     NavigationBar(modifier = Modifier.padding(0.dp),containerColor = Color(0xFFFFF6E9)) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
-        val screens = listOf(
-            Screen.Today,
+        val screens = listOf(Screen.Today,
             Screen.Daily,
             Screen.ZekAI,
             Screen.SelectCity

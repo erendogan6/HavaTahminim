@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.ui.view
+package com.erendogan6.havatahminim.ui.view.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

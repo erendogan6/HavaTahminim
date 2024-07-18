@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.ui.view
+package com.erendogan6.havatahminim.ui.view.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -32,8 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.R
-import com.erendogan6.havatahminim.model.DailyForecast
-import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecast
+import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.capitalizeWords
 import java.text.SimpleDateFormat

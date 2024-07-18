@@ -1,4 +1,6 @@
-package com.erendogan6.havatahminim.model
+package com.erendogan6.havatahminim.model.weather.DailyForecast
+
+import com.erendogan6.havatahminim.model.weather.Common.Weather
 
 data class DailyForecast(
     val dt: Long,

@@ -1,7 +1,7 @@
 package com.erendogan6.havatahminim.network
 
-import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

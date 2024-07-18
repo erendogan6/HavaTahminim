@@ -4,9 +4,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.erendogan6.havatahminim.model.DailyForecastDao
-import com.erendogan6.havatahminim.model.DailyForecastEntity
 import com.erendogan6.havatahminim.model.LocationDao
-import com.erendogan6.havatahminim.model.LocationEntity
+import com.erendogan6.havatahminim.model.database.DailyForecastEntity
+import com.erendogan6.havatahminim.model.database.LocationEntity
 
 @Database(entities = [LocationEntity::class, DailyForecastEntity::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)

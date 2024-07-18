@@ -29,6 +29,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
+import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
+import com.erendogan6.havatahminim.ui.view.navigation.Screen
+import com.erendogan6.havatahminim.ui.view.screen.CitySearchScreen
+import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
+import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
+import com.erendogan6.havatahminim.ui.view.screen.ZekAIScreen
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.NetworkUtils
 import com.google.android.gms.location.FusedLocationProviderClient

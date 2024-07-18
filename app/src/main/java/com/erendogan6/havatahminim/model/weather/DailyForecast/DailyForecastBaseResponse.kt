@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.model
+package com.erendogan6.havatahminim.model.weather.DailyForecast
 
 data class DailyForecastBaseResponse(
     val city: City,

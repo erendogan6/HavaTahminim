@@ -3,11 +3,11 @@ package com.erendogan6.havatahminim.ui.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erendogan6.havatahminim.model.City
-import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
-import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
-import com.erendogan6.havatahminim.model.LocationEntity
+import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.database.LocationEntity
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

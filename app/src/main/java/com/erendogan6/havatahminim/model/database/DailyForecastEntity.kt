@@ -1,7 +1,8 @@
-package com.erendogan6.havatahminim.model
+package com.erendogan6.havatahminim.model.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 
 @Entity(tableName = "daily_forecast")
 data class DailyForecastEntity(

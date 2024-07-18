@@ -1,6 +1,6 @@
 package com.erendogan6.havatahminim.network
 
-import com.erendogan6.havatahminim.model.City
+import com.erendogan6.havatahminim.model.weather.DailyForecast.City
 import retrofit2.http.GET
 import retrofit2.http.Query
 

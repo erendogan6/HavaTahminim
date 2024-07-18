@@ -2,14 +2,14 @@ package com.erendogan6.havatahminim.repository
 
 import android.icu.util.Calendar
 import android.location.Location
-import com.erendogan6.havatahminim.model.City
-import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.DailyForecastDao
-import com.erendogan6.havatahminim.model.DailyForecastEntity
-import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.model.LocationDao
-import com.erendogan6.havatahminim.model.LocationEntity
+import com.erendogan6.havatahminim.model.database.DailyForecastEntity
+import com.erendogan6.havatahminim.model.database.LocationEntity
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService

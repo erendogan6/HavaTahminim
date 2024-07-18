@@ -1,7 +1,7 @@
 package com.erendogan6.havatahminim.room
 
 import androidx.room.TypeConverter
-import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

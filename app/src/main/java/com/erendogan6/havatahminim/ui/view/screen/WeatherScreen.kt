@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.ui.view
+package com.erendogan6.havatahminim.ui.view.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,8 +38,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.R
-import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.capitalizeWords
 import java.text.SimpleDateFormat
@@ -91,7 +91,7 @@ fun BackgroundImage(weatherState: CurrentWeatherBaseResponse?) {
 fun WeatherContent(weatherState: CurrentWeatherBaseResponse?,
                    errorMessage: String?,
                    hourlyForecast: HourlyForecastBaseResponse?,
-    onLoaded: () -> Unit
+                   onLoaded: () -> Unit
 ) {
     Column(
         modifier = Modifier
