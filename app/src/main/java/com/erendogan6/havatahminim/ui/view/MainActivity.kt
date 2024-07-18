@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +60,7 @@ fun HavaTahminimApp() {
         var locationError by remember { mutableStateOf<String?>(null) }
         val navController = rememberNavController()
         var dataLoaded by remember { mutableStateOf(false) }
+        val savedLocation by weatherViewModel.location.collectAsState()
 
         val locationPermissionLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
@@ -94,14 +96,23 @@ fun HavaTahminimApp() {
                 }
             }
         } else {
-            LaunchedEffect(Unit) {
-                // İstanbul koordinatları
-                val defaultLat = 41.0082
-                val defaultLon = 28.9784
-                if (NetworkUtils.isNetworkAvailable(context)) {
-                    weatherViewModel.fetchWeather(defaultLat, defaultLon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
-                } else {
-                    locationError = "İnternet bağlantısı yok"
+            LaunchedEffect(savedLocation) {
+                savedLocation?.let {
+                    if (NetworkUtils.isNetworkAvailable(context)) {
+                        weatherViewModel.fetchWeather(it.latitude, it.longitude, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                    } else {
+                        locationError = "İnternet bağlantısı yok"
+                    }
+                } ?: run {
+                    // İstanbul koordinatları
+                    val defaultLat = 41.0082
+                    val defaultLon = 28.9784
+                    if (NetworkUtils.isNetworkAvailable(context)) {
+                        weatherViewModel.saveLocation(defaultLat, defaultLon)
+                        weatherViewModel.fetchWeather(defaultLat, defaultLon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                    } else {
+                        locationError = "İnternet bağlantısı yok"
+                    }
                 }
             }
         }
@@ -141,6 +152,7 @@ fun HavaTahminimApp() {
                     CitySearchScreen(weatherViewModel) { city ->
                         val lat = city.lat
                         val lon = city.lon
+                        weatherViewModel.saveLocation(lat, lon)
                         weatherViewModel.fetchWeather(lat, lon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
                         navController.navigate(Screen.Today.route)
                     }
