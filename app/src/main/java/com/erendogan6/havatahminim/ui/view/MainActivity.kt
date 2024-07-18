@@ -65,7 +65,7 @@ fun HavaTahminimApp() {
         ) { isGranted ->
             locationPermissionGranted = isGranted
             showPermissionRationale = !isGranted
-            }
+        }
 
         LaunchedEffect(Unit) {
             if (ContextCompat.checkSelfPermission(
@@ -93,6 +93,17 @@ fun HavaTahminimApp() {
                     }
                 }
             }
+        } else {
+            LaunchedEffect(Unit) {
+                // İstanbul koordinatları
+                val defaultLat = 41.0082
+                val defaultLon = 28.9784
+                if (NetworkUtils.isNetworkAvailable(context)) {
+                    weatherViewModel.fetchWeather(defaultLat, defaultLon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                } else {
+                    locationError = "İnternet bağlantısı yok"
+                }
+            }
         }
 
         if (showPermissionRationale && !locationPermissionGranted) {
@@ -118,13 +129,21 @@ fun HavaTahminimApp() {
                 startDestination = Screen.Today.route,
                 modifier = Modifier.padding(innerPadding)) {
                 composable(Screen.Today.route) {
-                    WeatherScreen(weatherViewModel) { dataLoaded = true }
+                    WeatherScreen(weatherViewModel, onLoaded = { dataLoaded = true })
                 }
                 composable(Screen.Daily.route) {
-                    DailyForecastScreen(weatherViewModel) { dataLoaded = true }
+                    DailyForecastScreen(weatherViewModel, onLoaded = { dataLoaded = true })
                 }
                 composable(Screen.ZekAI.route) {
                     ZekAIScreen(weatherViewModel)
+                }
+                composable(Screen.SelectCity.route) {
+                    CitySearchScreen(weatherViewModel) { city ->
+                        val lat = city.lat
+                        val lon = city.lon
+                        weatherViewModel.fetchWeather(lat, lon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                        navController.navigate(Screen.Today.route)
+                    }
                 }
             }
         }
