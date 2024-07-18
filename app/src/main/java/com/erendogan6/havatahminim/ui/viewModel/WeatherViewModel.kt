@@ -3,6 +3,7 @@ package com.erendogan6.havatahminim.ui.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.erendogan6.havatahminim.model.City
 import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
@@ -32,6 +33,9 @@ class WeatherViewModel @Inject constructor(
 
     private val _dailyForecast = MutableStateFlow<DailyForecastBaseResponse?>(null)
     val dailyForecast: StateFlow<DailyForecastBaseResponse?> = _dailyForecast
+
+    private val _cities = MutableStateFlow<List<City>>(emptyList())
+    val cities: StateFlow<List<City>> get() = _cities
 
     fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
@@ -92,6 +96,19 @@ class WeatherViewModel @Inject constructor(
                     logDebug("Daily forecast data fetched successfully", response)
                 },
                 onError = { handleError(it, "Error fetching daily forecast data") }
+            )
+        }
+    }
+
+    fun fetchCities(query: String) {
+        viewModelScope.launch {
+            handleApiCall(
+                call = { repository.getCities(query) },
+                onSuccess = { cities ->
+                    _cities.value = cities
+                    logDebug("Cities fetched successfully", cities)
+                },
+                onError = { handleError(it, "Error fetching cities") }
             )
         }
     }
