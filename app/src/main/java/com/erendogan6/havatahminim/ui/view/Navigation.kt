@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -22,7 +23,7 @@ sealed class Screen(val route: String, val icon: ImageVector, val title: String)
     data object Today : Screen("weather_screen", Icons.Default.Home, "Bugün")
     data object Daily : Screen("daily_forecast_screen", Icons.Default.DateRange, "Günlük")
     data object ZekAI : Screen("zekai", Icons.Default.Face, "ZekAI")
-
+    data object SelectCity : Screen("select_city",Icons.Default.LocationOn,"Konum Seç")
 }
 
 @Composable
@@ -33,7 +34,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         val screens = listOf(
             Screen.Today,
             Screen.Daily,
-            Screen.ZekAI
+            Screen.ZekAI,
+            Screen.SelectCity
         )
         screens.forEach { screen ->
             NavigationBarItem(
