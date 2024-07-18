@@ -3,6 +3,7 @@ package com.erendogan6.havatahminim.di
 import android.content.Context
 import androidx.room.Room
 import com.erendogan6.havatahminim.BuildConfig
+import com.erendogan6.havatahminim.model.DailyForecastDao
 import com.erendogan6.havatahminim.model.LocationDao
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
@@ -90,9 +91,10 @@ object AppModule {
         proWeatherApiService: ProWeatherApiService,
         geminiService: GeminiService,
         cityApiService: CityApiService,
-        locationDao: LocationDao
+        locationDao: LocationDao,
+        dailyForecastDao: DailyForecastDao
     ): WeatherRepository {
-        return WeatherRepository(weatherApiService, proWeatherApiService, geminiService, cityApiService, locationDao)
+        return WeatherRepository(weatherApiService, proWeatherApiService, geminiService, cityApiService, locationDao, dailyForecastDao)
     }
 
     @Provides
@@ -108,7 +110,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLocationDao(locationDatabase: RoomDB): LocationDao {
-        return locationDatabase.locationDao()
+    fun provideLocationDao(roomDB: RoomDB): LocationDao {
+        return roomDB.locationDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDailyForecastDao(roomDb: RoomDB): DailyForecastDao {
+        return roomDb.dailyForecastDao()
     }
 }
