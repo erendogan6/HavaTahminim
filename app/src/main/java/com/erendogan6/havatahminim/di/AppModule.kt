@@ -1,14 +1,19 @@
 package com.erendogan6.havatahminim.di
 
+import android.content.Context
+import androidx.room.Room
 import com.erendogan6.havatahminim.BuildConfig
+import com.erendogan6.havatahminim.model.LocationDao
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService
 import com.erendogan6.havatahminim.network.WeatherApiService
 import com.erendogan6.havatahminim.repository.WeatherRepository
+import com.erendogan6.havatahminim.room.RoomDB
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -84,8 +89,26 @@ object AppModule {
         weatherApiService: WeatherApiService,
         proWeatherApiService: ProWeatherApiService,
         geminiService: GeminiService,
-        cityApiService: CityApiService
+        cityApiService: CityApiService,
+        locationDao: LocationDao
     ): WeatherRepository {
-        return WeatherRepository(weatherApiService, proWeatherApiService,geminiService,cityApiService)
+        return WeatherRepository(weatherApiService, proWeatherApiService, geminiService, cityApiService, locationDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationDatabase(@ApplicationContext
+                                context: Context): RoomDB {
+        return Room.databaseBuilder(
+            context.applicationContext,
+            RoomDB::class.java,
+            "location_database"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationDao(locationDatabase: RoomDB): LocationDao {
+        return locationDatabase.locationDao()
     }
 }
