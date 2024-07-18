@@ -7,6 +7,7 @@ import com.erendogan6.havatahminim.model.City
 import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.LocationEntity
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +37,35 @@ class WeatherViewModel @Inject constructor(
 
     private val _cities = MutableStateFlow<List<City>>(emptyList())
     val cities: StateFlow<List<City>> get() = _cities
+
+    private val _location = MutableStateFlow<LocationEntity?>(null)
+    val location: StateFlow<LocationEntity?> get() = _location
+
+    init {
+        loadLocation()
+    }
+
+    private fun loadLocation(){
+        viewModelScope.launch {
+            handleApiCall(
+                call = { repository.getSavedLocation() },
+                onSuccess = { location ->
+                    _location.value = location
+                },
+                onError = { handleError(it, "Error fetching location") }
+            )
+        }
+    }
+
+    fun saveLocation(lat: Double, lon: Double) {
+        viewModelScope.launch {
+            handleApiCall(
+                call = { repository.saveLocation(lat, lon) },
+                onSuccess = { _location.value = LocationEntity(latitude = lat, longitude = lon) },
+                onError = { handleError(it, "Error saving location") }
+            )
+        }
+    }
 
     fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
