@@ -81,12 +81,16 @@ fun HavaTahminimApp() {
             }
         }
 
-        if (locationPermissionGranted) {
-            LaunchedEffect(Unit) {
+        LaunchedEffect(locationPermissionGranted) {
+            if (locationPermissionGranted) {
                 coroutineScope.launch {
                     getCurrentLocation(context, fusedLocationClient) { lat, lon ->
                         if (NetworkUtils.isNetworkAvailable(context)) {
-                            weatherViewModel.fetchWeather(lat, lon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                            weatherViewModel.saveLocation(lat, lon)
+                            if (!dataLoaded) {
+                                weatherViewModel.fetchWeather(lat, lon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                                dataLoaded = true
+                            }
                         } else {
                             locationError = "İnternet bağlantısı yok"
                         }
@@ -94,24 +98,21 @@ fun HavaTahminimApp() {
                         locationError = it.message
                     }
                 }
-            }
-        } else {
-            LaunchedEffect(savedLocation) {
+            } else {
                 savedLocation?.let {
-                    if (NetworkUtils.isNetworkAvailable(context)) {
+                    if (!dataLoaded && NetworkUtils.isNetworkAvailable(context)) {
                         weatherViewModel.fetchWeather(it.latitude, it.longitude, "3d4e2ea2d92e6ec224c1bc97c4057c27")
-                    } else {
-                        locationError = "İnternet bağlantısı yok"
-                    }
-                } ?: run {
-                    // İstanbul koordinatları
-                    val defaultLat = 41.0082
-                    val defaultLon = 28.9784
-                    if (NetworkUtils.isNetworkAvailable(context)) {
-                        weatherViewModel.saveLocation(defaultLat, defaultLon)
-                        weatherViewModel.fetchWeather(defaultLat, defaultLon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
-                    } else {
-                        locationError = "İnternet bağlantısı yok"
+                        dataLoaded = true
+                    } else if (!dataLoaded) {
+                        // İstanbul koordinatları
+                        val defaultLat = 41.0082
+                        val defaultLon = 28.9784
+                        if (NetworkUtils.isNetworkAvailable(context)) {
+                            weatherViewModel.fetchWeather(defaultLat, defaultLon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                            dataLoaded = true
+                        } else {
+                            locationError = "İnternet bağlantısı yok"
+                        }
                     }
                 }
             }
