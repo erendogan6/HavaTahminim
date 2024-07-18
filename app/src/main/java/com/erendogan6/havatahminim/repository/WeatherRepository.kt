@@ -4,6 +4,8 @@ import com.erendogan6.havatahminim.model.City
 import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.LocationDao
+import com.erendogan6.havatahminim.model.LocationEntity
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService
@@ -18,7 +20,8 @@ class WeatherRepository @Inject constructor(
     private val weatherApiService: WeatherApiService,
     private val proWeatherApiService: ProWeatherApiService,
     private val geminiService: GeminiService,
-    private val cityApiService: CityApiService
+    private val cityApiService: CityApiService,
+    private val locationDao: LocationDao
 ) {
     suspend fun getWeather(lat: Double, lon: Double, apiKey: String): CurrentWeatherBaseResponse {
         return withContext(Dispatchers.IO) {
@@ -75,6 +78,18 @@ class WeatherRepository @Inject constructor(
             } catch (e: Exception) {
                 throw RuntimeException("Failed to fetch cities", e)
             }
+        }
+    }
+
+    suspend fun getSavedLocation(): LocationEntity? {
+        return withContext(Dispatchers.IO) {
+            locationDao.getLocation()
+        }
+    }
+
+    suspend fun saveLocation(latitude: Double, longitude: Double) {
+        withContext(Dispatchers.IO) {
+            locationDao.insertLocation(LocationEntity(latitude = latitude, longitude = longitude))
         }
     }
 }
