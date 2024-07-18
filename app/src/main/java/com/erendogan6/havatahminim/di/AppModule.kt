@@ -1,6 +1,7 @@
 package com.erendogan6.havatahminim.di
 
 import com.erendogan6.havatahminim.BuildConfig
+import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService
 import com.erendogan6.havatahminim.network.WeatherApiService
@@ -40,13 +41,24 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWeatherApiService(okHttpClient: OkHttpClient): WeatherApiService {
+    fun provideWeatherApiServiceSecure(okHttpClient: OkHttpClient): WeatherApiService {
         return Retrofit.Builder()
             .baseUrl("https://api.openweathermap.org/data/2.5/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(WeatherApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWeatherApiServiceUnSecure(okHttpClient: OkHttpClient): CityApiService {
+        return Retrofit.Builder()
+            .baseUrl("http://api.openweathermap.org/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(CityApiService::class.java)
     }
 
     @Provides
@@ -71,8 +83,9 @@ object AppModule {
     fun provideWeatherRepository(
         weatherApiService: WeatherApiService,
         proWeatherApiService: ProWeatherApiService,
-        geminiService: GeminiService
+        geminiService: GeminiService,
+        cityApiService: CityApiService
     ): WeatherRepository {
-        return WeatherRepository(weatherApiService, proWeatherApiService,geminiService )
+        return WeatherRepository(weatherApiService, proWeatherApiService,geminiService,cityApiService)
     }
 }
