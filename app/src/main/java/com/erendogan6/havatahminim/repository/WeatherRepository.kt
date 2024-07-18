@@ -1,8 +1,12 @@
 package com.erendogan6.havatahminim.repository
 
+import android.icu.util.Calendar
+import android.location.Location
 import com.erendogan6.havatahminim.model.City
 import com.erendogan6.havatahminim.model.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.DailyForecastDao
+import com.erendogan6.havatahminim.model.DailyForecastEntity
 import com.erendogan6.havatahminim.model.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.model.LocationDao
 import com.erendogan6.havatahminim.model.LocationEntity
@@ -21,8 +25,11 @@ class WeatherRepository @Inject constructor(
     private val proWeatherApiService: ProWeatherApiService,
     private val geminiService: GeminiService,
     private val cityApiService: CityApiService,
-    private val locationDao: LocationDao
+    private val locationDao: LocationDao,
+    private val dailyForecastDao: DailyForecastDao
 ) {
+    private val DISTANCE_THRESHOLD_METERS = 10000  // 10 km
+
     suspend fun getWeather(lat: Double, lon: Double, apiKey: String): CurrentWeatherBaseResponse {
         return withContext(Dispatchers.IO) {
             try {
@@ -44,9 +51,41 @@ class WeatherRepository @Inject constructor(
     }
 
     suspend fun getDailyWeather(lat: Double, lon: Double, apiKey: String): DailyForecastBaseResponse {
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+
+        val savedForecast = dailyForecastDao.getForecastByDate(today)
+
+        if (savedForecast != null) {
+            val savedLocation = Location("saved").apply {
+                latitude = savedForecast.latitude
+                longitude = savedForecast.longitude
+            }
+            val currentLocation = Location("current").apply {
+                latitude = lat
+                longitude = lon
+            }
+            val distance = savedLocation.distanceTo(currentLocation)
+            if (distance <= DISTANCE_THRESHOLD_METERS) {
+                return savedForecast.forecastData
+            }
+        }
+
         return withContext(Dispatchers.IO) {
             try {
-                weatherApiService.getDailyWeather(lat, lon, apiKey)
+                val response = weatherApiService.getDailyWeather(lat, lon, apiKey)
+                val forecastEntity = DailyForecastEntity(
+                    date = today,
+                    latitude = lat,
+                    longitude = lon,
+                    forecastData = response
+                )
+                dailyForecastDao.insertForecast(forecastEntity)
+                response
             } catch (e: Exception) {
                 throw RuntimeException("Failed to fetch daily weather data", e)
             }
