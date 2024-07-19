@@ -11,6 +11,7 @@ import com.erendogan6.havatahminim.network.ProWeatherApiService
 import com.erendogan6.havatahminim.network.WeatherApiService
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.room.RoomDB
+import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -80,8 +81,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGeminiService(): GeminiService {
-        return GeminiService()
+    fun provideGeminiService(resourcesProvider: ResourcesProvider
+    ): GeminiService {
+        return GeminiService(resourcesProvider)
+    }
+
+    @Provides
+    @Singleton
+    fun provideResourcesProvider(@ApplicationContext context: Context): ResourcesProvider {
+        return ResourcesProvider(context)
     }
 
     @Provides
@@ -92,9 +100,10 @@ object AppModule {
         geminiService: GeminiService,
         cityApiService: CityApiService,
         locationDao: LocationDao,
-        dailyForecastDao: DailyForecastDao
+        dailyForecastDao: DailyForecastDao,
+        resourcesProvider: ResourcesProvider
     ): WeatherRepository {
-        return WeatherRepository(weatherApiService, proWeatherApiService, geminiService, cityApiService, locationDao, dailyForecastDao)
+        return WeatherRepository(weatherApiService, proWeatherApiService, geminiService, cityApiService, locationDao, dailyForecastDao, resourcesProvider)
     }
 
     @Provides

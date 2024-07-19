@@ -15,31 +15,34 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.erendogan6.havatahminim.R
 
-sealed class Screen(val route: String, val icon: ImageVector, val title: String) {
-    data object Today : Screen("weather_screen", Icons.Default.Home, "Bugün")
-    data object Daily : Screen("daily_forecast_screen", Icons.Default.DateRange, "Günlük")
-    data object ZekAI : Screen("zekai", Icons.Default.Face, "ZekAI")
-    data object SelectCity : Screen("select_city",Icons.Default.LocationOn,"Konum Seç")
+sealed class Screen(val route: String, val icon: ImageVector, val title: Int) {
+    data object Today : Screen("weather_screen", Icons.Default.Home, R.string.today)
+    data object Daily : Screen("daily_forecast_screen", Icons.Default.DateRange, R.string.daily)
+    data object ZekAI : Screen("zekai", Icons.Default.Face, R.string.zekai)
+    data object SelectCity : Screen("select_city", Icons.Default.LocationOn, R.string.select_city)
 }
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-    NavigationBar(modifier = Modifier.padding(0.dp),containerColor = Color(0xFFFFF6E9)) {
+    NavigationBar(modifier = Modifier.padding(0.dp), containerColor = Color(0xFFFFF6E9)) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
-        val screens = listOf(Screen.Today,
+        val screens = listOf(
+            Screen.Today,
             Screen.Daily,
             Screen.ZekAI,
             Screen.SelectCity
         )
         screens.forEach { screen ->
             NavigationBarItem(
-                icon = {Icon(screen.icon, contentDescription = screen.title)},
-                label = { Text(screen.title) },
+                icon = { Icon(screen.icon, contentDescription = stringResource(id = screen.title)) },
+                label = { Text(stringResource(id = screen.title)) },
                 selected = currentRoute == screen.route,
                 onClick = {
                     navController.navigate(screen.route) {
@@ -49,7 +52,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                         launchSingleTop = true
                         restoreState = true
                     }
-                })
+                }
+            )
         }
     }
 }

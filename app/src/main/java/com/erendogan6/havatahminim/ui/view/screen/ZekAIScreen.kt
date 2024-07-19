@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -68,7 +69,6 @@ fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
     }
 }
 
-
 @Composable
 fun SuggestionsCard(suggestions: String) {
     Column(
@@ -84,7 +84,7 @@ fun SuggestionsCard(suggestions: String) {
             contentScale = ContentScale.Crop
         )
         Text(
-            text = "ZekAI'nin Önerileri",
+            text = stringResource(id = R.string.zekai_suggestions),
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 8.dp),
@@ -132,7 +132,7 @@ fun ThinkerCard() {
     CenteredColumn {
         CircularProgressIndicator()
         Text(
-            text = "ZekAI öneriler için düşünüyor...",
+            text = stringResource(id = R.string.zekai_thinking),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 8.dp),

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hava Tahmini</string>
+    <string name="loading_message">Gökyüzü İnceleniyor…</string>
+    <string name="hourly_forecast">Saatlik Hava Durumu</string>
+    <string name="feels_like">Hissedilen Sıcaklık</string>
+    <string name="humidity">Nem</string>
+    <string name="zekai_suggestions">ZekAI\'nin Önerileri</string>
+    <string name="zekai_thinking">ZekAI öneriler için düşünüyor…</string>
+    <string name="daily_forecast_title">7 Günlük Hava Durumu</string>
+    <string name="permission_rationale_title">Konum İzni Gerekli</string>
+    <string name="permission_rationale_message">Bu uygulama, mevcut konumunuza göre hava durumu verilerini almak için konum izni gerektirir.</string>
+    <string name="grant_permission">İzin Ver</string>
+    <string name="cancel">Vazgeç</string>
+    <string name="error_title">Hata</string>
+    <string name="ok">Tamam</string>
+    <string name="no_internet">İnternet bağlantısı yok</string>
+    <string name="today">Bugün</string>
+    <string name="daily">Günlük</string>
+    <string name="zekai">ZekAI</string>
+    <string name="select_city">Konum Seç</string>
+    <string name="error_fetching_location">Konum alınırken hata oluştu</string>
+    <string name="error_saving_location">Konum kaydedilirken hata oluştu</string>
+    <string name="error_fetching_weather_data">Hava durumu verileri alınırken hata oluştu</string>
+    <string name="error_fetching_hourly_forecast">Saatlik hava durumu verileri alınırken hata oluştu</string>
+    <string name="error_fetching_weather_suggestions">Hava durumu önerileri alınırken hata oluştu. Hata: %s</string>
+    <string name="error_fetching_daily_forecast">Günlük hava durumu verileri alınırken hata oluştu</string>
+    <string name="error_fetching_cities">Şehirler alınırken hata oluştu</string>
+    <string name="general_error_message">Bir hata oluştu. Lütfen tekrar deneyin.</string>
+    <string name="city_search">Şehir Ara</string>
+    <string name="weather_assistant_instruction">Sen bir akıllı hava durumu asistanısın. Kullanıcının konum ve mevcut hava durumu bilgilerini alarak, onlara günlük aktiviteler için Türkçe önerilerde bulunuyorsun.</string>
+</resources>

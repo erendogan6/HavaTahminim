@@ -2,18 +2,20 @@ package com.erendogan6.havatahminim.repository
 
 import android.icu.util.Calendar
 import android.location.Location
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.model.DailyForecastDao
-import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.model.LocationDao
 import com.erendogan6.havatahminim.model.database.DailyForecastEntity
 import com.erendogan6.havatahminim.model.database.LocationEntity
+import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService
 import com.erendogan6.havatahminim.network.WeatherApiService
+import com.erendogan6.havatahminim.util.ResourcesProvider
 import com.google.ai.client.generativeai.type.asTextOrNull
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
@@ -26,16 +28,19 @@ class WeatherRepository @Inject constructor(
     private val geminiService: GeminiService,
     private val cityApiService: CityApiService,
     private val locationDao: LocationDao,
-    private val dailyForecastDao: DailyForecastDao
+    private val dailyForecastDao: DailyForecastDao,
+    private val resourcesProvider: ResourcesProvider
 ) {
     private val DISTANCE_THRESHOLD_METERS = 10000  // 10 km
+
+    private val language: String get() = resourcesProvider.getLanguage()
 
     suspend fun getWeather(lat: Double, lon: Double, apiKey: String): CurrentWeatherBaseResponse {
         return withContext(Dispatchers.IO) {
             try {
-                weatherApiService.getWeather(lat, lon, apiKey)
+                weatherApiService.getWeather(lat, lon, apiKey, lang = language)
             } catch (e: Exception) {
-                throw RuntimeException("Failed to fetch weather data", e)
+                throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_weather_data), e)
             }
         }
     }
@@ -43,9 +48,9 @@ class WeatherRepository @Inject constructor(
     suspend fun getHourlyWeather(lat: Double, lon: Double, apiKey: String): HourlyForecastBaseResponse {
         return withContext(Dispatchers.IO) {
             try {
-                proWeatherApiService.getHourlyWeather(lat, lon, apiKey)
+                proWeatherApiService.getHourlyWeather(lat, lon, apiKey, lang = language)
             } catch (e: Exception) {
-                throw RuntimeException("Failed to fetch hourly weather data", e)
+                throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_hourly_forecast), e)
             }
         }
     }
@@ -77,7 +82,7 @@ class WeatherRepository @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = weatherApiService.getDailyWeather(lat, lon, apiKey)
+                val response = weatherApiService.getDailyWeather(lat, lon, apiKey, lang = language)
                 val forecastEntity = DailyForecastEntity(
                     date = today,
                     latitude = lat,
@@ -87,7 +92,7 @@ class WeatherRepository @Inject constructor(
                 dailyForecastDao.insertForecast(forecastEntity)
                 response
             } catch (e: Exception) {
-                throw RuntimeException("Failed to fetch daily weather data", e)
+                throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_daily_forecast), e)
             }
         }
     }
@@ -101,11 +106,11 @@ class WeatherRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 val chat = geminiService.model.startChat(chatHistory)
-                val response = chat.sendMessage("Sen bir akıllı hava durumu asistanısın. Kullanıcının konum ve mevcut hava durumu bilgilerini alarak, onlara günlük aktiviteler için Türkçe önerilerde bulunuyorsun.")
-                response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.asTextOrNull() ?: "No suggestions available"
+                val response = chat.sendMessage(resourcesProvider.getString(R.string.weather_assistant_instruction))
+                response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.asTextOrNull() ?: resourcesProvider.getString(R.string.general_error_message)
             } catch (e: Exception) {
                 println(e.localizedMessage)
-                "Failed to fetch weather suggestions. Error: ${e.message}"
+                resourcesProvider.getString(R.string.error_fetching_weather_suggestions)
             }
         }
     }
@@ -115,7 +120,7 @@ class WeatherRepository @Inject constructor(
             try {
                 cityApiService.getCities(query)
             } catch (e: Exception) {
-                throw RuntimeException("Failed to fetch cities", e)
+                throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_cities), e)
             }
         }
     }
@@ -128,7 +133,11 @@ class WeatherRepository @Inject constructor(
 
     suspend fun saveLocation(latitude: Double, longitude: Double) {
         withContext(Dispatchers.IO) {
-            locationDao.insertLocation(LocationEntity(latitude = latitude, longitude = longitude))
+            try {
+                locationDao.insertLocation(LocationEntity(latitude = latitude, longitude = longitude))
+            } catch (e: Exception) {
+                throw RuntimeException(resourcesProvider.getString(R.string.error_saving_location), e)
+            }
         }
     }
 }

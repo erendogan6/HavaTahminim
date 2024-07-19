@@ -22,12 +22,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
 import com.erendogan6.havatahminim.ui.view.navigation.Screen
@@ -98,7 +100,7 @@ fun HavaTahminimApp() {
                                 dataLoaded = true
                             }
                         } else {
-                            locationError = "İnternet bağlantısı yok"
+                            locationError = context.getString(R.string.no_internet)
                         }
                     }.onFailure {
                         locationError = it.message
@@ -117,7 +119,7 @@ fun HavaTahminimApp() {
                             weatherViewModel.fetchWeather(defaultLat, defaultLon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
                             dataLoaded = true
                         } else {
-                            locationError = "İnternet bağlantısı yok"
+                            locationError = context.getString(R.string.no_internet)
                         }
                     }
                 }
@@ -177,19 +179,19 @@ fun PermissionRationaleDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = "Konum İzni Gerekli")
+            Text(text = stringResource(id = R.string.permission_rationale_title))
         },
         text = {
-            Text(text = "Bu uygulama, mevcut konumunuza göre hava durumu verilerini almak için konum izni gerektirir.")
+            Text(text = stringResource(id = R.string.permission_rationale_message))
         },
         confirmButton = {
             Button(onClick = onRequestPermission) {
-                Text("İzin Ver")
+                Text(stringResource(id = R.string.grant_permission))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Vazgeç")
+                Text(stringResource(id = R.string.cancel))
             }
         }
     )
@@ -203,14 +205,14 @@ fun ErrorDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = "Hata")
+            Text(text = stringResource(id = R.string.error_title))
         },
         text = {
             Text(text = message)
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Tamam")
+                Text(stringResource(id = R.string.ok))
             }
         }
     )

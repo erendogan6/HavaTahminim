@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -131,7 +132,7 @@ fun SplashScreen() {
         Spacer(modifier = Modifier.height(150.dp))
         CircularProgressIndicator()
         Text(
-            text = "Gökyüzü İnceleniyor...",
+            text = stringResource(id = R.string.loading_message),
             color = Color.Black,
             fontSize = 38.sp,
             fontFamily = FontFamily(Font(R.font.open_sans)),
@@ -149,7 +150,7 @@ fun HourlyForecastCard(hourlyForecast: HourlyForecastBaseResponse) {
             .padding(horizontal = 10.dp)
     ) {
         Text(
-            text = "Saatlik Hava Durumu",
+            text = stringResource(id = R.string.hourly_forecast),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily(Font(R.font.open_sans)),
@@ -207,7 +208,7 @@ fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
     )
 
     Text(
-        text = "Hissedilen Sıcaklık: ${weatherState.main.feels_like.toInt()}°C",
+        text = "${stringResource(id = R.string.feels_like)}: ${weatherState.main.feels_like.toInt()}°C",
         fontSize = 22.sp,
         fontFamily = FontFamily(Font(R.font.open_sans)),
         modifier = Modifier.padding(vertical = 15.dp),
@@ -215,7 +216,7 @@ fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
     )
 
     Text(
-        text = "Nem: ${weatherState.main.humidity}%",
+        text = "${stringResource(id = R.string.humidity)}: ${weatherState.main.humidity}%",
         fontSize = 22.sp,
         fontFamily = FontFamily(Font(R.font.open_sans)),
         modifier = Modifier.padding(vertical = 4.dp),

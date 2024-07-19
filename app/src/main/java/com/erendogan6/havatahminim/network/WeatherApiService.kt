@@ -12,7 +12,7 @@ interface WeatherApiService {
         @Query("lon") lon: Double,
         @Query("appid") apiKey: String,
         @Query("units") units: String = "metric",
-        @Query("lang") lang: String = "tr"
+        @Query("lang") lang: String
     ): CurrentWeatherBaseResponse
 
     @GET("forecast/daily")
@@ -22,6 +22,6 @@ interface WeatherApiService {
         @Query("appid") apiKey: String,
         @Query("cnt") days: Int = 7,
         @Query("units") units: String = "metric",
-        @Query("lang") lang: String = "tr"
+        @Query("lang") lang: String
     ): DailyForecastBaseResponse
 }

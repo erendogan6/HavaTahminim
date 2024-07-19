@@ -3,12 +3,14 @@ package com.erendogan6.havatahminim.ui.viewModel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.R
+import com.erendogan6.havatahminim.model.database.LocationEntity
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.DailyForecast.City
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
-import com.erendogan6.havatahminim.model.database.LocationEntity
 import com.erendogan6.havatahminim.repository.WeatherRepository
+import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
-    private val repository: WeatherRepository
+    private val repository: WeatherRepository,
+    private val resourcesProvider: ResourcesProvider
 ) : ViewModel() {
 
     private val _weatherState = MutableStateFlow<CurrentWeatherBaseResponse?>(null)
@@ -52,7 +55,7 @@ class WeatherViewModel @Inject constructor(
                 onSuccess = { location ->
                     _location.value = location
                 },
-                onError = { handleError(it, "Error fetching location") }
+                onError = { handleError(it, resourcesProvider.getString(R.string.error_fetching_location)) }
             )
         }
     }
@@ -62,7 +65,7 @@ class WeatherViewModel @Inject constructor(
             handleApiCall(
                 call = { repository.saveLocation(lat, lon) },
                 onSuccess = { _location.value = LocationEntity(latitude = lat, longitude = lon) },
-                onError = { handleError(it, "Error saving location") }
+                onError = { handleError(it, resourcesProvider.getString(R.string.error_saving_location)) }
             )
         }
     }
@@ -77,7 +80,7 @@ class WeatherViewModel @Inject constructor(
                     fetchAdditionalData(lat, lon, apiKey, response.name, "${response.main.temp.toInt()}°C")
                     logDebug("Weather data fetched successfully", response)
                 },
-                onError = { handleError(it, "Error fetching weather data") }
+                onError = { handleError(it, resourcesProvider.getString(R.string.error_fetching_weather_data)) }
             )
         }
     }
@@ -97,7 +100,7 @@ class WeatherViewModel @Inject constructor(
                     _errorMessage.value = null
                     logDebug("Hourly forecast data fetched successfully", response)
                 },
-                onError = { handleError(it, "Error fetching hourly forecast data") }
+                onError = { handleError(it, resourcesProvider.getString(R.string.error_fetching_hourly_forecast)) }
             )
         }
     }
@@ -111,12 +114,12 @@ class WeatherViewModel @Inject constructor(
                     _errorMessage.value = null
                     logDebug("Weather suggestions fetched successfully", suggestions)
                 },
-                onError = { handleError(it, "Error fetching weather suggestions") }
+                onError = { handleError(it, resourcesProvider.getString(R.string.error_fetching_weather_suggestions)) }
             )
         }
     }
 
-    private fun fetchDailyForecast(lat: Double, lon: Double, apiKey: String) {
+    fun fetchDailyForecast(lat: Double, lon: Double, apiKey: String) {
         viewModelScope.launch {
             handleApiCall(
                 call = { repository.getDailyWeather(lat, lon, apiKey) },
@@ -125,7 +128,7 @@ class WeatherViewModel @Inject constructor(
                     _errorMessage.value = null
                     logDebug("Daily forecast data fetched successfully", response)
                 },
-                onError = { handleError(it, "Error fetching daily forecast data") }
+                onError = { handleError(it, resourcesProvider.getString(R.string.error_fetching_daily_forecast)) }
             )
         }
     }
@@ -138,7 +141,7 @@ class WeatherViewModel @Inject constructor(
                     _cities.value = cities
                     logDebug("Cities fetched successfully", cities)
                 },
-                onError = { handleError(it, "Error fetching cities") }
+                onError = { handleError(it, resourcesProvider.getString(R.string.error_fetching_cities)) }
             )
         }
     }
@@ -157,7 +160,7 @@ class WeatherViewModel @Inject constructor(
     }
 
     private fun handleError(exception: Exception, logMessage: String) {
-        _errorMessage.value = "An error occurred. Please try again."
+        _errorMessage.value = logMessage
         logError(logMessage, exception)
     }
 

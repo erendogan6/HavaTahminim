@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -65,7 +66,7 @@ fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "7 Günlük Hava Durumu",
+            text = stringResource(id = R.string.daily_forecast_title),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily(Font(R.font.open_sans)),
