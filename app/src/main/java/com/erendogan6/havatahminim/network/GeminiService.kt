@@ -1,6 +1,6 @@
 package com.erendogan6.havatahminim.network
 
-import com.erendogan6.havatahminim.BuildConfig
+import com.erendogan6.havatahminim.BuildConfig.GEMINI_API_KEY
 import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import com.google.ai.client.generativeai.GenerativeModel
@@ -19,7 +19,7 @@ class GeminiService @Inject constructor(
     val model: GenerativeModel by lazy {
         GenerativeModel(
             "gemini-1.5-pro",
-            apiKey = BuildConfig.GEMINI_API_KEY,
+            apiKey = GEMINI_API_KEY,
             generationConfig = generationConfig {
                 temperature = 2f
                 topK = 64

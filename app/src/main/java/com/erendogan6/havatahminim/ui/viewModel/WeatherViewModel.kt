@@ -70,14 +70,14 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun fetchWeather(lat: Double, lon: Double, apiKey: String) {
+    fun fetchWeather(lat: Double, lon: Double) {
         viewModelScope.launch {
             handleApiCall(
-                call = { repository.getWeather(lat, lon, apiKey) },
+                call = { repository.getWeather(lat, lon) },
                 onSuccess = { response ->
                     _weatherState.value = response
                     _errorMessage.value = null
-                    fetchAdditionalData(lat, lon, apiKey, response.name, "${response.main.temp.toInt()}°C")
+                    fetchAdditionalData(lat, lon, response.name, "${response.main.temp.toInt()}°C")
                     logDebug("Weather data fetched successfully", response)
                 },
                 onError = { handleError(it, resourcesProvider.getString(R.string.error_fetching_weather_data)) }
@@ -85,16 +85,16 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    private fun fetchAdditionalData(lat: Double, lon: Double, apiKey: String, location: String, temperature: String) {
-        fetchHourlyForecast(lat, lon, apiKey)
-        fetchDailyForecast(lat, lon, apiKey)
+    private fun fetchAdditionalData(lat: Double, lon: Double, location: String, temperature: String) {
+        fetchHourlyForecast(lat, lon)
+        fetchDailyForecast(lat, lon)
         fetchWeatherSuggestions(location, temperature)
     }
 
-    private fun fetchHourlyForecast(lat: Double, lon: Double, apiKey: String) {
+    private fun fetchHourlyForecast(lat: Double, lon: Double) {
         viewModelScope.launch {
             handleApiCall(
-                call = { repository.getHourlyWeather(lat, lon, apiKey) },
+                call = { repository.getHourlyWeather(lat, lon) },
                 onSuccess = { response ->
                     _hourlyForecast.value = response
                     _errorMessage.value = null
@@ -119,10 +119,10 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun fetchDailyForecast(lat: Double, lon: Double, apiKey: String) {
+    fun fetchDailyForecast(lat: Double, lon: Double) {
         viewModelScope.launch {
             handleApiCall(
-                call = { repository.getDailyWeather(lat, lon, apiKey) },
+                call = { repository.getDailyWeather(lat, lon) },
                 onSuccess = { response ->
                     _dailyForecast.value = response
                     _errorMessage.value = null

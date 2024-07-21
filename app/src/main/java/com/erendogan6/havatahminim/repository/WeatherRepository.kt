@@ -35,27 +35,27 @@ class WeatherRepository @Inject constructor(
 
     private val language: String get() = resourcesProvider.getLanguage()
 
-    suspend fun getWeather(lat: Double, lon: Double, apiKey: String): CurrentWeatherBaseResponse {
+    suspend fun getWeather(lat: Double, lon: Double): CurrentWeatherBaseResponse {
         return withContext(Dispatchers.IO) {
             try {
-                weatherApiService.getWeather(lat, lon, apiKey, lang = language)
+                weatherApiService.getWeather(lat, lon, lang = language)
             } catch (e: Exception) {
                 throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_weather_data), e)
             }
         }
     }
 
-    suspend fun getHourlyWeather(lat: Double, lon: Double, apiKey: String): HourlyForecastBaseResponse {
+    suspend fun getHourlyWeather(lat: Double, lon: Double): HourlyForecastBaseResponse {
         return withContext(Dispatchers.IO) {
             try {
-                proWeatherApiService.getHourlyWeather(lat, lon, apiKey, lang = language)
+                proWeatherApiService.getHourlyWeather(lat, lon, lang = language)
             } catch (e: Exception) {
                 throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_hourly_forecast), e)
             }
         }
     }
 
-    suspend fun getDailyWeather(lat: Double, lon: Double, apiKey: String): DailyForecastBaseResponse {
+    suspend fun getDailyWeather(lat: Double, lon: Double): DailyForecastBaseResponse {
         val today = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
@@ -82,7 +82,7 @@ class WeatherRepository @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val response = weatherApiService.getDailyWeather(lat, lon, apiKey, lang = language)
+                val response = weatherApiService.getDailyWeather(lat, lon, lang = language)
                 val forecastEntity = DailyForecastEntity(
                     date = today,
                     latitude = lat,

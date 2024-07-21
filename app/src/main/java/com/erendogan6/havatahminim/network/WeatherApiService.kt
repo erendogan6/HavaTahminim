@@ -1,5 +1,6 @@
 package com.erendogan6.havatahminim.network
 
+import com.erendogan6.havatahminim.BuildConfig.WEATHER_API_KEY
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import retrofit2.http.GET
@@ -10,7 +11,7 @@ interface WeatherApiService {
     suspend fun getWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("appid") apiKey: String,
+        @Query("appid") apiKey: String = WEATHER_API_KEY,
         @Query("units") units: String = "metric",
         @Query("lang") lang: String
     ): CurrentWeatherBaseResponse
@@ -19,7 +20,7 @@ interface WeatherApiService {
     suspend fun getDailyWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("appid") apiKey: String,
+        @Query("appid") apiKey: String = WEATHER_API_KEY,
         @Query("cnt") days: Int = 7,
         @Query("units") units: String = "metric",
         @Query("lang") lang: String

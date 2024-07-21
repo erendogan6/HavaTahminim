@@ -96,7 +96,7 @@ fun HavaTahminimApp() {
                         if (NetworkUtils.isNetworkAvailable(context)) {
                             weatherViewModel.saveLocation(lat, lon)
                             if (!dataLoaded) {
-                                weatherViewModel.fetchWeather(lat, lon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                                weatherViewModel.fetchWeather(lat, lon)
                                 dataLoaded = true
                             }
                         } else {
@@ -109,14 +109,14 @@ fun HavaTahminimApp() {
             } else {
                 savedLocation?.let {
                     if (!dataLoaded && NetworkUtils.isNetworkAvailable(context)) {
-                        weatherViewModel.fetchWeather(it.latitude, it.longitude, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                        weatherViewModel.fetchWeather(it.latitude, it.longitude)
                         dataLoaded = true
                     } else if (!dataLoaded) {
                         // İstanbul koordinatları
                         val defaultLat = 41.0082
                         val defaultLon = 28.9784
                         if (NetworkUtils.isNetworkAvailable(context)) {
-                            weatherViewModel.fetchWeather(defaultLat, defaultLon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                            weatherViewModel.fetchWeather(defaultLat, defaultLon)
                             dataLoaded = true
                         } else {
                             locationError = context.getString(R.string.no_internet)
@@ -162,7 +162,7 @@ fun HavaTahminimApp() {
                         val lat = city.lat
                         val lon = city.lon
                         weatherViewModel.saveLocation(lat, lon)
-                        weatherViewModel.fetchWeather(lat, lon, "3d4e2ea2d92e6ec224c1bc97c4057c27")
+                        weatherViewModel.fetchWeather(lat, lon)
                         navController.navigate(Screen.Today.route)
                     }
                 }

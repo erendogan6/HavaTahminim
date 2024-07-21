@@ -4,7 +4,10 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 }
-
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
+def weatherApiKey = localProperties.getProperty("WEATHER_API_KEY")
 android {
     namespace 'com.erendogan6.havatahminim'
     compileSdk 34
@@ -15,6 +18,8 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+        buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
+        buildConfigField("String", "WEATHER_API_KEY", "\"${weatherApiKey}\"")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -26,11 +31,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            buildConfigField("String", "GEMINI_API_KEY", "\"${project.findProperty("GEMINI_API_KEY")}\"")
-        }
-        debug {
-            buildConfigField("String", "GEMINI_API_KEY", "\"${project.findProperty("GEMINI_API_KEY")}\"")
         }
     }
     compileOptions {
