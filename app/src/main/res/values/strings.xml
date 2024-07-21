@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Weather Forecast</string>
+    <string name="app_name">My Weather Forecast</string>
     <string name="loading_message">Analyzing the Sky…</string>
     <string name="hourly_forecast">Hourly Weather Forecast</string>
     <string name="feels_like">Feels Like</string>

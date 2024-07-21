@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Hava Tahmini</string>
+    <string name="app_name">Hava Tahminim</string>
     <string name="loading_message">Gökyüzü İnceleniyor…</string>
     <string name="hourly_forecast">Saatlik Hava Durumu</string>
     <string name="feels_like">Hissedilen Sıcaklık</string>
