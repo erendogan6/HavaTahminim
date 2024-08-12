@@ -10,6 +10,6 @@ interface CityApiService {
     suspend fun getCities(
         @Query("q") query: String,
         @Query("appid") apiKey: String = WEATHER_API_KEY,
-        @Query("limit") limit: Int = 5
+        @Query("limit") limit: Int = 5,
     ): List<City>
 }

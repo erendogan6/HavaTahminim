@@ -38,16 +38,17 @@ import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 @Composable
 fun CitySearchScreen(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
-    onCitySelected: (City) -> Unit = {}
+    onCitySelected: (City) -> Unit = {},
 ) {
     val cityState by weatherViewModel.cities.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(Color(0xFFF5F5F5), Color(0xFFE0E0E0))))
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(Color(0xFFF5F5F5), Color(0xFFE0E0E0))))
+                .padding(16.dp),
     ) {
         TextField(
             value = searchQuery,
@@ -58,21 +59,23 @@ fun CitySearchScreen(
                 }
             },
             label = { Text(text = stringResource(id = R.string.city_search)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .shadow(4.dp, RoundedCornerShape(8.dp)),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = Color.Gray
-            ),
-            shape = RoundedCornerShape(8.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+                    .shadow(4.dp, RoundedCornerShape(8.dp)),
+            colors =
+                TextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedIndicatorColor = Color.Gray,
+                ),
+            shape = RoundedCornerShape(8.dp),
         )
 
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(cityState) { city ->
                 CityCard(city, onCitySelected)
@@ -82,31 +85,31 @@ fun CitySearchScreen(
 }
 
 @Composable
-fun CityCard(city: City, onCitySelected: (City) -> Unit) {
+fun CityCard(
+    city: City,
+    onCitySelected: (City) -> Unit,
+) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onCitySelected(city) }
-            .shadow(4.dp, RoundedCornerShape(8.dp)),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFBBDEFB)
-        ),
+        modifier = Modifier.fillMaxWidth().clickable { onCitySelected(city) }.shadow(4.dp, RoundedCornerShape(8.dp)),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = Color(0xFFBBDEFB),
+            ),
         shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
+            horizontalAlignment = Alignment.Start,
         ) {
             Text(
                 text = city.name,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    ),
             )
         }
     }
