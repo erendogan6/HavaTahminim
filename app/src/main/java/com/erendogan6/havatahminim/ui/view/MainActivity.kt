@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -102,6 +104,7 @@ fun HavaTahminimApp() {
         var showPermissionRationale by remember { mutableStateOf(false) }
         var notificationPermissionGranted by remember { mutableStateOf(false) }
         var locationError by remember { mutableStateOf<String?>(null) }
+        val showNoInternetDialog = remember { mutableStateOf(false) }  // MutableState<Boolean> olarak tanımlandı
         val navController = rememberNavController()
         var dataLoaded by remember { mutableStateOf(false) }
         val savedLocation by weatherViewModel.location.collectAsState()
@@ -124,7 +127,7 @@ fun HavaTahminimApp() {
                 if (isGranted) {
                     requestNotificationPermission(notificationPermissionLauncher)
                 } else {
-                    showPermissionRationale = true
+                    useDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
                 }
             }
 
@@ -178,15 +181,7 @@ fun HavaTahminimApp() {
                         weatherViewModel.fetchWeather(it.latitude, it.longitude)
                         dataLoaded = true
                     } else if (!dataLoaded) {
-                        // İstanbul koordinatları
-                        val defaultLat = 41.0082
-                        val defaultLon = 28.9784
-                        if (NetworkUtils.isNetworkAvailable(context)) {
-                            weatherViewModel.fetchWeather(defaultLat, defaultLon)
-                            dataLoaded = true
-                        } else {
-                            locationError = context.getString(R.string.no_internet)
-                        }
+                        useDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
                     }
                 }
             }
@@ -197,6 +192,10 @@ fun HavaTahminimApp() {
                 message = it,
                 onDismiss = { locationError = null },
             )
+        }
+
+        if (showNoInternetDialog.value) {
+            NoInternetDialog { showNoInternetDialog.value = false }
         }
 
         Scaffold(bottomBar = {
@@ -232,11 +231,45 @@ fun HavaTahminimApp() {
     }
 }
 
-// Bildirim izni isteme fonksiyonu
 private fun requestNotificationPermission(notificationPermissionLauncher: ActivityResultLauncher<String>) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
+}
+
+private fun useDefaultLocation(
+    weatherViewModel: WeatherViewModel,
+    context: Context,
+    navController: NavController,
+    showNoInternetDialog: MutableState<Boolean>
+) {
+    // İstanbul koordinatları
+    val defaultLat = 41.0082
+    val defaultLon = 28.9784
+    if (NetworkUtils.isNetworkAvailable(context)) {
+        weatherViewModel.fetchWeather(defaultLat, defaultLon)
+        navController.navigate(Screen.Today.route)
+    } else {
+        showNoInternetDialog.value = true
+    }
+}
+
+@Composable
+fun NoInternetDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "İnternet Bağlantısı Yok")
+        },
+        text = {
+            Text(text = "Hava durumu verilerini almak için internet bağlantısına ihtiyacınız var. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.")
+        },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("Tamam")
+            }
+        },
+    )
 }
 
 @Composable
