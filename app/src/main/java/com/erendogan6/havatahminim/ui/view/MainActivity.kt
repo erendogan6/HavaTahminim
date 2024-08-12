@@ -127,7 +127,7 @@ fun HavaTahminimApp() {
                 if (isGranted) {
                     requestNotificationPermission(notificationPermissionLauncher)
                 } else {
-                    useDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
+                    useLastOrDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
                 }
             }
 
@@ -139,6 +139,25 @@ fun HavaTahminimApp() {
             ) {
                 locationPermissionGranted = true
                 requestNotificationPermission(notificationPermissionLauncher)
+                if (isLocationServiceEnabled(context)) {
+                    coroutineScope.launch {
+                        getCurrentLocation(context, fusedLocationClient) { lat, lon ->
+                            if (NetworkUtils.isNetworkAvailable(context)) {
+                                weatherViewModel.saveLocation(lat, lon)
+                                if (!dataLoaded) {
+                                    weatherViewModel.fetchWeather(lat, lon)
+                                    dataLoaded = true
+                                }
+                            } else {
+                                locationError = context.getString(R.string.no_internet)
+                            }
+                        }.onFailure {
+                            locationError = it.message
+                        }
+                    }
+                } else {
+                    useLastOrDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
+                }
             } else {
                 locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
@@ -156,28 +175,6 @@ fun HavaTahminimApp() {
                     }
                 },
             )
-        }
-
-        LaunchedEffect(locationPermissionGranted) {
-            if (locationPermissionGranted) {
-                coroutineScope.launch {
-                    getCurrentLocation(context, fusedLocationClient) { lat, lon ->
-                        if (NetworkUtils.isNetworkAvailable(context)) {
-                            weatherViewModel.saveLocation(lat, lon)
-                            if (!dataLoaded) {
-                                weatherViewModel.fetchWeather(lat, lon)
-                                dataLoaded = true
-                            }
-                        } else {
-                            locationError = context.getString(R.string.no_internet)
-                        }
-                    }.onFailure {
-                        locationError = it.message
-                    }
-                }
-            } else {
-                useDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
-            }
         }
 
         locationError?.let {
@@ -224,26 +221,38 @@ fun HavaTahminimApp() {
     }
 }
 
+private fun isLocationServiceEnabled(context: Context): Boolean {
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
+    return locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER) ||
+        locationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER)
+}
+
 private fun requestNotificationPermission(notificationPermissionLauncher: ActivityResultLauncher<String>) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
 
-private fun useDefaultLocation(
+private fun useLastOrDefaultLocation(
     weatherViewModel: WeatherViewModel,
     context: Context,
     navController: NavController,
     showNoInternetDialog: MutableState<Boolean>
 ) {
-    // İstanbul koordinatları
-    val defaultLat = 41.0082
-    val defaultLon = 28.9784
-    if (NetworkUtils.isNetworkAvailable(context)) {
-        weatherViewModel.fetchWeather(defaultLat, defaultLon)
+    val lastLocation = weatherViewModel.location.value
+    if (lastLocation != null) {
+        weatherViewModel.fetchWeather(lastLocation.latitude, lastLocation.longitude)
         navController.navigate(Screen.Today.route)
     } else {
-        showNoInternetDialog.value = true
+        // İstanbul koordinatları (varsayılan konum)
+        val defaultLat = 41.0082
+        val defaultLon = 28.9784
+        if (NetworkUtils.isNetworkAvailable(context)) {
+            weatherViewModel.fetchWeather(defaultLat, defaultLon)
+            navController.navigate(Screen.Today.route)
+        } else {
+            showNoInternetDialog.value = true
+        }
     }
 }
 
