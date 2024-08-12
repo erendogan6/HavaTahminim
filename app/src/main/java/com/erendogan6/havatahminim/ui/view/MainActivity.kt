@@ -1,11 +1,16 @@
 package com.erendogan6.havatahminim.ui.view
 
 import android.Manifest
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -39,12 +44,14 @@ import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
 import com.erendogan6.havatahminim.ui.view.screen.ZekAIScreen
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.NetworkUtils
+import com.erendogan6.havatahminim.util.NotificationReceiver
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Calendar
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -53,7 +60,35 @@ class MainActivity : ComponentActivity() {
         setContent {
             HavaTahminimApp()
         }
+        scheduleDailyNotification(this)
     }
+}
+
+fun scheduleDailyNotification(context: Context) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, NotificationReceiver::class.java)
+    val pendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+    val calendar =
+        Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, 12)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+        }
+
+    alarmManager.setInexactRepeating(
+        AlarmManager.RTC_WAKEUP,
+        calendar.timeInMillis,
+        AlarmManager.INTERVAL_DAY,
+        pendingIntent,
+    )
 }
 
 @Composable
@@ -65,28 +100,59 @@ fun HavaTahminimApp() {
         val coroutineScope = rememberCoroutineScope()
         var locationPermissionGranted by remember { mutableStateOf(false) }
         var showPermissionRationale by remember { mutableStateOf(false) }
+        var notificationPermissionGranted by remember { mutableStateOf(false) }
         var locationError by remember { mutableStateOf<String?>(null) }
         val navController = rememberNavController()
         var dataLoaded by remember { mutableStateOf(false) }
         val savedLocation by weatherViewModel.location.collectAsState()
 
-        val locationPermissionLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            locationPermissionGranted = isGranted
-            showPermissionRationale = !isGranted
-        }
+        val notificationPermissionLauncher =
+            rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission(),
+            ) { isGranted ->
+                notificationPermissionGranted = isGranted
+                if (!isGranted) {
+                    showPermissionRationale = true
+                }
+            }
+
+        val locationPermissionLauncher =
+            rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission(),
+            ) { isGranted ->
+                locationPermissionGranted = isGranted
+                if (isGranted) {
+                    requestNotificationPermission(notificationPermissionLauncher)
+                } else {
+                    showPermissionRationale = true
+                }
+            }
 
         LaunchedEffect(Unit) {
             if (ContextCompat.checkSelfPermission(
                     context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION,
                 ) == PermissionChecker.PERMISSION_GRANTED
             ) {
                 locationPermissionGranted = true
+                requestNotificationPermission(notificationPermissionLauncher)
             } else {
                 locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
+        }
+
+        if (showPermissionRationale && (!locationPermissionGranted || !notificationPermissionGranted)) {
+            PermissionRationaleDialog(
+                onDismiss = { showPermissionRationale = false },
+                onRequestPermission = {
+                    showPermissionRationale = false
+                    if (!locationPermissionGranted) {
+                        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    } else if (!notificationPermissionGranted) {
+                        requestNotificationPermission(notificationPermissionLauncher)
+                    }
+                },
+            )
         }
 
         LaunchedEffect(locationPermissionGranted) {
@@ -126,28 +192,23 @@ fun HavaTahminimApp() {
             }
         }
 
-        if (showPermissionRationale && !locationPermissionGranted) {
-            PermissionRationaleDialog(
-                onDismiss = { showPermissionRationale = false },
-                onRequestPermission = {
-                    showPermissionRationale = false
-                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }
-            )
-        }
-
         locationError?.let {
             ErrorDialog(
                 message = it,
-                onDismiss = { locationError = null }
+                onDismiss = { locationError = null },
             )
         }
+
         Scaffold(bottomBar = {
-            if (dataLoaded)
-                BottomNavigationBar(navController) }) { innerPadding ->
-            NavHost(navController,
+            if (dataLoaded) {
+                BottomNavigationBar(navController)
+            }
+        }) { innerPadding ->
+            NavHost(
+                navController,
                 startDestination = Screen.Today.route,
-                modifier = Modifier.padding(innerPadding)) {
+                modifier = Modifier.padding(innerPadding),
+            ) {
                 composable(Screen.Today.route) {
                     WeatherScreen(weatherViewModel, onLoaded = { dataLoaded = true })
                 }
@@ -171,10 +232,17 @@ fun HavaTahminimApp() {
     }
 }
 
+// Bildirim izni isteme fonksiyonu
+private fun requestNotificationPermission(notificationPermissionLauncher: ActivityResultLauncher<String>) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+}
+
 @Composable
 fun PermissionRationaleDialog(
     onDismiss: () -> Unit,
-    onRequestPermission: () -> Unit
+    onRequestPermission: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -193,14 +261,14 @@ fun PermissionRationaleDialog(
             Button(onClick = onDismiss) {
                 Text(stringResource(id = R.string.cancel))
             }
-        }
+        },
     )
 }
 
 @Composable
 fun ErrorDialog(
     message: String,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -214,29 +282,33 @@ fun ErrorDialog(
             Button(onClick = onDismiss) {
                 Text(stringResource(id = R.string.ok))
             }
-        }
+        },
     )
 }
 
 suspend fun getCurrentLocation(
     context: Context,
     fusedLocationClient: FusedLocationProviderClient,
-    onNewLocation: (Double, Double) -> Unit
-): Result<Unit> = runCatching {
-    if (ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PermissionChecker.PERMISSION_GRANTED
-    ) {
-        val location = fusedLocationClient.getCurrentLocation(
-            Priority.PRIORITY_HIGH_ACCURACY,
-            null
-        ).await()
+    onNewLocation: (Double, Double) -> Unit,
+): Result<Unit> =
+    runCatching {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) == PermissionChecker.PERMISSION_GRANTED
+        ) {
+            val location =
+                fusedLocationClient
+                    .getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        null,
+                    ).await()
 
-        location?.let {
-            onNewLocation(it.latitude, it.longitude)
-        } ?: throw Exception("Konum alınamadı")
-    } else {
-        throw Exception("İzin verilmedi")
+            location?.let {
+                onNewLocation(it.latitude, it.longitude)
+            } ?: throw Exception("Konum alınamadı")
+        } else {
+            throw Exception("İzin verilmedi")
+        }
     }
-}
+
