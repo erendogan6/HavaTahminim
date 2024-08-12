@@ -104,7 +104,7 @@ fun HavaTahminimApp() {
         var showPermissionRationale by remember { mutableStateOf(false) }
         var notificationPermissionGranted by remember { mutableStateOf(false) }
         var locationError by remember { mutableStateOf<String?>(null) }
-        val showNoInternetDialog = remember { mutableStateOf(false) }  // MutableState<Boolean> olarak tanımlandı
+        val showNoInternetDialog = remember { mutableStateOf(false) }
         val navController = rememberNavController()
         var dataLoaded by remember { mutableStateOf(false) }
         val savedLocation by weatherViewModel.location.collectAsState()
@@ -176,14 +176,7 @@ fun HavaTahminimApp() {
                     }
                 }
             } else {
-                savedLocation?.let {
-                    if (!dataLoaded && NetworkUtils.isNetworkAvailable(context)) {
-                        weatherViewModel.fetchWeather(it.latitude, it.longitude)
-                        dataLoaded = true
-                    } else if (!dataLoaded) {
-                        useDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
-                    }
-                }
+                useDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
             }
         }
 
