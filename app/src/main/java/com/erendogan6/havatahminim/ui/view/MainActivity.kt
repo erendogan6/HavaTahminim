@@ -109,6 +109,12 @@ fun HavaTahminimApp() {
         var dataLoaded by remember { mutableStateOf(false) }
         val savedLocation by weatherViewModel.location.collectAsState()
 
+        LaunchedEffect(savedLocation) {
+            savedLocation?.let { location ->
+                weatherViewModel.fetchWeather(location.latitude, location.longitude)
+            }
+        }
+
         val notificationPermissionLauncher =
             rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission(),
@@ -126,6 +132,25 @@ fun HavaTahminimApp() {
                 locationPermissionGranted = isGranted
                 if (isGranted) {
                     requestNotificationPermission(notificationPermissionLauncher)
+                    if (isLocationServiceEnabled(context)) {
+                        coroutineScope.launch {
+                            getCurrentLocation(context, fusedLocationClient) { lat, lon ->
+                                if (NetworkUtils.isNetworkAvailable(context)) {
+                                    weatherViewModel.saveLocation(lat, lon)
+                                    if (!dataLoaded) {
+                                        weatherViewModel.fetchWeather(lat, lon)
+                                        dataLoaded = true
+                                    }
+                                } else {
+                                    locationError = context.getString(R.string.no_internet)
+                                }
+                            }.onFailure {
+                                locationError = it.message
+                            }
+                        }
+                    } else {
+                        useLastOrDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
+                    }
                 } else {
                     useLastOrDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
                 }
