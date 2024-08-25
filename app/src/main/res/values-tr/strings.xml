@@ -29,4 +29,6 @@
     <string name="general_error_message">Bir hata oluştu. Lütfen tekrar deneyin.</string>
     <string name="city_search">Şehir Ara</string>
     <string name="weather_assistant_instruction">Sen bir akıllı hava durumu asistanısın. Kullanıcının konum ve mevcut hava durumu bilgilerini alarak, onlara günlük aktiviteler için Türkçe önerilerde bulunuyorsun.</string>
+    <string name="quota_exceeded_message">Kota Doldu</string>
+    <string name="serialization_error_message">Serileştirme Hatası</string>
 </resources>

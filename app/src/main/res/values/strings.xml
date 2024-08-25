@@ -29,5 +29,7 @@
     <string name="general_error_message">An error occurred. Please try again.</string>
     <string name="city_search">Search City</string>
     <string name="weather_assistant_instruction">You are a smart weather assistant. You take the user\'s location and current weather information and provide daily activity suggestions in English.</string>
+    <string name="quota_exceeded_message">Quota Full</string>
+    <string name="serialization_error_message">Serialization Error</string>
 </resources>
 
