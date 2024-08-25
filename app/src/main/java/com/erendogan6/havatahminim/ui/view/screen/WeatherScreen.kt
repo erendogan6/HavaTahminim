@@ -39,10 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.R
+import com.erendogan6.havatahminim.extension.capitalizeWords
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
-import com.erendogan6.havatahminim.util.capitalizeWords
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
