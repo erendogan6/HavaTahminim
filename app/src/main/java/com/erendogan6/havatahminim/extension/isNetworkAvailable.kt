@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.util
+package com.erendogan6.havatahminim.extension
 
 import android.content.Context
 import android.net.ConnectivityManager
