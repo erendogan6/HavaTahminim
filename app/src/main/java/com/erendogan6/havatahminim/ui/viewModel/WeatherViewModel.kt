@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.R
-import com.erendogan6.havatahminim.model.database.LocationEntity
+import com.erendogan6.havatahminim.model.entity.LocationEntity
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.DailyForecast.City
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
@@ -12,6 +12,7 @@ import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBa
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -104,7 +105,7 @@ class WeatherViewModel
         ) {
             fetchHourlyForecast(lat, lon)
             fetchDailyForecast(lat, lon)
-            fetchWeatherSuggestions(location, temperature)
+            fetchWeatherSuggestions(location, temperature, lat, lon)
         }
 
         private fun fetchHourlyForecast(
@@ -127,10 +128,12 @@ class WeatherViewModel
         private fun fetchWeatherSuggestions(
             location: String,
             temperature: String,
+            lat: Double,
+            lon: Double,
         ) {
             viewModelScope.launch {
                 handleApiCall(
-                    call = { repository.getWeatherSuggestions(location, temperature) },
+                    call = { repository.getWeatherSuggestions(lat, lon, location, temperature) },
                     onSuccess = { suggestions ->
                         _weatherSuggestions.value = suggestions
                         _errorMessage.value = null
@@ -176,12 +179,27 @@ class WeatherViewModel
             onSuccess: (T) -> Unit,
             onError: (Exception) -> Unit,
         ) {
-            try {
-                val response = call()
-                onSuccess(response)
-            } catch (e: Exception) {
-                onError(e)
+            val maxRetries = 3
+            var currentRetry = 0
+
+            while (currentRetry < maxRetries) {
+                try {
+                    val response = call()
+                    onSuccess(response)
+                    return
+                } catch (e: Exception) {
+                    if (e.message?.contains("RESOURCE_EXHAUSTED") == true) {
+                        currentRetry++
+                        println("Retrying due to RESOURCE_EXHAUSTED... Attempt: $currentRetry")
+                        delay(1000L * currentRetry) // Exponential backoff
+                    } else {
+                        println("Error during API call: ${e.message}")
+                        onError(e)
+                        return
+                    }
+                }
             }
+            onError(Exception("Max retries exceeded"))
         }
 
         private fun handleError(
