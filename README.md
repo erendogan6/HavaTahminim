@@ -27,10 +27,12 @@ Hava Tahminim, kullanıcılara mevcut konumlarına göre güncel hava durumu bil
 - Android Jetpack (Navigation, Flow, ViewModel, Room Database)
 - Retrofit
 - OkHTTP
-- Gemini
+- Chucker
+- LeakCanary
+- Generative AI (Gemini)
 - Coroutine
 - Hilt Dependency Injection
-- Localization %100
+- %100 Localization (Türkçe ve İngilizce)
 - API (OpenWeather, Gemini)
 - MVVM (Model, View, Viewmodel)
 - SOLID 
