@@ -32,17 +32,15 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
@@ -53,11 +51,12 @@ fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
     WeatherBackgroundLayout(weatherState) {
         Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(Modifier.size(30.dp))
                 weatherSuggestions?.let {
@@ -73,56 +72,45 @@ fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
 fun SuggestionsCard(suggestions: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Image(
             painter = painterResource(id = R.drawable.zekai),
             contentDescription = null,
-            modifier = Modifier
-                .size(260.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
+            modifier =
+                Modifier
+                    .size(260.dp)
+                    .clip(CircleShape),
+            contentScale = ContentScale.Crop,
         )
         Text(
             text = stringResource(id = R.string.zekai_suggestions),
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 8.dp),
-            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
+            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)),
         )
     }
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .background(Color(0xAA80C4E9), RoundedCornerShape(12.dp))
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(
+                    Color(0xAA80C4E9),
+                    RoundedCornerShape(12.dp),
+                ).padding(16.dp),
     ) {
-        Text(
-            text = buildAnnotatedString {
-                val parts = suggestions.split("**")
-                parts.forEachIndexed { index, part ->
-                    if (index % 2 == 1) {
-                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                            append(part)
-                        }
-                    } else {
-                        val subParts = part.split("*")
-                        subParts.forEachIndexed { subIndex, subPart ->
-                            if (subIndex % 2 == 1) {
-                                append("\n\t-$subPart")
-                            } else {
-                                append(subPart)
-                            }
-                        }
-                    }
-                }
-            },
-            fontSize = 21.sp,
+        MarkdownText(
+            markdown = suggestions,
             modifier = Modifier.padding(vertical = 4.dp),
-            color = Color.Black,
-            fontFamily = FontFamily(Font(R.font.open_sans)),
-            style = TextStyle(shadow = Shadow(color = Color.Gray, blurRadius = 2f))
+            style =
+                TextStyle(
+                    shadow = Shadow(color = Color.Gray, blurRadius = 2f),
+                    color = Color.Black,
+                    fontSize = 21.sp,
+                    fontFamily = FontFamily(Font(R.font.open_sans)),
+                ),
         )
     }
 }
@@ -136,7 +124,7 @@ fun ThinkerCard() {
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 8.dp),
-            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
+            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)),
         )
     }
 }
