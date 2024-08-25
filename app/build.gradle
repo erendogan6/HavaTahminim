@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
     id ("kotlin-kapt")
     id ('dagger.hilt.android.plugin')
 }
@@ -69,7 +67,6 @@ dependencies {
     //Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
-    implementation libs.androidx.hilt.navigation.compose
 
     //ViewModel
     implementation libs.androidx.lifecycle.viewmodel.compose
@@ -88,6 +85,19 @@ dependencies {
     implementation libs.androidx.room.runtime
     kapt libs.androidx.room.compiler
     implementation libs.androidx.room.ktx
+
+    // Markdown Compose
+    implementation libs.compose.markdown
+
+    // LeakCanary
+    debugImplementation libs.leakcanary.android
+
+    // Chuker
+    debugImplementation libs.library
+    releaseImplementation libs.library.no.op
+
+    //Navigation
+    implementation libs.androidx.hilt.navigation.compose
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.lifecycle.runtime.ktx
