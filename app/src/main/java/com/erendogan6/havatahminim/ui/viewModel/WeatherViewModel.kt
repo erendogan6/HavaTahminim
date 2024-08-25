@@ -74,6 +74,10 @@ class WeatherViewModel
             }
         }
 
+        fun clearCities() {
+            _cities.value = emptyList()
+        }
+
         fun fetchWeather(
             lat: Double,
             lon: Double,
