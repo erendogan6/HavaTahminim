@@ -10,7 +10,9 @@ import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.ProWeatherApiService
 import com.erendogan6.havatahminim.network.WeatherApiService
 import com.erendogan6.havatahminim.repository.WeatherRepository
+import com.erendogan6.havatahminim.room.MIGRATION_1_2
 import com.erendogan6.havatahminim.room.RoomDB
+import com.erendogan6.havatahminim.room.WeatherSuggestionDao
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.Module
 import dagger.Provides
@@ -27,15 +29,15 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         val builder = OkHttpClient.Builder()
         if (BuildConfig.DEBUG) {
-            val logging = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }
+            val logging =
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
             builder.addInterceptor(logging)
         }
 
@@ -48,49 +50,46 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWeatherApiServiceSecure(okHttpClient: OkHttpClient): WeatherApiService {
-        return Retrofit.Builder()
+    fun provideWeatherApiServiceSecure(okHttpClient: OkHttpClient): WeatherApiService =
+        Retrofit
+            .Builder()
             .baseUrl("https://api.openweathermap.org/data/2.5/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(WeatherApiService::class.java)
-    }
 
     @Provides
     @Singleton
-    fun provideWeatherApiServiceUnSecure(okHttpClient: OkHttpClient): CityApiService {
-        return Retrofit.Builder()
+    fun provideWeatherApiServiceUnSecure(okHttpClient: OkHttpClient): CityApiService =
+        Retrofit
+            .Builder()
             .baseUrl("http://api.openweathermap.org/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(CityApiService::class.java)
-    }
 
     @Provides
     @Singleton
-    fun provideProWeatherApiService(okHttpClient: OkHttpClient): ProWeatherApiService {
-        return Retrofit.Builder()
+    fun provideProWeatherApiService(okHttpClient: OkHttpClient): ProWeatherApiService =
+        Retrofit
+            .Builder()
             .baseUrl("https://pro.openweathermap.org/data/2.5/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ProWeatherApiService::class.java)
-    }
 
     @Provides
     @Singleton
-    fun provideGeminiService(resourcesProvider: ResourcesProvider
-    ): GeminiService {
-        return GeminiService(resourcesProvider)
-    }
+    fun provideGeminiService(resourcesProvider: ResourcesProvider): GeminiService = GeminiService(resourcesProvider)
 
     @Provides
     @Singleton
-    fun provideResourcesProvider(@ApplicationContext context: Context): ResourcesProvider {
-        return ResourcesProvider(context)
-    }
+    fun provideResourcesProvider(
+        @ApplicationContext context: Context,
+    ): ResourcesProvider = ResourcesProvider(context)
 
     @Provides
     @Singleton
@@ -101,31 +100,43 @@ object AppModule {
         cityApiService: CityApiService,
         locationDao: LocationDao,
         dailyForecastDao: DailyForecastDao,
-        resourcesProvider: ResourcesProvider
-    ): WeatherRepository {
-        return WeatherRepository(weatherApiService, proWeatherApiService, geminiService, cityApiService, locationDao, dailyForecastDao, resourcesProvider)
-    }
+        resourcesProvider: ResourcesProvider,
+        weatherSuggestionDao: WeatherSuggestionDao,
+    ): WeatherRepository =
+        WeatherRepository(
+            weatherApiService,
+            proWeatherApiService,
+            geminiService,
+            cityApiService,
+            locationDao,
+            dailyForecastDao,
+            resourcesProvider,
+            weatherSuggestionDao,
+        )
 
     @Provides
     @Singleton
-    fun provideLocationDatabase(@ApplicationContext
-                                context: Context): RoomDB {
-        return Room.databaseBuilder(
-            context.applicationContext,
-            RoomDB::class.java,
-            "location_database"
-        ).build()
-    }
+    fun provideLocationDatabase(
+        @ApplicationContext
+        context: Context,
+    ): RoomDB =
+        Room
+            .databaseBuilder(
+                context.applicationContext,
+                RoomDB::class.java,
+                "location_database",
+            ).addMigrations(MIGRATION_1_2)
+            .build()
 
     @Provides
     @Singleton
-    fun provideLocationDao(roomDB: RoomDB): LocationDao {
-        return roomDB.locationDao()
-    }
+    fun provideLocationDao(roomDB: RoomDB): LocationDao = roomDB.locationDao()
 
     @Provides
     @Singleton
-    fun provideDailyForecastDao(roomDb: RoomDB): DailyForecastDao {
-        return roomDb.dailyForecastDao()
-    }
+    fun provideDailyForecastDao(roomDb: RoomDB): DailyForecastDao = roomDb.dailyForecastDao()
+
+    @Provides
+    @Singleton
+    fun provideWeatherSuggestionDao(roomDb: RoomDB): WeatherSuggestionDao = roomDb.weatherSuggestionDao()
 }
