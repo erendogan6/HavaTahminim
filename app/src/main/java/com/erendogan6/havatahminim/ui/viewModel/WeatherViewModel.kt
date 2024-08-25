@@ -46,8 +46,15 @@ class WeatherViewModel
         private val _location = MutableStateFlow<LocationEntity?>(null)
         val location: StateFlow<LocationEntity?> get() = _location
 
+        private val _dataLoaded = MutableStateFlow(false)
+        val dataLoaded: StateFlow<Boolean> = _dataLoaded
+
         init {
             loadLocation()
+        }
+
+        fun setDataLoaded(loaded: Boolean) {
+            _dataLoaded.value = loaded
         }
 
         private fun loadLocation() {
@@ -75,14 +82,20 @@ class WeatherViewModel
             }
         }
 
-        fun clearCities() {
-            _cities.value = emptyList()
-        }
-
-        fun fetchWeather(
+        fun updateLocationAndFetchWeather(
             lat: Double,
             lon: Double,
         ) {
+            _dataLoaded.value = false
+            saveLocation(lat, lon)
+            fetchWeatherOnce(lat, lon)
+        }
+
+        fun fetchWeatherOnce(
+            lat: Double,
+            lon: Double,
+        ) {
+            if (_dataLoaded.value) return
             viewModelScope.launch {
                 handleApiCall(
                     call = { repository.getWeather(lat, lon) },
@@ -91,10 +104,15 @@ class WeatherViewModel
                         _errorMessage.value = null
                         fetchAdditionalData(lat, lon, response.name, "${response.main.temp.toInt()}°C")
                         logDebug("Weather data fetched successfully", response)
+                        _dataLoaded.value = true
                     },
                     onError = { handleError(it, resourcesProvider.getString(R.string.error_fetching_weather_data)) },
                 )
             }
+        }
+
+        fun clearCities() {
+            _cities.value = emptyList()
         }
 
         private fun fetchAdditionalData(
@@ -144,7 +162,7 @@ class WeatherViewModel
             }
         }
 
-        fun fetchDailyForecast(
+        private fun fetchDailyForecast(
             lat: Double,
             lon: Double,
         ) {

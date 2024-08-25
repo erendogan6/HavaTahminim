@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -75,14 +74,8 @@ fun HavaTahminimApp() {
         var locationError by rememberSaveable { mutableStateOf<String?>(null) }
         val showNoInternetDialog = rememberSaveable { mutableStateOf(false) }
         val navController = rememberNavController()
-        var dataLoaded by rememberSaveable { mutableStateOf(false) }
-        val savedLocation by weatherViewModel.location.collectAsState()
 
-        LaunchedEffect(savedLocation) {
-            savedLocation?.let { location ->
-                weatherViewModel.fetchWeather(location.latitude, location.longitude)
-            }
-        }
+        val dataLoaded by weatherViewModel.dataLoaded.collectAsState()
 
         val notificationPermissionLauncher =
             rememberLauncherForActivityResult(
@@ -103,59 +96,43 @@ fun HavaTahminimApp() {
                 locationPermissionGranted = isGranted
                 if (isGranted) {
                     requestNotificationPermission(notificationPermissionLauncher)
-                    if (isLocationServiceEnabled(context)) {
-                        coroutineScope.launch {
-                            getCurrentLocation(context, fusedLocationClient) { lat, lon ->
-                                if (NetworkUtils.isNetworkAvailable(context)) {
-                                    weatherViewModel.saveLocation(lat, lon)
-                                    if (!dataLoaded) {
-                                        weatherViewModel.fetchWeather(lat, lon)
-                                        dataLoaded = true
-                                    }
-                                } else {
-                                    locationError = context.getString(R.string.no_internet)
-                                }
-                            }.onFailure {
-                                locationError = it.message
-                            }
+                    coroutineScope.launch {
+                        if (isLocationServiceEnabled(context) && NetworkUtils.isNetworkAvailable(context)) {
+                            fetchLocationAndWeather(
+                                context,
+                                fusedLocationClient,
+                                weatherViewModel,
+                                showNoInternetDialog,
+                            )
+                        } else {
+                            useLastOrDefaultLocation(weatherViewModel, context, showNoInternetDialog)
                         }
-                    } else {
-                        useLastOrDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
                     }
                 } else {
-                    useLastOrDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
+                    useLastOrDefaultLocation(weatherViewModel, context, showNoInternetDialog)
                 }
             }
 
         LaunchedEffect(Unit) {
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                ) == PermissionChecker.PERMISSION_GRANTED
-            ) {
-                locationPermissionGranted = true
-                requestNotificationPermission(notificationPermissionLauncher)
-                if (isLocationServiceEnabled(context)) {
+            if (!dataLoaded) {
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                    ) == PermissionChecker.PERMISSION_GRANTED
+                ) {
+                    locationPermissionGranted = true
+                    requestNotificationPermission(notificationPermissionLauncher)
                     coroutineScope.launch {
-                        getCurrentLocation(context, fusedLocationClient) { lat, lon ->
-                            if (NetworkUtils.isNetworkAvailable(context)) {
-                                weatherViewModel.saveLocation(lat, lon)
-                                if (!dataLoaded) {
-                                    weatherViewModel.fetchWeather(lat, lon)
-                                    dataLoaded = true
-                                }
-                            } else {
-                                locationError = context.getString(R.string.no_internet)
-                            }
-                        }.onFailure {
-                            locationError = it.message
-                        }
+                        fetchLocationAndWeather(
+                            context,
+                            fusedLocationClient,
+                            weatherViewModel,
+                            showNoInternetDialog,
+                        )
                     }
                 } else {
-                    useLastOrDefaultLocation(weatherViewModel, context, navController, showNoInternetDialog)
+                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }
-            } else {
-                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
 
@@ -195,20 +172,17 @@ fun HavaTahminimApp() {
                 modifier = Modifier.padding(innerPadding),
             ) {
                 composable(Screen.Today.route) {
-                    WeatherScreen(weatherViewModel, onLoaded = { dataLoaded = true })
+                    WeatherScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
                 }
                 composable(Screen.Daily.route) {
-                    DailyForecastScreen(weatherViewModel, onLoaded = { dataLoaded = true })
+                    DailyForecastScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
                 }
                 composable(Screen.ZekAI.route) {
                     ZekAIScreen(weatherViewModel)
                 }
                 composable(Screen.SelectCity.route) {
                     CitySearchScreen(weatherViewModel) { city ->
-                        val lat = city.latitude
-                        val lon = city.longitude
-                        weatherViewModel.saveLocation(lat, lon)
-                        weatherViewModel.fetchWeather(lat, lon)
+                        weatherViewModel.updateLocationAndFetchWeather(city.latitude, city.longitude)
                         navController.navigate(Screen.Today.route)
                     }
                 }
@@ -229,23 +203,41 @@ private fun requestNotificationPermission(notificationPermissionLauncher: Activi
     }
 }
 
+private suspend fun fetchLocationAndWeather(
+    context: Context,
+    fusedLocationClient: FusedLocationProviderClient,
+    weatherViewModel: WeatherViewModel,
+    showNoInternetDialog: MutableState<Boolean>,
+) {
+    val locationResult =
+        getCurrentLocation(context, fusedLocationClient) { lat, lon ->
+            if (NetworkUtils.isNetworkAvailable(context)) {
+                weatherViewModel.saveLocation(lat, lon)
+                weatherViewModel.fetchWeatherOnce(lat, lon)
+            } else {
+                showNoInternetDialog.value = true
+            }
+        }
+
+    if (locationResult.isFailure) {
+        useLastOrDefaultLocation(weatherViewModel, context, showNoInternetDialog)
+    }
+}
+
 private fun useLastOrDefaultLocation(
     weatherViewModel: WeatherViewModel,
     context: Context,
-    navController: NavController,
     showNoInternetDialog: MutableState<Boolean>,
 ) {
     val lastLocation = weatherViewModel.location.value
     if (lastLocation != null) {
-        weatherViewModel.fetchWeather(lastLocation.latitude, lastLocation.longitude)
-        navController.navigate(Screen.Today.route)
+        weatherViewModel.fetchWeatherOnce(lastLocation.latitude, lastLocation.longitude)
     } else {
-        // İstanbul koordinatları (varsayılan konum)
+        // Default location: Istanbul coordinates
         val defaultLat = 41.0082
         val defaultLon = 28.9784
         if (NetworkUtils.isNetworkAvailable(context)) {
-            weatherViewModel.fetchWeather(defaultLat, defaultLon)
-            navController.navigate(Screen.Today.route)
+            weatherViewModel.fetchWeatherOnce(defaultLat, defaultLon)
         } else {
             showNoInternetDialog.value = true
         }
