@@ -36,10 +36,19 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
         <receiver
             android:name=".util.NotificationReceiver"
             android:exported="true"
             android:permission="com.erendogan6.havatahminim.PERMISSION" />
+
+        <receiver android:name=".util.BootReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

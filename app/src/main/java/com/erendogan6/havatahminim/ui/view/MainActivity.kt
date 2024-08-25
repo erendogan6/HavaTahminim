@@ -1,10 +1,7 @@
 package com.erendogan6.havatahminim.ui.view
 
 import android.Manifest
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,8 +20,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +34,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.erendogan6.havatahminim.R
+import com.erendogan6.havatahminim.extension.NetworkUtils
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
 import com.erendogan6.havatahminim.ui.view.navigation.Screen
@@ -45,15 +43,13 @@ import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
 import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
 import com.erendogan6.havatahminim.ui.view.screen.ZekAIScreen
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
-import com.erendogan6.havatahminim.util.NetworkUtils
-import com.erendogan6.havatahminim.util.NotificationReceiver
+import com.erendogan6.havatahminim.util.NotificationUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import java.util.Calendar
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -62,35 +58,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             HavaTahminimApp()
         }
-        scheduleDailyNotification(this)
     }
-}
-
-fun scheduleDailyNotification(context: Context) {
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    val intent = Intent(context, NotificationReceiver::class.java)
-    val pendingIntent =
-        PendingIntent.getBroadcast(
-            context,
-            0,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
-
-    val calendar =
-        Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 12)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-        }
-
-    alarmManager.setInexactRepeating(
-        AlarmManager.RTC_WAKEUP,
-        calendar.timeInMillis,
-        AlarmManager.INTERVAL_DAY,
-        pendingIntent,
-    )
 }
 
 @Composable
@@ -100,13 +68,14 @@ fun HavaTahminimApp() {
         val context = LocalContext.current
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         val coroutineScope = rememberCoroutineScope()
-        var locationPermissionGranted by remember { mutableStateOf(false) }
-        var showPermissionRationale by remember { mutableStateOf(false) }
-        var notificationPermissionGranted by remember { mutableStateOf(false) }
-        var locationError by remember { mutableStateOf<String?>(null) }
-        val showNoInternetDialog = remember { mutableStateOf(false) }
+
+        var locationPermissionGranted by rememberSaveable { mutableStateOf(false) }
+        var showPermissionRationale by rememberSaveable { mutableStateOf(false) }
+        var notificationPermissionGranted by rememberSaveable { mutableStateOf(false) }
+        var locationError by rememberSaveable { mutableStateOf<String?>(null) }
+        val showNoInternetDialog = rememberSaveable { mutableStateOf(false) }
         val navController = rememberNavController()
-        var dataLoaded by remember { mutableStateOf(false) }
+        var dataLoaded by rememberSaveable { mutableStateOf(false) }
         val savedLocation by weatherViewModel.location.collectAsState()
 
         LaunchedEffect(savedLocation) {
@@ -120,7 +89,9 @@ fun HavaTahminimApp() {
                 contract = ActivityResultContracts.RequestPermission(),
             ) { isGranted ->
                 notificationPermissionGranted = isGranted
-                if (!isGranted) {
+                if (isGranted) {
+                    NotificationUtils.scheduleDailyNotification(context)
+                } else {
                     showPermissionRationale = true
                 }
             }
@@ -234,8 +205,8 @@ fun HavaTahminimApp() {
                 }
                 composable(Screen.SelectCity.route) {
                     CitySearchScreen(weatherViewModel) { city ->
-                        val lat = city.lat
-                        val lon = city.lon
+                        val lat = city.latitude
+                        val lon = city.longitude
                         weatherViewModel.saveLocation(lat, lon)
                         weatherViewModel.fetchWeather(lat, lon)
                         navController.navigate(Screen.Today.route)
@@ -262,7 +233,7 @@ private fun useLastOrDefaultLocation(
     weatherViewModel: WeatherViewModel,
     context: Context,
     navController: NavController,
-    showNoInternetDialog: MutableState<Boolean>
+    showNoInternetDialog: MutableState<Boolean>,
 ) {
     val lastLocation = weatherViewModel.location.value
     if (lastLocation != null) {
@@ -289,7 +260,9 @@ fun NoInternetDialog(onDismiss: () -> Unit) {
             Text(text = "İnternet Bağlantısı Yok")
         },
         text = {
-            Text(text = "Hava durumu verilerini almak için internet bağlantısına ihtiyacınız var. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.")
+            Text(
+                text = "Hava durumu verilerini almak için internet bağlantısına ihtiyacınız var. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.",
+            )
         },
         confirmButton = {
             Button(onClick = onDismiss) {
@@ -371,4 +344,3 @@ suspend fun getCurrentLocation(
             throw Exception("İzin verilmedi")
         }
     }
-
