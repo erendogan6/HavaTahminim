@@ -10,24 +10,27 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GeminiService @Inject constructor(
-    private val resourcesProvider: ResourcesProvider
-) {
-    private val systemInstruction: String
-        get() = resourcesProvider.getString(R.string.weather_assistant_instruction)
+class GeminiService
+    @Inject
+    constructor(
+        private val resourcesProvider: ResourcesProvider,
+    ) {
+        private val systemInstruction: String
+            get() = resourcesProvider.getString(R.string.weather_assistant_instruction)
 
-    val model: GenerativeModel by lazy {
-        GenerativeModel(
-            "gemini-1.5-pro",
-            apiKey = GEMINI_API_KEY,
-            generationConfig = generationConfig {
-                temperature = 2f
-                topK = 64
-                topP = 0.95f
-                maxOutputTokens = 8192
-                responseMimeType = "text/plain"
-            },
-            systemInstruction = content { text(systemInstruction) },
-        )
+        val model: GenerativeModel by lazy {
+            GenerativeModel(
+                "gemini-1.5-flash",
+                apiKey = GEMINI_API_KEY,
+                generationConfig =
+                    generationConfig {
+                        temperature = 2f
+                        topK = 64
+                        topP = 0.95f
+                        maxOutputTokens = 8192
+                        responseMimeType = "text/plain"
+                    },
+                systemInstruction = content { text(systemInstruction) },
+            )
+        }
     }
-}
