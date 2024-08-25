@@ -3,7 +3,10 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id ("kotlin-kapt")
+    id ('dagger.hilt.android.plugin')
 }
+
 def localProperties = new Properties()
 localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
