@@ -21,24 +21,32 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.erendogan6.havatahminim.R
 
-sealed class Screen(val route: String, val icon: ImageVector, val title: Int) {
+sealed class Screen(
+    val route: String,
+    val icon: ImageVector,
+    val title: Int,
+) {
     data object Today : Screen("weather_screen", Icons.Default.Home, R.string.today)
+
     data object Daily : Screen("daily_forecast_screen", Icons.Default.DateRange, R.string.daily)
+
     data object ZekAI : Screen("zekai", Icons.Default.Face, R.string.zekai)
+
     data object SelectCity : Screen("select_city", Icons.Default.LocationOn, R.string.select_city)
 }
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-    NavigationBar(modifier = Modifier.padding(0.dp), containerColor = Color(0xFFFFF6E9)) {
+    NavigationBar(modifier = Modifier.padding(0.dp), containerColor = Color(0xAA80C4E9).copy(alpha = 0.2f)) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
-        val screens = listOf(
-            Screen.Today,
-            Screen.Daily,
-            Screen.ZekAI,
-            Screen.SelectCity
-        )
+        val screens =
+            listOf(
+                Screen.Today,
+                Screen.Daily,
+                Screen.ZekAI,
+                Screen.SelectCity,
+            )
         screens.forEach { screen ->
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = stringResource(id = screen.title)) },
@@ -52,7 +60,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                         launchSingleTop = true
                         restoreState = true
                     }
-                }
+                },
             )
         }
     }
