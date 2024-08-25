@@ -2,6 +2,7 @@ package com.erendogan6.havatahminim.di
 
 import android.content.Context
 import androidx.room.Room
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.erendogan6.havatahminim.BuildConfig
 import com.erendogan6.havatahminim.model.DailyForecastDao
 import com.erendogan6.havatahminim.model.LocationDao
@@ -31,14 +32,20 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(
+        @ApplicationContext context: Context,
+    ): OkHttpClient {
         val builder = OkHttpClient.Builder()
+
         if (BuildConfig.DEBUG) {
             val logging =
                 HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 }
             builder.addInterceptor(logging)
+
+            val chuckerInterceptor = ChuckerInterceptor.Builder(context).build()
+            builder.addInterceptor(chuckerInterceptor)
         }
 
         builder.connectTimeout(30, TimeUnit.SECONDS)
