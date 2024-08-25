@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.model.database
+package com.erendogan6.havatahminim.model.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
