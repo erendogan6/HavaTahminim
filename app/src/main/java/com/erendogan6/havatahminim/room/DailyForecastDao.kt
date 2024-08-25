@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.erendogan6.havatahminim.model.database.DailyForecastEntity
+import com.erendogan6.havatahminim.model.entity.DailyForecastEntity
 
 @Dao
 interface DailyForecastDao {

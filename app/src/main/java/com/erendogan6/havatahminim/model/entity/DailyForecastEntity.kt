@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.model.database
+package com.erendogan6.havatahminim.model.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,5 +10,5 @@ data class DailyForecastEntity(
     val date: Long,
     val latitude: Double,
     val longitude: Double,
-    val forecastData: DailyForecastBaseResponse
+    val forecastData: DailyForecastBaseResponse,
 )
