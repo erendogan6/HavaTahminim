@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.room
+package com.erendogan6.havatahminim.util
 
 import androidx.room.TypeConverter
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
