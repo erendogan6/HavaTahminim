@@ -1,11 +1,23 @@
 # Hava Tahminim - Hava Durumu Uygulaması
 
- <img src="https://i.hizliresim.com/iku3t6y.png" alt="Hava Tahminim Kullanım Videosu" width="300" height="300">
+ <img src="https://i.hizliresim.com/iku3t6y.png" alt="Hava Tahminim Kullanım Videosu" width="200" height="200">
 
 ## Proje Hakkında
 Hava Tahminim, kullanıcılara mevcut konumlarına göre güncel hava durumu bilgilerini sunan bir mobil uygulamadır. Kullanıcılar, bulundukları veya seçtikleri şehirlerin hava durumu tahminlerini kolayca görüntüleyebilirler. Uygulama, anlık hava durumu, saatlik ve günlük hava durumu tahminleri sunmaktadır. Uygulamanın diğer hava durumu uygulamarından ayrılan ve öne çıkan özelliği ise uygulama içinde bulunan yapay zeka asistanı ZekAI, hava durumu tahminlerine göre günlük aktiviteler için önerilerde bulunmasıdır.
 
-## Kullanım Videosu
+Google Play Store: https://play.google.com/store/apps/details?id=com.erendogan6.havatahminim
+
+## Ekran Görüntüleri
+
+<table>
+  <tr>
+    <td><img src="https://i.hizliresim.com/jpebfiq.png" alt="Hava Tahminim Ekran Görüntüsü 1" width="393" height="700"></td>
+    <td><img src="https://i.hizliresim.com/evbfoq3.png" alt="Hava Tahminim Ekran Görüntüsü 2" width="393" height="700"></td>
+  </tr>
+</table>
+
+
+## Kullanım Videosu 🎥
 
 <a href="https://www.youtube.com/shorts/5RNjgU8RkFQ"> <img src="https://i.hizliresim.com/fe34vga.png" alt="Hava Tahminim Kullanım Videosu" width="320" height="680">  </a> 
 
