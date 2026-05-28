@@ -21,8 +21,8 @@ android {
         applicationId "com.erendogan6.havatahminim"
         minSdk 26
         targetSdk 36
-        versionCode 9
-        versionName "1.8"
+        versionCode 10
+        versionName "1.9"
         buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
         buildConfigField("String", "WEATHER_API_KEY", "\"${weatherApiKey}\"")
 
