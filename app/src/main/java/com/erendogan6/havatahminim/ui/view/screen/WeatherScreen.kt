@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -45,7 +46,6 @@ import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBa
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
 @Composable
 fun WeatherScreen(weatherViewModel: WeatherViewModel, onLoaded: () -> Unit) {
@@ -228,7 +228,8 @@ fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
 
 @Composable
 fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
-    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    val locale = LocalConfiguration.current.locales[0]
+    val sdf = SimpleDateFormat("HH:mm", locale)
     val date = sdf.format(forecast.dt * 1000L)
 
     Column(

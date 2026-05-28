@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.model.weather.DailyForecast.City
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel

@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +41,6 @@ import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecast
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun DailyForecastScreen(
@@ -62,9 +62,10 @@ fun DailyForecastScreen(
 
 @Composable
 fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
+    val locale = LocalConfiguration.current.locales[0]
     val dayNames =
         dailyForecast.list.map {
-            SimpleDateFormat("EEEE", Locale.getDefault()).format(it.dt * 1000L)
+            SimpleDateFormat("EEEE", locale).format(it.dt * 1000L)
         }
     val maxWidth = dayNames.maxOfOrNull { it.length } ?: 0
 
@@ -99,7 +100,8 @@ fun DailyForecastItem(
     forecast: DailyForecast,
     maxWidth: Float,
 ) {
-    val dayFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+    val locale = LocalConfiguration.current.locales[0]
+    val dayFormat = SimpleDateFormat("EEEE", locale)
     val day = dayFormat.format(forecast.dt * 1000L)
 
     Card(
