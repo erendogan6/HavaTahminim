@@ -5,10 +5,14 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -24,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
@@ -37,6 +42,7 @@ import com.erendogan6.havatahminim.extension.NetworkUtils
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
 import com.erendogan6.havatahminim.ui.view.navigation.Screen
+import com.erendogan6.havatahminim.ui.view.screen.BackgroundImage
 import com.erendogan6.havatahminim.ui.view.screen.CitySearchScreen
 import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
 import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
@@ -54,6 +60,15 @@ import kotlinx.coroutines.tasks.await
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Draw edge-to-edge behind transparent system bars. The weather backgrounds are bright,
+        // so force dark status-bar icons via SystemBarStyle.light.
+        enableEdgeToEdge(
+            statusBarStyle =
+                SystemBarStyle.light(
+                    android.graphics.Color.TRANSPARENT,
+                    android.graphics.Color.TRANSPARENT,
+                ),
+        )
         setContent {
             HavaTahminimApp()
         }
@@ -76,6 +91,7 @@ fun HavaTahminimApp() {
         val navController = rememberNavController()
 
         val dataLoaded by weatherViewModel.dataLoaded.collectAsState()
+        val weatherState by weatherViewModel.weatherState.collectAsState()
 
         val notificationPermissionLauncher =
             rememberLauncherForActivityResult(
@@ -161,29 +177,38 @@ fun HavaTahminimApp() {
             NoInternetDialog { showNoInternetDialog.value = false }
         }
 
-        Scaffold(bottomBar = {
-            if (dataLoaded) {
-                BottomNavigationBar(navController)
-            }
-        }) { innerPadding ->
-            NavHost(
-                navController,
-                startDestination = Screen.Today.route,
-                modifier = Modifier.padding(innerPadding),
-            ) {
-                composable(Screen.Today.route) {
-                    WeatherScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
-                }
-                composable(Screen.Daily.route) {
-                    DailyForecastScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
-                }
-                composable(Screen.ZekAI.route) {
-                    ZekAIScreen(weatherViewModel)
-                }
-                composable(Screen.SelectCity.route) {
-                    CitySearchScreen(weatherViewModel) { city ->
-                        weatherViewModel.updateLocationAndFetchWeather(city.latitude, city.longitude)
-                        navController.navigate(Screen.Today.route)
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Full-bleed background drawn behind the transparent system bars. The per-screen
+            // content (below) stays inset via the Scaffold's innerPadding.
+            BackgroundImage(weatherState)
+
+            Scaffold(
+                containerColor = Color.Transparent,
+                bottomBar = {
+                    if (dataLoaded) {
+                        BottomNavigationBar(navController)
+                    }
+                },
+            ) { innerPadding ->
+                NavHost(
+                    navController,
+                    startDestination = Screen.Today.route,
+                    modifier = Modifier.padding(innerPadding),
+                ) {
+                    composable(Screen.Today.route) {
+                        WeatherScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
+                    }
+                    composable(Screen.Daily.route) {
+                        DailyForecastScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
+                    }
+                    composable(Screen.ZekAI.route) {
+                        ZekAIScreen(weatherViewModel)
+                    }
+                    composable(Screen.SelectCity.route) {
+                        CitySearchScreen(weatherViewModel) { city ->
+                            weatherViewModel.updateLocationAndFetchWeather(city.latitude, city.longitude)
+                            navController.navigate(Screen.Today.route)
+                        }
                     }
                 }
             }
