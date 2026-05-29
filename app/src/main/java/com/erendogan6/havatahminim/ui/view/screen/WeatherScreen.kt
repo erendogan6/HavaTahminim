@@ -68,8 +68,9 @@ fun WeatherBackgroundLayout(
     weatherState: CurrentWeatherBaseResponse?,
     content: @Composable () -> Unit
 ) {
+    // The weather background is now drawn once, full-bleed, behind the Scaffold in MainActivity
+    // (so it extends edge-to-edge under the system bars). This stays a transparent passthrough.
     Box(modifier = Modifier.fillMaxSize()) {
-        BackgroundImage(weatherState)
         content()
     }
 }
