@@ -8,10 +8,10 @@ import com.erendogan6.havatahminim.model.DailyForecastDao
 import com.erendogan6.havatahminim.model.LocationDao
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
-import com.erendogan6.havatahminim.network.ProWeatherApiService
 import com.erendogan6.havatahminim.network.WeatherApiService
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.room.MIGRATION_1_2
+import com.erendogan6.havatahminim.room.MIGRATION_2_3
 import com.erendogan6.havatahminim.room.RoomDB
 import com.erendogan6.havatahminim.room.WeatherSuggestionDao
 import com.erendogan6.havatahminim.util.ResourcesProvider
@@ -57,10 +57,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWeatherApiServiceSecure(okHttpClient: OkHttpClient): WeatherApiService =
+    fun provideWeatherApiService(okHttpClient: OkHttpClient): WeatherApiService =
         Retrofit
             .Builder()
-            .baseUrl("https://api.openweathermap.org/data/2.5/")
+            .baseUrl("https://api.open-meteo.com/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -68,25 +68,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWeatherApiServiceUnSecure(okHttpClient: OkHttpClient): CityApiService =
+    fun provideCityApiService(okHttpClient: OkHttpClient): CityApiService =
         Retrofit
             .Builder()
-            .baseUrl("http://api.openweathermap.org/")
+            .baseUrl("https://geocoding-api.open-meteo.com/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(CityApiService::class.java)
-
-    @Provides
-    @Singleton
-    fun provideProWeatherApiService(okHttpClient: OkHttpClient): ProWeatherApiService =
-        Retrofit
-            .Builder()
-            .baseUrl("https://pro.openweathermap.org/data/2.5/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ProWeatherApiService::class.java)
 
     @Provides
     @Singleton
@@ -102,23 +91,23 @@ object AppModule {
     @Singleton
     fun provideWeatherRepository(
         weatherApiService: WeatherApiService,
-        proWeatherApiService: ProWeatherApiService,
         geminiService: GeminiService,
         cityApiService: CityApiService,
         locationDao: LocationDao,
         dailyForecastDao: DailyForecastDao,
         resourcesProvider: ResourcesProvider,
         weatherSuggestionDao: WeatherSuggestionDao,
+        @ApplicationContext context: Context,
     ): WeatherRepository =
         WeatherRepository(
             weatherApiService,
-            proWeatherApiService,
             geminiService,
             cityApiService,
             locationDao,
             dailyForecastDao,
             resourcesProvider,
             weatherSuggestionDao,
+            context,
         )
 
     @Provides
@@ -132,7 +121,7 @@ object AppModule {
                 context.applicationContext,
                 RoomDB::class.java,
                 "location_database",
-            ).addMigrations(MIGRATION_1_2)
+            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
     @Provides

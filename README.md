@@ -45,7 +45,7 @@ Google Play Store: https://play.google.com/store/apps/details?id=com.erendogan6.
 - Coroutine
 - Hilt Dependency Injection
 - %100 Localization (Türkçe ve İngilizce)
-- API (OpenWeather, Gemini)
+- API (Open-Meteo, Gemini)
 - MVVM (Model, View, Viewmodel)
 - SOLID 
 - UI/UX
@@ -67,7 +67,7 @@ git clone https://github.com/erendogan6/HavaTahminim.git
 ```
 - Android Studio'yu açın ve "Open an existing project" seçeneğini kullanarak indirdiğiniz projeyi seçin.
 - Projeyi açtıktan sonra gereken bağımlılıkların indirilmesini bekleyin.
-- Gerekli API'leri local.properties içerisine girin.
+- `local.properties` dosyasına Gemini API anahtarınızı girin: `GEMINI_API_KEY=...` (Hava durumu ve şehir arama için kullanılan Open-Meteo API anahtarı gerektirmez).
 - Uygulamayı bir Android cihazda veya emülatörde çalıştırın.
 
 - Uygulamayı doğrudan Android cihazınızda çalıştırabilmek için "HavaTahminim.apk" dosyasını indirip uygulamayı cihazınıza kurabilirsiniz.
