@@ -8,7 +8,6 @@ plugins {
 def localProperties = new Properties()
 localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
-def weatherApiKey = localProperties.getProperty("WEATHER_API_KEY")
 android {
     namespace 'com.erendogan6.havatahminim'
     compileSdk 36
@@ -24,7 +23,6 @@ android {
         versionCode 10
         versionName "1.9"
         buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
-        buildConfigField("String", "WEATHER_API_KEY", "\"${weatherApiKey}\"")
 
         vectorDrawables {
             useSupportLibrary true

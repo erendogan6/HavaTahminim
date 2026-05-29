@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class City(
     @SerializedName("name") val name: String,
-    @SerializedName("lat") val latitude: Double,
-    @SerializedName("lon") val longitude: Double,
-    @SerializedName("country") val country: String,
-    @SerializedName("local_names") val localNames: LocalNames? = null,
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double,
+    @SerializedName("country") val country: String? = null,
+    @SerializedName("admin1") val admin1: String? = null,
 )

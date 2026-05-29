@@ -1,15 +1,15 @@
 package com.erendogan6.havatahminim.network
 
-import com.erendogan6.havatahminim.BuildConfig.WEATHER_API_KEY
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.model.weather.openmeteo.GeoSearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface CityApiService {
-    @GET("geo/1.0/direct")
+    @GET("v1/search")
     suspend fun getCities(
-        @Query("q") query: String,
-        @Query("appid") apiKey: String = WEATHER_API_KEY,
-        @Query("limit") limit: Int = 5,
-    ): List<City>
+        @Query("name") query: String,
+        @Query("language") language: String,
+        @Query("count") count: Int = 5,
+        @Query("format") format: String = "json",
+    ): GeoSearchResponse
 }

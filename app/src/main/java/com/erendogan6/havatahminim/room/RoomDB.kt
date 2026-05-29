@@ -12,7 +12,7 @@ import com.erendogan6.havatahminim.model.entity.LocationEntity
 import com.erendogan6.havatahminim.model.entity.WeatherSuggestionEntity
 import com.erendogan6.havatahminim.util.Converters
 
-@Database(entities = [LocationEntity::class, DailyForecastEntity::class, WeatherSuggestionEntity::class], version = 2, exportSchema = false)
+@Database(entities = [LocationEntity::class, DailyForecastEntity::class, WeatherSuggestionEntity::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class RoomDB : RoomDatabase() {
     abstract fun locationDao(): LocationDao
@@ -35,5 +35,13 @@ val MIGRATION_1_2 =
                     "`longitude` REAL NOT NULL, " +
                     "`timestamp` INTEGER NOT NULL)",
             )
+        }
+    }
+
+val MIGRATION_2_3 =
+    object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("DELETE FROM `daily_forecast`")
+            db.execSQL("DELETE FROM `weather_suggestions`")
         }
     }
