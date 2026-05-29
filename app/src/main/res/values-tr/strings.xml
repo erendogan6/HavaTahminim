@@ -31,4 +31,35 @@
     <string name="weather_assistant_instruction">Sen bir akıllı hava durumu asistanısın. Kullanıcının konum ve mevcut hava durumu bilgilerini alarak, onlara günlük aktiviteler için Türkçe önerilerde bulunuyorsun.</string>
     <string name="quota_exceeded_message">Kota Doldu</string>
     <string name="serialization_error_message">Serileştirme Hatası</string>
+
+    <!-- WMO hava durumu kodu açıklamaları (Open-Meteo) -->
+    <string name="wmo_clear_sky">Açık</string>
+    <string name="wmo_mainly_clear">Çoğunlukla açık</string>
+    <string name="wmo_partly_cloudy">Parçalı bulutlu</string>
+    <string name="wmo_overcast">Kapalı</string>
+    <string name="wmo_fog">Sisli</string>
+    <string name="wmo_rime_fog">Kırağılı sis</string>
+    <string name="wmo_drizzle_light">Hafif çiseleme</string>
+    <string name="wmo_drizzle_moderate">Orta çiseleme</string>
+    <string name="wmo_drizzle_dense">Yoğun çiseleme</string>
+    <string name="wmo_freezing_drizzle_light">Hafif dondurucu çiseleme</string>
+    <string name="wmo_freezing_drizzle_dense">Yoğun dondurucu çiseleme</string>
+    <string name="wmo_rain_slight">Hafif yağmur</string>
+    <string name="wmo_rain_moderate">Orta yağmur</string>
+    <string name="wmo_rain_heavy">Şiddetli yağmur</string>
+    <string name="wmo_freezing_rain_light">Hafif dondurucu yağmur</string>
+    <string name="wmo_freezing_rain_heavy">Şiddetli dondurucu yağmur</string>
+    <string name="wmo_snow_slight">Hafif kar yağışı</string>
+    <string name="wmo_snow_moderate">Orta kar yağışı</string>
+    <string name="wmo_snow_heavy">Yoğun kar yağışı</string>
+    <string name="wmo_snow_grains">Kar tanecikleri</string>
+    <string name="wmo_rain_showers_slight">Hafif sağanak yağmur</string>
+    <string name="wmo_rain_showers_moderate">Orta sağanak yağmur</string>
+    <string name="wmo_rain_showers_violent">Şiddetli sağanak yağmur</string>
+    <string name="wmo_snow_showers_slight">Hafif kar sağanağı</string>
+    <string name="wmo_snow_showers_heavy">Yoğun kar sağanağı</string>
+    <string name="wmo_thunderstorm">Gök gürültülü fırtına</string>
+    <string name="wmo_thunderstorm_hail_slight">Hafif dolulu gök gürültülü fırtına</string>
+    <string name="wmo_thunderstorm_hail_heavy">Yoğun dolulu gök gürültülü fırtına</string>
+    <string name="wmo_unknown">Bilinmiyor</string>
 </resources>

@@ -129,14 +129,7 @@ fun CityCard(
             horizontalAlignment = Alignment.Start,
         ) {
             Text(
-                text =
-                    (
-                        if (city.localNames?.tr != null) {
-                            city.localNames.tr
-                        } else {
-                            city.name
-                        }
-                    ) + " - " + city.country,
+                text = listOfNotNull(city.name, city.admin1, city.country).joinToString(" - "),
                 style =
                     MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,

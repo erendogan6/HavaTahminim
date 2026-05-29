@@ -20,7 +20,7 @@ class GeminiService
 
         val model: GenerativeModel by lazy {
             GenerativeModel(
-                "gemini-1.5-flash",
+                "gemini-2.5-flash",
                 apiKey = GEMINI_API_KEY,
                 generationConfig =
                     generationConfig {

@@ -31,5 +31,36 @@
     <string name="weather_assistant_instruction">You are a smart weather assistant. You take the user\'s location and current weather information and provide daily activity suggestions in English.</string>
     <string name="quota_exceeded_message">Quota Full</string>
     <string name="serialization_error_message">Serialization Error</string>
+
+    <!-- WMO weather code descriptions (Open-Meteo) -->
+    <string name="wmo_clear_sky">Clear sky</string>
+    <string name="wmo_mainly_clear">Mainly clear</string>
+    <string name="wmo_partly_cloudy">Partly cloudy</string>
+    <string name="wmo_overcast">Overcast</string>
+    <string name="wmo_fog">Fog</string>
+    <string name="wmo_rime_fog">Depositing rime fog</string>
+    <string name="wmo_drizzle_light">Light drizzle</string>
+    <string name="wmo_drizzle_moderate">Moderate drizzle</string>
+    <string name="wmo_drizzle_dense">Dense drizzle</string>
+    <string name="wmo_freezing_drizzle_light">Light freezing drizzle</string>
+    <string name="wmo_freezing_drizzle_dense">Dense freezing drizzle</string>
+    <string name="wmo_rain_slight">Slight rain</string>
+    <string name="wmo_rain_moderate">Moderate rain</string>
+    <string name="wmo_rain_heavy">Heavy rain</string>
+    <string name="wmo_freezing_rain_light">Light freezing rain</string>
+    <string name="wmo_freezing_rain_heavy">Heavy freezing rain</string>
+    <string name="wmo_snow_slight">Slight snowfall</string>
+    <string name="wmo_snow_moderate">Moderate snowfall</string>
+    <string name="wmo_snow_heavy">Heavy snowfall</string>
+    <string name="wmo_snow_grains">Snow grains</string>
+    <string name="wmo_rain_showers_slight">Slight rain showers</string>
+    <string name="wmo_rain_showers_moderate">Moderate rain showers</string>
+    <string name="wmo_rain_showers_violent">Violent rain showers</string>
+    <string name="wmo_snow_showers_slight">Slight snow showers</string>
+    <string name="wmo_snow_showers_heavy">Heavy snow showers</string>
+    <string name="wmo_thunderstorm">Thunderstorm</string>
+    <string name="wmo_thunderstorm_hail_slight">Thunderstorm with slight hail</string>
+    <string name="wmo_thunderstorm_hail_heavy">Thunderstorm with heavy hail</string>
+    <string name="wmo_unknown">Unknown</string>
 </resources>
 
