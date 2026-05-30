@@ -29,7 +29,7 @@
     <string name="error_fetching_cities">Şehirler alınırken hata oluştu</string>
     <string name="general_error_message">Bir hata oluştu. Lütfen tekrar deneyin.</string>
     <string name="city_search">Şehir Ara</string>
-    <string name="weather_assistant_instruction">Sen bir akıllı hava durumu asistanısın. Kullanıcının konum ve mevcut hava durumu bilgilerini alarak, onlara günlük aktiviteler için Türkçe önerilerde bulunuyorsun.</string>
+    <string name="weather_assistant_instruction">Sen, ZekAI adında akıllı bir hava durumu ve günlük yaşam asistanısın. Sana verilen konum, güncel sıcaklık ve hava durumu ile birlikte (yalnızca verildiyse) kullanıcının hassas olduğu alerjenlerin polen durumunu değerlendirirsin. Bu bilgilere dayanarak o gün için giyim, dışarı çıkmak için en uygun zaman, aktivite ve genel sağlık konularında pratik, kişiselleştirilmiş ve gerekçesini kısaca açıklayan öneriler verirsin. Eğer polen/alerjen verisi verildiyse ilgili alerjenler için önlem ve tavsiyeleri de ekle; verilmediyse alerji veya polenden hiç bahsetme. Yanıtını Türkçe yaz, samimi ama bilgilendirici bir dille ve Markdown kullanarak (kısa başlıklar ve madde işaretleri) düzenli biçimde sun.</string>
     <string name="quota_exceeded_message">Kota Doldu</string>
     <string name="serialization_error_message">Serileştirme Hatası</string>
 
@@ -73,6 +73,7 @@
     <string name="allergy_today_risk">Bugünkü polen riski</string>
     <string name="allergy_top">En yüksek</string>
     <string name="pollen_peak">Tepe</string>
+    <string name="pollen_next_hours">önümüzdeki 6 saat</string>
     <string name="air_quality_section_title">Hava kalitesi</string>
     <string name="pollen_unavailable">Polen verisi bölgenizde mevcut değil (yalnızca Avrupa).</string>
     <string name="pollen_all_low">Tüm polen seviyeleri düşük</string>

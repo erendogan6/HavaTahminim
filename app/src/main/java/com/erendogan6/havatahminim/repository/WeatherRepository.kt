@@ -38,8 +38,6 @@ import com.erendogan6.havatahminim.util.ResourcesProvider
 import com.erendogan6.havatahminim.util.WmoWeather
 import kotlinx.coroutines.flow.Flow
 import com.google.ai.client.generativeai.type.SerializationException
-import com.google.ai.client.generativeai.type.asTextOrNull
-import com.google.ai.client.generativeai.type.content
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -177,28 +175,18 @@ class WeatherRepository
                     try {
                         weatherSuggestionDao.deleteAllSuggestions()
 
+                        // The persona/instructions live in the model's systemInstruction
+                        // (see GeminiService); here we only send the user-specific data.
                         val userMessage =
                             buildString {
                                 append("Konum: $location\nSıcaklık: $temperature")
                                 if (pollenSummary.isNotBlank()) {
-                                    append("\nPolen ve hava kalitesi: $pollenSummary")
+                                    append("\nSeçili alerjenlerin polen durumu: $pollenSummary")
                                 }
                             }
-                        val chatHistory =
-                            listOf(
-                                content("user") {
-                                    text(userMessage)
-                                },
-                            )
-                        val chat = geminiService.model.startChat(chatHistory)
-                        val response = chat.sendMessage(resourcesProvider.getString(R.string.weather_assistant_instruction))
+                        val response = geminiService.model.generateContent(userMessage)
                         val suggestion =
-                            response.candidates
-                                .firstOrNull()
-                                ?.content
-                                ?.parts
-                                ?.firstOrNull()
-                                ?.asTextOrNull() ?: resourcesProvider.getString(R.string.general_error_message)
+                            response.text ?: resourcesProvider.getString(R.string.general_error_message)
 
                         val suggestionEntity =
                             WeatherSuggestionEntity(
@@ -386,9 +374,21 @@ class WeatherRepository
                 rawByType.map { (type, grains) ->
                     PollenReading(type = type, valueGrains = grains, risk = PollenLevel.risk(type, grains))
                 }
+            val hourly = response.hourly
+            val hourlyByType =
+                mapOf(
+                    PollenType.ALDER to hourly?.alderPollen.orEmpty(),
+                    PollenType.BIRCH to hourly?.birchPollen.orEmpty(),
+                    PollenType.GRASS to hourly?.grassPollen.orEmpty(),
+                    PollenType.MUGWORT to hourly?.mugwortPollen.orEmpty(),
+                    PollenType.OLIVE to hourly?.olivePollen.orEmpty(),
+                    PollenType.RAGWEED to hourly?.ragweedPollen.orEmpty(),
+                )
             return AirQualityInfo(
                 pollen = pollen,
                 dailyForecast = buildDailyPollen(response.hourly),
+                hourlyTimes = hourly?.time.orEmpty(),
+                hourlyByType = hourlyByType,
                 pm25 = current?.pm25,
                 pm10 = current?.pm10,
                 ozone = current?.ozone,
