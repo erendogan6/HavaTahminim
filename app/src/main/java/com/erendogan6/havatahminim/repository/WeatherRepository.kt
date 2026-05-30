@@ -58,8 +58,12 @@ class WeatherRepository
         private val allergenPreferenceDao: AllergenPreferenceDao,
         @param:ApplicationContext private val context: Context,
     ) {
-        private val DISTANCE_THRESHOLD_METERS = 10000 // 10 km
-        private val TIME_THRESHOLD_MILLIS = 24 * 60 * 60 * 1000 // 24 hours
+        private val DISTANCE_THRESHOLD_METERS = 10000 // 10 km — daily forecast cache reuse radius
+
+        // ZekAI suggestion cache is invalidated when the location moves beyond this radius, the
+        // cache gets older than this, or the device language changes.
+        private val SUGGESTION_DISTANCE_THRESHOLD_METERS = 5000 // 5 km
+        private val SUGGESTION_TIME_THRESHOLD_MILLIS = 2 * 60 * 60 * 1000 // 2 hours
 
         private val language: String get() = resourcesProvider.getLanguage()
 
@@ -150,6 +154,7 @@ class WeatherRepository
             forceRefresh: Boolean = false,
         ): String {
             val cachedSuggestion = weatherSuggestionDao.getLatestSuggestion()
+            val currentLanguage = language
 
             val needsNewSuggestion =
                 forceRefresh ||
@@ -167,7 +172,9 @@ class WeatherRepository
                     val distance = savedLocation.distanceTo(currentLocation)
                     val timeElapsed = System.currentTimeMillis() - it.timestamp
 
-                    distance > DISTANCE_THRESHOLD_METERS || timeElapsed > TIME_THRESHOLD_MILLIS
+                    distance > SUGGESTION_DISTANCE_THRESHOLD_METERS ||
+                        timeElapsed > SUGGESTION_TIME_THRESHOLD_MILLIS ||
+                        it.language != currentLanguage
                 } ?: true
 
             if (needsNewSuggestion) {
@@ -195,6 +202,7 @@ class WeatherRepository
                                 suggestion = suggestion,
                                 latitude = lat,
                                 longitude = lon,
+                                language = currentLanguage,
                             )
                         weatherSuggestionDao.insertSuggestion(suggestionEntity)
 

@@ -20,7 +20,7 @@ import com.erendogan6.havatahminim.util.Converters
         WeatherSuggestionEntity::class,
         AllergenPreferenceEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -67,5 +67,13 @@ val MIGRATION_3_4 =
                     "`type` TEXT PRIMARY KEY NOT NULL, " +
                     "`sensitive` INTEGER NOT NULL)",
             )
+        }
+    }
+
+/** Records the language a cached ZekAI suggestion was generated for, so a language change refreshes it. */
+val MIGRATION_4_5 =
+    object : Migration(4, 5) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE `weather_suggestions` ADD COLUMN `language` TEXT NOT NULL DEFAULT ''")
         }
     }
