@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -58,7 +58,7 @@ fun CitySearchScreen(
     Column(
         modifier =
             Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .background(Color(0xAA80C4E9).copy(alpha = 0.2f))
                 .padding(20.dp),
     ) {
@@ -99,7 +99,7 @@ fun CitySearchScreen(
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(10.dp),
+            modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp).padding(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(cityState) { city ->

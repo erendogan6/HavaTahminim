@@ -28,7 +28,7 @@ interface WeatherApiService {
     suspend fun getHourlyWeather(
         @Query("latitude") lat: Double,
         @Query("longitude") lon: Double,
-        @Query("hourly") hourly: String = "temperature_2m,weather_code",
+        @Query("hourly") hourly: String = "temperature_2m,weather_code,precipitation_probability",
         @Query("daily") daily: String = "sunrise,sunset",
         @Query("timezone") timezone: String = "auto",
         @Query("timeformat") timeformat: String = "unixtime",

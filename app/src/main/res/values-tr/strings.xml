@@ -19,6 +19,7 @@
     <string name="daily">Günlük</string>
     <string name="zekai">ZekAI</string>
     <string name="select_city">Konum Seç</string>
+    <string name="use_my_location">Konumumu kullan</string>
     <string name="error_fetching_location">Konum alınırken hata oluştu</string>
     <string name="error_saving_location">Konum kaydedilirken hata oluştu</string>
     <string name="error_fetching_weather_data">Hava durumu verileri alınırken hata oluştu</string>
