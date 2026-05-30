@@ -42,6 +42,7 @@ import com.erendogan6.havatahminim.extension.NetworkUtils
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
 import com.erendogan6.havatahminim.ui.view.navigation.Screen
+import com.erendogan6.havatahminim.ui.view.screen.AllergyScreen
 import com.erendogan6.havatahminim.ui.view.screen.BackgroundImage
 import com.erendogan6.havatahminim.ui.view.screen.CitySearchScreen
 import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
@@ -200,6 +201,9 @@ fun HavaTahminimApp() {
                     }
                     composable(Screen.Daily.route) {
                         DailyForecastScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
+                    }
+                    composable(Screen.Allergy.route) {
+                        AllergyScreen(weatherViewModel)
                     }
                     composable(Screen.ZekAI.route) {
                         ZekAIScreen(weatherViewModel)

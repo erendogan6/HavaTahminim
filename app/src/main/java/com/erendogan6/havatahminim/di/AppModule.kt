@@ -6,12 +6,15 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.erendogan6.havatahminim.BuildConfig
 import com.erendogan6.havatahminim.model.DailyForecastDao
 import com.erendogan6.havatahminim.model.LocationDao
+import com.erendogan6.havatahminim.network.AirQualityApiService
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.WeatherApiService
 import com.erendogan6.havatahminim.repository.WeatherRepository
+import com.erendogan6.havatahminim.room.AllergenPreferenceDao
 import com.erendogan6.havatahminim.room.MIGRATION_1_2
 import com.erendogan6.havatahminim.room.MIGRATION_2_3
+import com.erendogan6.havatahminim.room.MIGRATION_3_4
 import com.erendogan6.havatahminim.room.RoomDB
 import com.erendogan6.havatahminim.room.WeatherSuggestionDao
 import com.erendogan6.havatahminim.util.ResourcesProvider
@@ -79,6 +82,17 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideAirQualityApiService(okHttpClient: OkHttpClient): AirQualityApiService =
+        Retrofit
+            .Builder()
+            .baseUrl("https://air-quality-api.open-meteo.com/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AirQualityApiService::class.java)
+
+    @Provides
+    @Singleton
     fun provideGeminiService(resourcesProvider: ResourcesProvider): GeminiService = GeminiService(resourcesProvider)
 
     @Provides
@@ -91,22 +105,26 @@ object AppModule {
     @Singleton
     fun provideWeatherRepository(
         weatherApiService: WeatherApiService,
+        airQualityApiService: AirQualityApiService,
         geminiService: GeminiService,
         cityApiService: CityApiService,
         locationDao: LocationDao,
         dailyForecastDao: DailyForecastDao,
         resourcesProvider: ResourcesProvider,
         weatherSuggestionDao: WeatherSuggestionDao,
+        allergenPreferenceDao: AllergenPreferenceDao,
         @ApplicationContext context: Context,
     ): WeatherRepository =
         WeatherRepository(
             weatherApiService,
+            airQualityApiService,
             geminiService,
             cityApiService,
             locationDao,
             dailyForecastDao,
             resourcesProvider,
             weatherSuggestionDao,
+            allergenPreferenceDao,
             context,
         )
 
@@ -121,7 +139,7 @@ object AppModule {
                 context.applicationContext,
                 RoomDB::class.java,
                 "location_database",
-            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
 
     @Provides
@@ -135,4 +153,8 @@ object AppModule {
     @Provides
     @Singleton
     fun provideWeatherSuggestionDao(roomDb: RoomDB): WeatherSuggestionDao = roomDb.weatherSuggestionDao()
+
+    @Provides
+    @Singleton
+    fun provideAllergenPreferenceDao(roomDb: RoomDB): AllergenPreferenceDao = roomDb.allergenPreferenceDao()
 }
