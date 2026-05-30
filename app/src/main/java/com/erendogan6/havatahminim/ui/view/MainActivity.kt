@@ -44,7 +44,6 @@ import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
 import com.erendogan6.havatahminim.ui.view.navigation.Screen
 import com.erendogan6.havatahminim.ui.view.screen.AllergyScreen
 import com.erendogan6.havatahminim.ui.view.screen.BackgroundImage
-import com.erendogan6.havatahminim.ui.view.screen.CitySearchScreen
 import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
 import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
 import com.erendogan6.havatahminim.ui.view.screen.ZekAIScreen
@@ -130,6 +129,28 @@ fun HavaTahminimApp() {
                 }
             }
 
+        // Triggered by the "my location" icon on the Today screen: re-fetch the GPS position and
+        // refresh every data slice for it. Requests permission first if it isn't granted yet.
+        val onUseMyLocation: () -> Unit = {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                ) == PermissionChecker.PERMISSION_GRANTED
+            ) {
+                coroutineScope.launch {
+                    if (isLocationServiceEnabled(context) && NetworkUtils.isNetworkAvailable(context)) {
+                        getCurrentLocation(context, fusedLocationClient) { lat, lon ->
+                            weatherViewModel.updateLocationAndFetchWeather(lat, lon)
+                        }
+                    } else {
+                        showNoInternetDialog.value = true
+                    }
+                }
+            } else {
+                locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+        }
+
         LaunchedEffect(Unit) {
             if (!dataLoaded) {
                 if (ContextCompat.checkSelfPermission(
@@ -197,7 +218,11 @@ fun HavaTahminimApp() {
                     modifier = Modifier.padding(innerPadding),
                 ) {
                     composable(Screen.Today.route) {
-                        WeatherScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
+                        WeatherScreen(
+                            weatherViewModel,
+                            onLoaded = { weatherViewModel.setDataLoaded(true) },
+                            onUseMyLocation = onUseMyLocation,
+                        )
                     }
                     composable(Screen.Daily.route) {
                         DailyForecastScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
@@ -207,12 +232,6 @@ fun HavaTahminimApp() {
                     }
                     composable(Screen.ZekAI.route) {
                         ZekAIScreen(weatherViewModel)
-                    }
-                    composable(Screen.SelectCity.route) {
-                        CitySearchScreen(weatherViewModel) { city ->
-                            weatherViewModel.updateLocationAndFetchWeather(city.latitude, city.longitude)
-                            navController.navigate(Screen.Today.route)
-                        }
                     }
                 }
             }

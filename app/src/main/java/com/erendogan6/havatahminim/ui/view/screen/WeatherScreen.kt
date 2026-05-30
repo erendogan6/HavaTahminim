@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,15 +15,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,19 +61,71 @@ import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherScreen(weatherViewModel: WeatherViewModel, onLoaded: () -> Unit) {
+fun WeatherScreen(
+    weatherViewModel: WeatherViewModel,
+    onLoaded: () -> Unit,
+    onUseMyLocation: () -> Unit,
+) {
     val weatherState by weatherViewModel.weatherState.collectAsState()
     val errorMessage by weatherViewModel.errorMessage.collectAsState()
     val hourlyForecast by weatherViewModel.hourlyForecast.collectAsState()
+    var showCitySheet by remember { mutableStateOf(false) }
 
     WeatherBackgroundLayout(weatherState) {
         Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-            WeatherContent(weatherState,
-                errorMessage,
-                hourlyForecast,
-                onLoaded = onLoaded)
+            Box(modifier = Modifier.fillMaxSize()) {
+                WeatherContent(weatherState, errorMessage, hourlyForecast, onLoaded = onLoaded)
+                TopActions(
+                    modifier = Modifier.align(Alignment.TopEnd).padding(top = 8.dp, end = 12.dp),
+                    onUseMyLocation = onUseMyLocation,
+                    onSearchCity = { showCitySheet = true },
+                )
+            }
         }
+    }
+
+    if (showCitySheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showCitySheet = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        ) {
+            CitySearchScreen(weatherViewModel) { city ->
+                weatherViewModel.updateLocationAndFetchWeather(city.latitude, city.longitude)
+                showCitySheet = false
+            }
+        }
+    }
+}
+
+@Composable
+private fun TopActions(
+    modifier: Modifier,
+    onUseMyLocation: () -> Unit,
+    onSearchCity: () -> Unit,
+) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ActionIconButton(Icons.Default.MyLocation, R.string.use_my_location, onUseMyLocation)
+        ActionIconButton(Icons.Default.Search, R.string.select_city, onSearchCity)
+    }
+}
+
+@Composable
+private fun ActionIconButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    descRes: Int,
+    onClick: () -> Unit,
+) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier.size(42.dp).clip(CircleShape).background(Color(0x66FFFFFF)),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = stringResource(id = descRes),
+            tint = Color(0xFF1B3A4B),
+        )
     }
 }
 
@@ -258,11 +324,33 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily(Font(R.font.open_sans)),
-            modifier = Modifier.padding(vertical = 6.dp),
+            modifier = Modifier.padding(top = 6.dp),
             style = TextStyle(
                 shadow = Shadow(color = Color.DarkGray, blurRadius = 1f)
             )
         )
+        forecast.pop?.let { pop ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(top = 2.dp, bottom = 6.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.WaterDrop,
+                    contentDescription = null,
+                    tint = Color(0xFF1565C0),
+                    modifier = Modifier.size(15.dp)
+                )
+                Spacer(modifier = Modifier.size(2.dp))
+                Text(
+                    text = "%$pop",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1565C0),
+                    fontFamily = FontFamily(Font(R.font.open_sans)),
+                    style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 1f))
+                )
+            }
+        }
     }
 }
 
