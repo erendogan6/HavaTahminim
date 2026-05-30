@@ -24,8 +24,11 @@ class GeminiService
                 apiKey = GEMINI_API_KEY,
                 generationConfig =
                     generationConfig {
-                        temperature = 2f
-                        topK = 64
+                        // Tuned for Gemini 2.5 Flash, favouring coherent, detailed advice over
+                        // randomness. This is a one-shot, non-latency-critical call, so 2.5 Flash's
+                        // built-in reasoning is welcome; we only steer the sampling here.
+                        temperature = 0.9f
+                        topK = 40
                         topP = 0.95f
                         maxOutputTokens = 8192
                         responseMimeType = "text/plain"

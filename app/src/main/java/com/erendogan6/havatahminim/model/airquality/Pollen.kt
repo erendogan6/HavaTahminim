@@ -50,6 +50,9 @@ data class DailyPollenForecast(
 data class AirQualityInfo(
     val pollen: List<PollenReading>,
     val dailyForecast: List<DailyPollenForecast>,
+    // Flat hourly series (whole forecast horizon) used to extract the "next N hours" for ZekAI.
+    val hourlyTimes: List<Long>,
+    val hourlyByType: Map<PollenType, List<Double?>>,
     val pm25: Double?,
     val pm10: Double?,
     val ozone: Double?,

@@ -29,7 +29,7 @@
     <string name="error_fetching_cities">Error fetching cities</string>
     <string name="general_error_message">An error occurred. Please try again.</string>
     <string name="city_search">Search City</string>
-    <string name="weather_assistant_instruction">You are a smart weather assistant. You take the user\'s location and current weather information and provide daily activity suggestions in English.</string>
+    <string name="weather_assistant_instruction">You are ZekAI, a smart weather and daily-life assistant. You evaluate the given location, current temperature and weather together with (only when it is provided) the pollen status of the user\'s sensitive allergens. Based on this, you give practical, personalized suggestions for the day — about clothing, the best time to go outside, activities and general well-being — briefly explaining your reasoning. If pollen/allergen data is provided, also add precautions and tips for those allergens; if it is not provided, do not mention allergies or pollen at all. Write in English, in a warm but informative tone, and present it neatly using Markdown (short headings and bullet points).</string>
     <string name="quota_exceeded_message">Quota Full</string>
     <string name="serialization_error_message">Serialization Error</string>
 
@@ -73,6 +73,7 @@
     <string name="allergy_today_risk">Today\'s pollen risk</string>
     <string name="allergy_top">Highest</string>
     <string name="pollen_peak">Peak</string>
+    <string name="pollen_next_hours">next 6 hours</string>
     <string name="air_quality_section_title">Air quality</string>
     <string name="pollen_unavailable">Pollen data is not available in your region (Europe only).</string>
     <string name="pollen_all_low">All pollen levels are low</string>
