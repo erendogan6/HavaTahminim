@@ -12,4 +12,6 @@ data class WeatherSuggestionEntity(
     val latitude: Double,
     val longitude: Double,
     val timestamp: Long = System.currentTimeMillis(),
+    // Device language the suggestion was generated for; a change invalidates the cache.
+    val language: String = "",
 )
