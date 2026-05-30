@@ -9,35 +9,43 @@ def localProperties = new Properties()
 localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
 android {
-    namespace 'com.erendogan6.havatahminim'
-    compileSdk 36
+    namespace = 'com.erendogan6.havatahminim'
+    compileSdk = 36
     buildFeatures {
-        compose true
-        buildConfig true
+        compose = true
+        buildConfig = true
     }
 
     defaultConfig {
-        applicationId "com.erendogan6.havatahminim"
-        minSdk 26
-        targetSdk 36
-        versionCode 10
-        versionName "1.9"
+        applicationId = "com.erendogan6.havatahminim"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 10
+        versionName = "1.9"
         buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
 
         vectorDrawables {
-            useSupportLibrary true
+            useSupportLibrary = true
         }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+    lint {
+        // Font-provider certificate hashes (font_certs.xml) and valid Turkish strings are not typos.
+        disable 'Typos'
+        // We ship against the latest *stable* SDK on purpose; don't nag to chase preview SDKs.
+        disable 'OldTargetApi'
+        // "A newer version is available" is informational, not a defect (and never reaches zero).
+        informational 'GradleDependency', 'AndroidGradlePluginVersion'
     }
     packaging {
         resources {

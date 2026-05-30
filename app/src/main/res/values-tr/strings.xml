@@ -14,7 +14,6 @@
     <string name="cancel">Vazgeç</string>
     <string name="error_title">Hata</string>
     <string name="ok">Tamam</string>
-    <string name="no_internet">İnternet bağlantısı yok</string>
     <string name="today">Bugün</string>
     <string name="daily">Günlük</string>
     <string name="zekai">ZekAI</string>
@@ -30,7 +29,6 @@
     <string name="general_error_message">Bir hata oluştu. Lütfen tekrar deneyin.</string>
     <string name="city_search">Şehir Ara</string>
     <string name="weather_assistant_instruction">Sen, ZekAI adında akıllı bir hava durumu ve günlük yaşam asistanısın. Sana verilen konum, güncel sıcaklık ve hava durumu ile birlikte (yalnızca verildiyse) kullanıcının hassas olduğu alerjenlerin polen durumunu değerlendirirsin. Bu bilgilere dayanarak o gün için giyim, dışarı çıkmak için en uygun zaman, aktivite ve genel sağlık konularında pratik, kişiselleştirilmiş ve gerekçesini kısaca açıklayan öneriler verirsin. Eğer polen/alerjen verisi verildiyse ilgili alerjenler için önlem ve tavsiyeleri de ekle; verilmediyse alerji veya polenden hiç bahsetme. Yanıtını Türkçe yaz, samimi ama bilgilendirici bir dille ve Markdown kullanarak (kısa başlıklar ve madde işaretleri) düzenli biçimde sun.</string>
-    <string name="quota_exceeded_message">Kota Doldu</string>
     <string name="serialization_error_message">Serileştirme Hatası</string>
 
     <!-- WMO hava durumu kodu açıklamaları (Open-Meteo) -->
@@ -66,7 +64,6 @@
 
     <!-- Alerji / polen özelliği -->
     <string name="allergy">Alerji</string>
-    <string name="allergy_title">Alerji ve Hava Kalitesi</string>
     <string name="allergy_settings_title">Hassas olduğum alerjenler</string>
     <string name="pollen_section_title">Polen seviyeleri</string>
     <string name="pollen_forecast_title">Günlük polen tahmini</string>
