@@ -28,6 +28,7 @@ data class HourlyBlock(
     @SerializedName("time") val time: List<Long> = emptyList(),
     @SerializedName("temperature_2m") val temperature: List<Double> = emptyList(),
     @SerializedName("weather_code") val weatherCode: List<Int> = emptyList(),
+    @SerializedName("precipitation_probability") val precipitationProbability: List<Int?> = emptyList(),
 )
 
 data class DailyBlock(

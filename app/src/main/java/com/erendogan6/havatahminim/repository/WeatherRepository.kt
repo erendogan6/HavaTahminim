@@ -339,6 +339,7 @@ class WeatherRepository
                             dt = hourly.time[i],
                             sys = sys,
                             name = "",
+                            pop = hourly.precipitationProbability.getOrNull(i),
                         )
                     }
             return HourlyForecastBaseResponse(list)

@@ -8,4 +8,6 @@ data class CurrentWeatherBaseResponse(
     val dt: Long,
     val sys: Sys,
     val name: String,
+    // Precipitation probability (%) — populated for hourly entries, null for the current snapshot.
+    val pop: Int? = null,
 )

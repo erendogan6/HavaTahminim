@@ -6,7 +6,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalFlorist
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -34,8 +33,6 @@ sealed class Screen(
     data object Allergy : Screen("allergy_screen", Icons.Default.LocalFlorist, R.string.allergy)
 
     data object ZekAI : Screen("zekai", Icons.Default.Face, R.string.zekai)
-
-    data object SelectCity : Screen("select_city", Icons.Default.LocationOn, R.string.select_city)
 }
 
 @Composable
@@ -49,7 +46,6 @@ fun BottomNavigationBar(navController: NavHostController) {
                 Screen.Daily,
                 Screen.Allergy,
                 Screen.ZekAI,
-                Screen.SelectCity,
             )
         screens.forEach { screen ->
             NavigationBarItem(
