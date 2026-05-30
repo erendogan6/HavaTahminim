@@ -62,5 +62,51 @@
     <string name="wmo_thunderstorm_hail_slight">Thunderstorm with slight hail</string>
     <string name="wmo_thunderstorm_hail_heavy">Thunderstorm with heavy hail</string>
     <string name="wmo_unknown">Unknown</string>
+
+    <!-- Allergy / pollen feature -->
+    <string name="allergy">Allergy</string>
+    <string name="allergy_title">Allergy &amp; Air Quality</string>
+    <string name="allergy_settings_title">My sensitive allergens</string>
+    <string name="pollen_section_title">Pollen levels</string>
+    <string name="pollen_forecast_title">Daily pollen forecast</string>
+    <string name="allergy_today_risk">Today\'s pollen risk</string>
+    <string name="allergy_top">Highest</string>
+    <string name="air_quality_section_title">Air quality</string>
+    <string name="pollen_unavailable">Pollen data is not available in your region (Europe only).</string>
+    <string name="pollen_all_low">All pollen levels are low</string>
+    <string name="pollen_unit">grains/m³</string>
+    <string name="unit_ugm3">µg/m³</string>
+
+    <string name="pollen_type_alder">Alder</string>
+    <string name="pollen_type_birch">Birch</string>
+    <string name="pollen_type_grass">Grass</string>
+    <string name="pollen_type_mugwort">Mugwort</string>
+    <string name="pollen_type_olive">Olive</string>
+    <string name="pollen_type_ragweed">Ragweed</string>
+
+    <string name="pollen_risk_none">None</string>
+    <string name="pollen_risk_low">Low</string>
+    <string name="pollen_risk_moderate">Moderate</string>
+    <string name="pollen_risk_high">High</string>
+    <string name="pollen_risk_very_high">Very high</string>
+
+    <string name="european_aqi">European AQI</string>
+    <string name="pm2_5">PM2.5</string>
+    <string name="pm10">PM10</string>
+    <string name="ozone">Ozone</string>
+    <string name="aqi_unknown">Unknown</string>
+    <string name="aqi_good">Good</string>
+    <string name="aqi_fair">Fair</string>
+    <string name="aqi_moderate">Moderate</string>
+    <string name="aqi_poor">Poor</string>
+    <string name="aqi_very_poor">Very poor</string>
+    <string name="aqi_extremely_poor">Extremely poor</string>
+
+    <string name="error_fetching_air_quality">Error fetching air quality data</string>
+
+    <string name="notification_weather_title">Weather Reminder</string>
+    <string name="notification_weather_text">Have you checked today\'s weather?</string>
+    <string name="pollen_alert_title">High Pollen Alert</string>
+    <string name="pollen_alert_text">High pollen levels today: %s. Take precautions if you are sensitive.</string>
 </resources>
 

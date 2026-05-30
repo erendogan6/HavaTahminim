@@ -4,14 +4,20 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.R
+import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
+import com.erendogan6.havatahminim.model.airquality.PollenRisk
+import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.model.entity.LocationEntity
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.DailyForecast.City
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.repository.WeatherRepository
+import com.erendogan6.havatahminim.util.AqiLevel
+import com.erendogan6.havatahminim.util.PollenLevel
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,8 +55,63 @@ class WeatherViewModel
         private val _dataLoaded = MutableStateFlow(false)
         val dataLoaded: StateFlow<Boolean> = _dataLoaded
 
+        private val _airQuality = MutableStateFlow<AirQualityInfo?>(null)
+        val airQuality: StateFlow<AirQualityInfo?> = _airQuality
+
+        private val _allergenPrefs = MutableStateFlow<Set<PollenType>>(emptySet())
+        val allergenPrefs: StateFlow<Set<PollenType>> = _allergenPrefs
+
+        private var suggestionRefreshJob: Job? = null
+
         init {
             loadLocation()
+            observeAllergenPreferences()
+        }
+
+        private fun observeAllergenPreferences() {
+            viewModelScope.launch {
+                repository.allergenPreferences().collect { prefs ->
+                    _allergenPrefs.value =
+                        prefs
+                            .filter { it.sensitive }
+                            .mapNotNull { runCatching { PollenType.valueOf(it.type) }.getOrNull() }
+                            .toSet()
+                }
+            }
+        }
+
+        fun toggleAllergen(
+            type: PollenType,
+            sensitive: Boolean,
+        ) {
+            viewModelScope.launch {
+                repository.setAllergenPreference(type, sensitive)
+            }
+            scheduleSuggestionRefresh()
+        }
+
+        /**
+         * After the user changes their sensitive allergens, ZekAI should reflect the new selection.
+         * Debounced so rapid chip toggles collapse into a single (cache-bypassing) regeneration.
+         */
+        private fun scheduleSuggestionRefresh() {
+            suggestionRefreshJob?.cancel()
+            suggestionRefreshJob =
+                viewModelScope.launch {
+                    delay(1500)
+                    val weather = _weatherState.value ?: return@launch
+                    val loc = _location.value ?: return@launch
+                    val prefs = repository.sensitiveAllergens()
+                    _weatherSuggestions.value = null
+                    fetchWeatherSuggestions(
+                        location = weather.name,
+                        temperature = "${weather.main.temp.toInt()}°C",
+                        pollenSummary = buildPollenSummary(_airQuality.value, prefs),
+                        lat = loc.latitude,
+                        lon = loc.longitude,
+                        forceRefresh = true,
+                    )
+                }
         }
 
         fun setDataLoaded(loaded: Boolean) {
@@ -123,7 +184,52 @@ class WeatherViewModel
         ) {
             fetchHourlyForecast(lat, lon)
             fetchDailyForecast(lat, lon)
-            fetchWeatherSuggestions(location, temperature, lat, lon)
+            fetchAirQualityThenSuggestions(lat, lon, location, temperature)
+        }
+
+        /**
+         * Air quality is fetched before the ZekAI suggestion so the pollen/air-quality summary can
+         * be folded into the Gemini prompt. A failed air-quality call must not block suggestions.
+         */
+        private fun fetchAirQualityThenSuggestions(
+            lat: Double,
+            lon: Double,
+            location: String,
+            temperature: String,
+        ) {
+            viewModelScope.launch {
+                val airQuality = runCatching { repository.getAirQuality(lat, lon) }.getOrNull()
+                _airQuality.value = airQuality
+                logDebug("Air quality fetched", airQuality)
+                fetchWeatherSuggestions(location, temperature, buildPollenSummary(airQuality), lat, lon)
+            }
+        }
+
+        private fun buildPollenSummary(
+            info: AirQualityInfo?,
+            prefs: Set<PollenType> = _allergenPrefs.value,
+        ): String {
+            if (info == null) return ""
+            val pollenText =
+                if (info.pollenAvailable) {
+                    val relevant = info.pollen.filter { prefs.isEmpty() || it.type in prefs }
+                    val raised =
+                        relevant
+                            .filter { it.risk != PollenRisk.NONE }
+                            .joinToString(", ") {
+                                "${resourcesProvider.getString(PollenLevel.typeNameRes(it.type))}: " +
+                                    resourcesProvider.getString(PollenLevel.riskLabelRes(it.risk))
+                            }
+                    raised.ifBlank { resourcesProvider.getString(R.string.pollen_all_low) }
+                } else {
+                    ""
+                }
+            val aqiText =
+                info.europeanAqi?.let {
+                    "${resourcesProvider.getString(R.string.european_aqi)}: " +
+                        resourcesProvider.getString(AqiLevel.labelRes(it))
+                } ?: ""
+            return listOf(pollenText, aqiText).filter { it.isNotBlank() }.joinToString(". ")
         }
 
         private fun fetchHourlyForecast(
@@ -146,12 +252,14 @@ class WeatherViewModel
         private fun fetchWeatherSuggestions(
             location: String,
             temperature: String,
+            pollenSummary: String,
             lat: Double,
             lon: Double,
+            forceRefresh: Boolean = false,
         ) {
             viewModelScope.launch {
                 handleApiCall(
-                    call = { repository.getWeatherSuggestions(lat, lon, location, temperature) },
+                    call = { repository.getWeatherSuggestions(lat, lon, location, temperature, pollenSummary, forceRefresh) },
                     onSuccess = { suggestions ->
                         _weatherSuggestions.value = suggestions
                         _errorMessage.value = null
