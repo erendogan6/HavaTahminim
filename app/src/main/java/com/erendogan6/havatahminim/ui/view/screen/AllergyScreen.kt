@@ -1,6 +1,7 @@
 package com.erendogan6.havatahminim.ui.view.screen
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -39,8 +41,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -54,6 +61,7 @@ import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
 import com.erendogan6.havatahminim.model.airquality.DailyPollenForecast
 import com.erendogan6.havatahminim.model.airquality.PollenReading
 import com.erendogan6.havatahminim.model.airquality.PollenRisk
+import com.erendogan6.havatahminim.model.airquality.PollenSeries
 import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.AqiLevel
@@ -88,16 +96,9 @@ fun AllergyScreen(weatherViewModel: WeatherViewModel) {
 private fun List<PollenReading>.relevant(selected: Set<PollenType>) =
     filter { selected.isEmpty() || it.type in selected }
 
-private fun worst(readings: List<PollenReading>): PollenReading? = readings.maxByOrNull { it.risk.ordinal }
-
-private fun fractionFor(risk: PollenRisk): Float =
-    when (risk) {
-        PollenRisk.NONE -> 0.05f
-        PollenRisk.LOW -> 0.28f
-        PollenRisk.MODERATE -> 0.52f
-        PollenRisk.HIGH -> 0.76f
-        PollenRisk.VERY_HIGH -> 1f
-    }
+/** Most concerning reading: highest risk bucket first, then highest actual concentration. */
+private fun worst(readings: List<PollenReading>): PollenReading? =
+    readings.maxWithOrNull(compareBy({ it.risk.ordinal }, { it.valueGrains ?: 0.0 }))
 
 @Composable
 private fun AllergyContent(
@@ -128,7 +129,7 @@ private fun AllergyContent(
             Spacer(Modifier.size(20.dp))
             SectionTitle(stringResource(R.string.pollen_section_title))
             Spacer(Modifier.size(8.dp))
-            airQuality.pollen.forEach { reading ->
+            airQuality.pollen.relevant(selectedAllergens).forEach { reading ->
                 PollenBarRow(reading, highlighted = reading.type in selectedAllergens)
             }
 
@@ -251,7 +252,12 @@ private fun PollenBarRow(
             }
             Spacer(Modifier.size(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.weight(1f)) { LevelBar(reading.risk) }
+                Box(modifier = Modifier.weight(1f)) {
+                    LevelBar(
+                        fraction = PollenLevel.fraction(reading.type, reading.valueGrains),
+                        color = PollenLevel.riskColor(reading.risk),
+                    )
+                }
                 Spacer(Modifier.size(10.dp))
                 Text(
                     text = stringResource(PollenLevel.riskLabelRes(reading.risk)),
@@ -266,7 +272,10 @@ private fun PollenBarRow(
 }
 
 @Composable
-private fun LevelBar(risk: PollenRisk) {
+private fun LevelBar(
+    fraction: Float,
+    color: Color,
+) {
     Box(
         modifier =
             Modifier
@@ -278,10 +287,10 @@ private fun LevelBar(risk: PollenRisk) {
         Box(
             modifier =
                 Modifier
-                    .fillMaxWidth(fractionFor(risk))
+                    .fillMaxWidth(fraction.coerceIn(0f, 1f))
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(50))
-                    .background(PollenLevel.riskColor(risk)),
+                    .background(color),
         )
     }
 }
@@ -349,45 +358,159 @@ private fun DailyDayCard(
             }
 
             AnimatedVisibility(visible = expanded) {
-                Column(modifier = Modifier.fillMaxWidth().padding(top = 10.dp)) {
-                    relevant.forEach { reading -> PollenMiniRow(reading) }
+                val active = relevant.filter { it.risk != PollenRisk.NONE }
+                Column(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
+                    if (active.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.pollen_all_low),
+                            fontSize = 14.sp,
+                            color = Color.DarkGray,
+                            fontFamily = OPEN_SANS,
+                        )
+                    } else {
+                        val activeTypes = active.map { it.type }.toSet()
+                        PollenDayChart(day.hours, day.hourly.filter { it.type in activeTypes })
+                        Spacer(Modifier.size(10.dp))
+                        ChartLegend(active)
+                    }
                 }
             }
         }
     }
 }
 
+/** Hourly line chart of pollen concentration across the day (one colored line per pollen type). */
 @Composable
-private fun PollenMiniRow(reading: PollenReading) {
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = stringResource(PollenLevel.typeNameRes(reading.type)),
-                fontSize = 15.sp,
-                fontFamily = OPEN_SANS,
-            )
-            Text(
-                text = "${(reading.valueGrains ?: 0.0).toInt()} ${stringResource(R.string.pollen_unit)}",
-                fontSize = 12.sp,
-                color = Color.DarkGray,
-                fontFamily = OPEN_SANS,
-            )
+private fun PollenDayChart(
+    hours: List<Long>,
+    series: List<PollenSeries>,
+) {
+    val locale = LocalConfiguration.current.locales[0]
+    val timeFmt = remember(locale) { SimpleDateFormat("HH:mm", locale) }
+
+    // Global peak across the shown species: what peaks, when and how much.
+    var peakType: PollenType? = null
+    var peakIndex = 0
+    var peakValue = 0.0
+    series.forEach { s ->
+        s.values.forEachIndexed { i, v ->
+            val value = v ?: 0.0
+            if (value > peakValue) {
+                peakValue = value
+                peakType = s.type
+                peakIndex = i
+            }
         }
-        Spacer(Modifier.size(4.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.weight(1f)) { LevelBar(reading.risk) }
-            Spacer(Modifier.size(10.dp))
-            Text(
-                text = stringResource(PollenLevel.riskLabelRes(reading.risk)),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = PollenLevel.riskColor(reading.risk),
-                fontFamily = OPEN_SANS,
-            )
+    }
+    val axisMax = (peakValue * 1.15).takeIf { it > 0.0 } ?: 1.0 // headroom so the peak isn't clipped
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        peakType?.let { pt ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier.size(10.dp).clip(CircleShape).background(PollenLevel.typeColor(pt)),
+                )
+                Spacer(Modifier.size(6.dp))
+                Text(
+                    text =
+                        "${stringResource(R.string.pollen_peak)}: " +
+                            "${stringResource(PollenLevel.typeNameRes(pt))} · " +
+                            "${timeFmt.format(hours.getOrElse(peakIndex) { 0L } * 1000L)} · " +
+                            "${peakValue.toInt()} ${stringResource(R.string.pollen_unit)}",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1B3A4B),
+                    fontFamily = OPEN_SANS,
+                )
+            }
+        }
+        Spacer(Modifier.size(8.dp))
+        Canvas(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFFFFFFFF))
+                    .padding(horizontal = 10.dp, vertical = 12.dp),
+        ) {
+            val w = size.width
+            val h = size.height
+            listOf(0f, 0.25f, 0.5f, 0.75f, 1f).forEach { f ->
+                drawLine(
+                    color = Color(0x11000000),
+                    start = Offset(0f, h * f),
+                    end = Offset(w, h * f),
+                    strokeWidth = 1.dp.toPx(),
+                )
+            }
+            val lineStyle = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+            series.forEach { s ->
+                val n = s.values.size
+                if (n >= 2) {
+                    val path = Path()
+                    s.values.forEachIndexed { i, v ->
+                        val x = i / (n - 1f) * w
+                        val y = h - ((v ?: 0.0) / axisMax).toFloat() * h
+                        if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+                    }
+                    drawPath(path = path, color = PollenLevel.typeColor(s.type), style = lineStyle)
+                }
+            }
+            // Highlight the peak point.
+            peakType?.let { pt ->
+                val n = series.first { it.type == pt }.values.size
+                if (n >= 2) {
+                    val x = peakIndex / (n - 1f) * w
+                    val y = h - (peakValue / axisMax).toFloat() * h
+                    drawCircle(Color.White, radius = 5.dp.toPx(), center = Offset(x, y))
+                    drawCircle(PollenLevel.typeColor(pt), radius = 4.dp.toPx(), center = Offset(x, y))
+                }
+            }
+        }
+        Spacer(Modifier.size(6.dp))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            val n = hours.size
+            if (n > 0) {
+                listOf(0, n / 4, n / 2, 3 * n / 4, n - 1).distinct().forEach { idx ->
+                    Text(
+                        text = timeFmt.format(hours[idx] * 1000L),
+                        fontSize = 10.sp,
+                        color = Color(0xFF1B3A4B),
+                        fontFamily = OPEN_SANS,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ChartLegend(readings: List<PollenReading>) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        readings.forEach { reading ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(12.dp)
+                            .clip(CircleShape)
+                            .background(PollenLevel.typeColor(reading.type)),
+                )
+                Spacer(Modifier.size(6.dp))
+                Text(
+                    text =
+                        "${stringResource(PollenLevel.typeNameRes(reading.type))} · " +
+                            stringResource(PollenLevel.riskLabelRes(reading.risk)),
+                    fontSize = 12.sp,
+                    fontFamily = OPEN_SANS,
+                )
+            }
         }
     }
 }

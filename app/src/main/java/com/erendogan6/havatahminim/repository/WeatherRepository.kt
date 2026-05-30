@@ -10,6 +10,7 @@ import com.erendogan6.havatahminim.model.LocationDao
 import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
 import com.erendogan6.havatahminim.model.airquality.DailyPollenForecast
 import com.erendogan6.havatahminim.model.airquality.PollenReading
+import com.erendogan6.havatahminim.model.airquality.PollenSeries
 import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.model.entity.AllergenPreferenceEntity
 import com.erendogan6.havatahminim.model.entity.DailyForecastEntity
@@ -423,7 +424,16 @@ class WeatherRepository
                         val peak = indices.mapNotNull { idx -> series?.getOrNull(idx) }.maxOrNull()
                         PollenReading(type, peak, PollenLevel.risk(type, peak))
                     }
-                DailyPollenForecast(date = hourly.time[indices.first()], readings = readings)
+                val hourlySeries =
+                    seriesByType.map { (type, series) ->
+                        PollenSeries(type, indices.map { idx -> series?.getOrNull(idx) })
+                    }
+                DailyPollenForecast(
+                    date = hourly.time[indices.first()],
+                    readings = readings,
+                    hours = indices.map { hourly.time[it] },
+                    hourly = hourlySeries,
+                )
             }
         }
 
