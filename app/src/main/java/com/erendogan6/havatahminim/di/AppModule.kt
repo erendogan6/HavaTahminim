@@ -15,6 +15,7 @@ import com.erendogan6.havatahminim.room.AllergenPreferenceDao
 import com.erendogan6.havatahminim.room.MIGRATION_1_2
 import com.erendogan6.havatahminim.room.MIGRATION_2_3
 import com.erendogan6.havatahminim.room.MIGRATION_3_4
+import com.erendogan6.havatahminim.room.MIGRATION_4_5
 import com.erendogan6.havatahminim.room.RoomDB
 import com.erendogan6.havatahminim.room.WeatherSuggestionDao
 import com.erendogan6.havatahminim.util.ResourcesProvider
@@ -139,7 +140,7 @@ object AppModule {
                 context.applicationContext,
                 RoomDB::class.java,
                 "location_database",
-            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .build()
 
     @Provides
