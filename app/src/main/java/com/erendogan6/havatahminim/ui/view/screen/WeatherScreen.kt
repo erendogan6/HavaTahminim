@@ -1,5 +1,12 @@
 package com.erendogan6.havatahminim.ui.view.screen
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +29,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WaterDrop
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +46,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
@@ -77,11 +86,14 @@ fun WeatherScreen(
         Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
             Box(modifier = Modifier.fillMaxSize()) {
                 WeatherContent(weatherState, errorMessage, hourlyForecast, onLoaded = onLoaded)
-                TopActions(
-                    modifier = Modifier.align(Alignment.TopEnd).padding(top = 8.dp, end = 12.dp),
-                    onUseMyLocation = onUseMyLocation,
-                    onSearchCity = { showCitySheet = true },
-                )
+                // Only offer city search / my-location once data is loaded (hidden during the splash).
+                if (weatherState != null) {
+                    TopActions(
+                        modifier = Modifier.align(Alignment.TopEnd).padding(top = 8.dp, end = 12.dp),
+                        onUseMyLocation = onUseMyLocation,
+                        onSearchCity = { showCitySheet = true },
+                    )
+                }
             }
         }
     }
@@ -195,17 +207,78 @@ fun ErrorMessage(message: String) {
 
 @Composable
 fun SplashScreen() {
+    val transition = rememberInfiniteTransition(label = "splash")
+    val rotation by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(tween(durationMillis = 9000, easing = LinearEasing)),
+        label = "rotation",
+    )
+    val pulse by transition.animateFloat(
+        initialValue = 0.9f,
+        targetValue = 1.18f,
+        animationSpec = infiniteRepeatable(tween(durationMillis = 1200, easing = FastOutSlowInEasing), RepeatMode.Reverse),
+        label = "pulse",
+    )
+
     CenteredColumn {
-        Spacer(modifier = Modifier.height(150.dp))
-        CircularProgressIndicator()
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(200.dp)) {
+            // Soft glowing halo that breathes behind the icon.
+            Box(
+                modifier = Modifier
+                    .size(180.dp)
+                    .scale(pulse)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(Color(0x88FFFFFF), Color(0x33FFFFFF), Color(0x00FFFFFF))
+                        )
+                    )
+            )
+            Image(
+                painter = painterResource(id = R.drawable.day_clear),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(120.dp)
+                    .rotate(rotation),
+            )
+        }
+        Spacer(modifier = Modifier.height(28.dp))
         Text(
             text = stringResource(id = R.string.loading_message),
-            color = Color.Black,
-            fontSize = 38.sp,
+            color = Color(0xFF1B3A4B),
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
             fontFamily = FontFamily(Font(R.font.open_sans)),
-            modifier = Modifier.padding(vertical = 26.dp),
-            style = TextStyle(shadow = Shadow(color = Color.Gray, blurRadius = 2f))
+            style = TextStyle(shadow = Shadow(color = Color.White, blurRadius = 8f))
         )
+        Spacer(modifier = Modifier.height(18.dp))
+        LoadingDots()
+    }
+}
+
+@Composable
+private fun LoadingDots() {
+    val transition = rememberInfiniteTransition(label = "dots")
+    Row {
+        repeat(3) { index ->
+            val alpha by transition.animateFloat(
+                initialValue = 0.25f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    tween(durationMillis = 600, delayMillis = index * 180, easing = FastOutSlowInEasing),
+                    RepeatMode.Reverse,
+                ),
+                label = "dot$index",
+            )
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 5.dp)
+                    .size(11.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF1B3A4B).copy(alpha = alpha))
+            )
+        }
     }
 }
 
