@@ -62,4 +62,50 @@
     <string name="wmo_thunderstorm_hail_slight">Hafif dolulu gök gürültülü fırtına</string>
     <string name="wmo_thunderstorm_hail_heavy">Yoğun dolulu gök gürültülü fırtına</string>
     <string name="wmo_unknown">Bilinmiyor</string>
+
+    <!-- Alerji / polen özelliği -->
+    <string name="allergy">Alerji</string>
+    <string name="allergy_title">Alerji ve Hava Kalitesi</string>
+    <string name="allergy_settings_title">Hassas olduğum alerjenler</string>
+    <string name="pollen_section_title">Polen seviyeleri</string>
+    <string name="pollen_forecast_title">Günlük polen tahmini</string>
+    <string name="allergy_today_risk">Bugünkü polen riski</string>
+    <string name="allergy_top">En yüksek</string>
+    <string name="air_quality_section_title">Hava kalitesi</string>
+    <string name="pollen_unavailable">Polen verisi bölgenizde mevcut değil (yalnızca Avrupa).</string>
+    <string name="pollen_all_low">Tüm polen seviyeleri düşük</string>
+    <string name="pollen_unit">tane/m³</string>
+    <string name="unit_ugm3">µg/m³</string>
+
+    <string name="pollen_type_alder">Kızılağaç</string>
+    <string name="pollen_type_birch">Huş</string>
+    <string name="pollen_type_grass">Çimen</string>
+    <string name="pollen_type_mugwort">Pelin</string>
+    <string name="pollen_type_olive">Zeytin</string>
+    <string name="pollen_type_ragweed">Kısa Ambrosia</string>
+
+    <string name="pollen_risk_none">Yok</string>
+    <string name="pollen_risk_low">Düşük</string>
+    <string name="pollen_risk_moderate">Orta</string>
+    <string name="pollen_risk_high">Yüksek</string>
+    <string name="pollen_risk_very_high">Çok yüksek</string>
+
+    <string name="european_aqi">Avrupa HKİ</string>
+    <string name="pm2_5">PM2.5</string>
+    <string name="pm10">PM10</string>
+    <string name="ozone">Ozon</string>
+    <string name="aqi_unknown">Bilinmiyor</string>
+    <string name="aqi_good">İyi</string>
+    <string name="aqi_fair">Makul</string>
+    <string name="aqi_moderate">Orta</string>
+    <string name="aqi_poor">Kötü</string>
+    <string name="aqi_very_poor">Çok kötü</string>
+    <string name="aqi_extremely_poor">Aşırı kötü</string>
+
+    <string name="error_fetching_air_quality">Hava kalitesi verileri alınırken hata oluştu</string>
+
+    <string name="notification_weather_title">Hava Durumu Hatırlatma</string>
+    <string name="notification_weather_text">Bugünün hava durumunu kontrol ettin mi?</string>
+    <string name="pollen_alert_title">Yüksek Polen Uyarısı</string>
+    <string name="pollen_alert_text">Bugün polen seviyesi yüksek: %s. Hassassanız önlem alın.</string>
 </resources>

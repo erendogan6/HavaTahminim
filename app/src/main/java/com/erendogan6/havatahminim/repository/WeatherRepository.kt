@@ -7,6 +7,11 @@ import android.location.Location
 import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.model.DailyForecastDao
 import com.erendogan6.havatahminim.model.LocationDao
+import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
+import com.erendogan6.havatahminim.model.airquality.DailyPollenForecast
+import com.erendogan6.havatahminim.model.airquality.PollenReading
+import com.erendogan6.havatahminim.model.airquality.PollenType
+import com.erendogan6.havatahminim.model.entity.AllergenPreferenceEntity
 import com.erendogan6.havatahminim.model.entity.DailyForecastEntity
 import com.erendogan6.havatahminim.model.entity.LocationEntity
 import com.erendogan6.havatahminim.model.entity.WeatherSuggestionEntity
@@ -19,13 +24,18 @@ import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecast
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.weather.DailyForecast.Temperature
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.openmeteo.AirQualityResponse
 import com.erendogan6.havatahminim.model.weather.openmeteo.OpenMeteoResponse
+import com.erendogan6.havatahminim.network.AirQualityApiService
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.GeminiService
 import com.erendogan6.havatahminim.network.WeatherApiService
+import com.erendogan6.havatahminim.room.AllergenPreferenceDao
 import com.erendogan6.havatahminim.room.WeatherSuggestionDao
+import com.erendogan6.havatahminim.util.PollenLevel
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import com.erendogan6.havatahminim.util.WmoWeather
+import kotlinx.coroutines.flow.Flow
 import com.google.ai.client.generativeai.type.SerializationException
 import com.google.ai.client.generativeai.type.asTextOrNull
 import com.google.ai.client.generativeai.type.content
@@ -39,13 +49,15 @@ class WeatherRepository
     @Inject
     constructor(
         private val weatherApiService: WeatherApiService,
+        private val airQualityApiService: AirQualityApiService,
         private val geminiService: GeminiService,
         private val cityApiService: CityApiService,
         private val locationDao: LocationDao,
         private val dailyForecastDao: DailyForecastDao,
         private val resourcesProvider: ResourcesProvider,
         private val weatherSuggestionDao: WeatherSuggestionDao,
-        @ApplicationContext private val context: Context,
+        private val allergenPreferenceDao: AllergenPreferenceDao,
+        @param:ApplicationContext private val context: Context,
     ) {
         private val DISTANCE_THRESHOLD_METERS = 10000 // 10 km
         private val TIME_THRESHOLD_MILLIS = 24 * 60 * 60 * 1000 // 24 hours
@@ -135,11 +147,14 @@ class WeatherRepository
             lon: Double,
             location: String,
             temperature: String,
+            pollenSummary: String = "",
+            forceRefresh: Boolean = false,
         ): String {
             val cachedSuggestion = weatherSuggestionDao.getLatestSuggestion()
 
             val needsNewSuggestion =
-                cachedSuggestion?.let {
+                forceRefresh ||
+                    cachedSuggestion?.let {
                     val savedLocation =
                         Location("saved").apply {
                             latitude = it.latitude
@@ -161,10 +176,17 @@ class WeatherRepository
                     try {
                         weatherSuggestionDao.deleteAllSuggestions()
 
+                        val userMessage =
+                            buildString {
+                                append("Konum: $location\nSıcaklık: $temperature")
+                                if (pollenSummary.isNotBlank()) {
+                                    append("\nPolen ve hava kalitesi: $pollenSummary")
+                                }
+                            }
                         val chatHistory =
                             listOf(
                                 content("user") {
-                                    text("Konum: $location\nSıcaklık: $temperature")
+                                    text(userMessage)
                                 },
                             )
                         val chat = geminiService.model.startChat(chatHistory)
@@ -196,7 +218,7 @@ class WeatherRepository
                     }
                 }
             } else {
-                return cachedSuggestion!!.suggestion
+                return cachedSuggestion.suggestion
             }
         }
 
@@ -207,6 +229,38 @@ class WeatherRepository
                 } catch (e: Exception) {
                     throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_cities), e)
                 }
+            }
+
+        suspend fun getAirQuality(
+            lat: Double,
+            lon: Double,
+        ): AirQualityInfo =
+            withContext(Dispatchers.IO) {
+                try {
+                    mapAirQuality(airQualityApiService.getAirQuality(lat, lon))
+                } catch (e: Exception) {
+                    throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_air_quality), e)
+                }
+            }
+
+        fun allergenPreferences(): Flow<List<AllergenPreferenceEntity>> = allergenPreferenceDao.getAll()
+
+        suspend fun setAllergenPreference(
+            type: PollenType,
+            sensitive: Boolean,
+        ) {
+            withContext(Dispatchers.IO) {
+                allergenPreferenceDao.setPreference(AllergenPreferenceEntity(type.name, sensitive))
+            }
+        }
+
+        /** Allergens the user explicitly marked sensitive; empty means "treat all as relevant". */
+        suspend fun sensitiveAllergens(): Set<PollenType> =
+            withContext(Dispatchers.IO) {
+                allergenPreferenceDao
+                    .getSensitive()
+                    .mapNotNull { runCatching { PollenType.valueOf(it.type) }.getOrNull() }
+                    .toSet()
             }
 
         suspend fun getSavedLocation(): LocationEntity? =
@@ -314,6 +368,64 @@ class WeatherRepository
                 main = WmoWeather.category(code),
                 description = resourcesProvider.getString(WmoWeather.descriptionRes(code)),
             )
+
+        private fun mapAirQuality(response: AirQualityResponse): AirQualityInfo {
+            val current = response.current
+            val rawByType =
+                mapOf(
+                    PollenType.ALDER to current?.alderPollen,
+                    PollenType.BIRCH to current?.birchPollen,
+                    PollenType.GRASS to current?.grassPollen,
+                    PollenType.MUGWORT to current?.mugwortPollen,
+                    PollenType.OLIVE to current?.olivePollen,
+                    PollenType.RAGWEED to current?.ragweedPollen,
+                )
+            val pollen =
+                rawByType.map { (type, grains) ->
+                    PollenReading(type = type, valueGrains = grains, risk = PollenLevel.risk(type, grains))
+                }
+            return AirQualityInfo(
+                pollen = pollen,
+                dailyForecast = buildDailyPollen(response.hourly),
+                pm25 = current?.pm25,
+                pm10 = current?.pm10,
+                ozone = current?.ozone,
+                europeanAqi = current?.europeanAqi,
+                pollenAvailable = pollen.any { it.valueGrains != null },
+            )
+        }
+
+        /**
+         * Open-Meteo only forecasts pollen hourly, so we aggregate the hourly series into a per-day
+         * outlook by taking each day's **peak** concentration (worst case) per pollen type. Hours
+         * are bucketed into local calendar days.
+         */
+        private fun buildDailyPollen(hourly: com.erendogan6.havatahminim.model.weather.openmeteo.AirQualityHourly?): List<DailyPollenForecast> {
+            if (hourly == null || hourly.time.isEmpty()) return emptyList()
+            val zone = java.time.ZoneId.systemDefault()
+            val seriesByType =
+                mapOf(
+                    PollenType.ALDER to hourly.alderPollen,
+                    PollenType.BIRCH to hourly.birchPollen,
+                    PollenType.GRASS to hourly.grassPollen,
+                    PollenType.MUGWORT to hourly.mugwortPollen,
+                    PollenType.OLIVE to hourly.olivePollen,
+                    PollenType.RAGWEED to hourly.ragweedPollen,
+                )
+            val indicesByDay = LinkedHashMap<java.time.LocalDate, MutableList<Int>>()
+            hourly.time.forEachIndexed { i, t ->
+                val day = java.time.Instant.ofEpochSecond(t).atZone(zone).toLocalDate()
+                indicesByDay.getOrPut(day) { mutableListOf() }.add(i)
+            }
+            return indicesByDay.values.map { indices ->
+                val readings =
+                    seriesByType.map { (type, series) ->
+                        val peak = indices.mapNotNull { idx -> series?.getOrNull(idx) }.maxOrNull()
+                        PollenReading(type, peak, PollenLevel.risk(type, peak))
+                    }
+                DailyPollenForecast(date = hourly.time[indices.first()], readings = readings)
+            }
+        }
 
         /**
          * Open-Meteo's forecast endpoint does not return a place name, so we reverse-geocode the

@@ -7,12 +7,22 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.erendogan6.havatahminim.model.DailyForecastDao
 import com.erendogan6.havatahminim.model.LocationDao
+import com.erendogan6.havatahminim.model.entity.AllergenPreferenceEntity
 import com.erendogan6.havatahminim.model.entity.DailyForecastEntity
 import com.erendogan6.havatahminim.model.entity.LocationEntity
 import com.erendogan6.havatahminim.model.entity.WeatherSuggestionEntity
 import com.erendogan6.havatahminim.util.Converters
 
-@Database(entities = [LocationEntity::class, DailyForecastEntity::class, WeatherSuggestionEntity::class], version = 3, exportSchema = false)
+@Database(
+    entities = [
+        LocationEntity::class,
+        DailyForecastEntity::class,
+        WeatherSuggestionEntity::class,
+        AllergenPreferenceEntity::class,
+    ],
+    version = 4,
+    exportSchema = false,
+)
 @TypeConverters(Converters::class)
 abstract class RoomDB : RoomDatabase() {
     abstract fun locationDao(): LocationDao
@@ -20,6 +30,8 @@ abstract class RoomDB : RoomDatabase() {
     abstract fun dailyForecastDao(): DailyForecastDao
 
     abstract fun weatherSuggestionDao(): WeatherSuggestionDao
+
+    abstract fun allergenPreferenceDao(): AllergenPreferenceDao
 }
 
 val MIGRATION_1_2 =
@@ -43,5 +55,17 @@ val MIGRATION_2_3 =
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("DELETE FROM `daily_forecast`")
             db.execSQL("DELETE FROM `weather_suggestions`")
+        }
+    }
+
+/** Adds the allergen personalization table (which pollens the user is sensitive to). */
+val MIGRATION_3_4 =
+    object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `allergen_preferences` (" +
+                    "`type` TEXT PRIMARY KEY NOT NULL, " +
+                    "`sensitive` INTEGER NOT NULL)",
+            )
         }
     }
