@@ -71,6 +71,7 @@
     <string name="pollen_forecast_title">Günlük polen tahmini</string>
     <string name="allergy_today_risk">Bugünkü polen riski</string>
     <string name="allergy_top">En yüksek</string>
+    <string name="pollen_peak">Tepe</string>
     <string name="air_quality_section_title">Hava kalitesi</string>
     <string name="pollen_unavailable">Polen verisi bölgenizde mevcut değil (yalnızca Avrupa).</string>
     <string name="pollen_all_low">Tüm polen seviyeleri düşük</string>
