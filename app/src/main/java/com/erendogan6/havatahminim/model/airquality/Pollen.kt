@@ -25,13 +25,22 @@ data class PollenReading(
     val risk: PollenRisk,
 )
 
+/** Hourly concentration series for one pollen type within a day; [values] aligns with the day's hour list. */
+data class PollenSeries(
+    val type: PollenType,
+    val values: List<Double?>,
+)
+
 /**
  * One day of the pollen outlook. [date] is an epoch-second timestamp inside that local day (used
- * only for day-name formatting). [readings] holds the day's peak value/risk per pollen type.
+ * only for day-name formatting). [readings] holds the day's peak value/risk per pollen type, while
+ * [hours] + [hourly] expose the intra-day variation for charting.
  */
 data class DailyPollenForecast(
     val date: Long,
     val readings: List<PollenReading>,
+    val hours: List<Long>,
+    val hourly: List<PollenSeries>,
 )
 
 /**

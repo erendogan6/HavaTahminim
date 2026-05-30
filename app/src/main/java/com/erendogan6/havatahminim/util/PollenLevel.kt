@@ -13,20 +13,23 @@ import com.erendogan6.havatahminim.model.airquality.PollenType
  * Also hosts the European AQI band interpretation.
  */
 object PollenLevel {
+    /** [low, moderate, high, veryHigh] grains/m³ cutoffs per plant group. */
+    private fun thresholds(type: PollenType): List<Double> =
+        when (type) {
+            // Trees
+            PollenType.ALDER, PollenType.BIRCH, PollenType.OLIVE -> listOf(1.0, 10.0, 50.0, 100.0)
+            // Grass
+            PollenType.GRASS -> listOf(1.0, 20.0, 50.0, 200.0)
+            // Weeds
+            PollenType.MUGWORT, PollenType.RAGWEED -> listOf(1.0, 10.0, 30.0, 50.0)
+        }
+
     fun risk(
         type: PollenType,
         grains: Double?,
     ): PollenRisk {
         if (grains == null) return PollenRisk.NONE
-        val (low, moderate, high, veryHigh) =
-            when (type) {
-                // Trees
-                PollenType.ALDER, PollenType.BIRCH, PollenType.OLIVE -> listOf(1.0, 10.0, 50.0, 100.0)
-                // Grass
-                PollenType.GRASS -> listOf(1.0, 20.0, 50.0, 200.0)
-                // Weeds
-                PollenType.MUGWORT, PollenType.RAGWEED -> listOf(1.0, 10.0, 30.0, 50.0)
-            }
+        val (low, moderate, high, veryHigh) = thresholds(type)
         return when {
             grains < low -> PollenRisk.NONE
             grains < moderate -> PollenRisk.LOW
@@ -35,6 +38,31 @@ object PollenLevel {
             else -> PollenRisk.VERY_HIGH
         }
     }
+
+    /**
+     * Bar fill fraction proportional to the actual concentration, scaled against this pollen's
+     * "very high" threshold (so the width reflects the real value, not just the risk bucket).
+     * Any positive value keeps a small visible sliver.
+     */
+    fun fraction(
+        type: PollenType,
+        grains: Double?,
+    ): Float {
+        if (grains == null || grains <= 0.0) return 0f
+        val veryHigh = thresholds(type).last()
+        return (grains / veryHigh).toFloat().coerceIn(0.03f, 1f)
+    }
+
+    /** Distinct, high-contrast per-species line color for the intra-day chart (and legend). */
+    fun typeColor(type: PollenType): Color =
+        when (type) {
+            PollenType.ALDER -> Color(0xFF00897B) // teal
+            PollenType.BIRCH -> Color(0xFF6D4C41) // brown
+            PollenType.GRASS -> Color(0xFF2E7D32) // green
+            PollenType.MUGWORT -> Color(0xFF8E24AA) // purple
+            PollenType.OLIVE -> Color(0xFF9E9D24) // olive
+            PollenType.RAGWEED -> Color(0xFFE53935) // red
+        }
 
     fun riskLabelRes(risk: PollenRisk): Int =
         when (risk) {

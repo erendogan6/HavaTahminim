@@ -71,6 +71,7 @@
     <string name="pollen_forecast_title">Daily pollen forecast</string>
     <string name="allergy_today_risk">Today\'s pollen risk</string>
     <string name="allergy_top">Highest</string>
+    <string name="pollen_peak">Peak</string>
     <string name="air_quality_section_title">Air quality</string>
     <string name="pollen_unavailable">Pollen data is not available in your region (Europe only).</string>
     <string name="pollen_all_low">All pollen levels are low</string>
