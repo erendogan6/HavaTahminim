@@ -15,7 +15,6 @@ import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.util.PollenLevel
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -59,7 +58,8 @@ class WeatherViewModel
         private val _allergenPrefs = MutableStateFlow<Set<PollenType>>(emptySet())
         val allergenPrefs: StateFlow<Set<PollenType>> = _allergenPrefs
 
-        private var suggestionRefreshJob: Job? = null
+        // Set when allergens change; consumed (and reset) the next time the ZekAI tab is opened.
+        private var pendingAllergenRefresh = false
 
         init {
             loadLocation()
@@ -85,31 +85,32 @@ class WeatherViewModel
             viewModelScope.launch {
                 repository.setAllergenPreference(type, sensitive)
             }
-            scheduleSuggestionRefresh()
+            // Don't hit ZekAI now; just mark it stale. It refreshes when the ZekAI tab is opened.
+            pendingAllergenRefresh = true
         }
 
         /**
-         * After the user changes their sensitive allergens, ZekAI should reflect the new selection.
-         * Debounced so rapid chip toggles collapse into a single (cache-bypassing) regeneration.
+         * Called when the ZekAI tab is opened. Regenerates the suggestion (bypassing the cache) only
+         * if the user changed their allergens since the last one — so the request is sent on tab
+         * open, not while toggling chips.
          */
-        private fun scheduleSuggestionRefresh() {
-            suggestionRefreshJob?.cancel()
-            suggestionRefreshJob =
-                viewModelScope.launch {
-                    delay(1500)
-                    val weather = _weatherState.value ?: return@launch
-                    val loc = _location.value ?: return@launch
-                    val prefs = repository.sensitiveAllergens()
-                    _weatherSuggestions.value = null
-                    fetchWeatherSuggestions(
-                        location = weather.name,
-                        temperature = "${weather.main.temp.toInt()}°C",
-                        pollenSummary = buildPollenSummary(_airQuality.value, prefs),
-                        lat = loc.latitude,
-                        lon = loc.longitude,
-                        forceRefresh = true,
-                    )
-                }
+        fun onZekAIOpened() {
+            if (!pendingAllergenRefresh) return
+            val weather = _weatherState.value ?: return
+            val loc = _location.value ?: return
+            pendingAllergenRefresh = false
+            _weatherSuggestions.value = null
+            viewModelScope.launch {
+                val prefs = repository.sensitiveAllergens()
+                fetchWeatherSuggestions(
+                    location = weather.name,
+                    temperature = "${weather.main.temp.toInt()}°C",
+                    pollenSummary = buildPollenSummary(_airQuality.value, prefs),
+                    lat = loc.latitude,
+                    lon = loc.longitude,
+                    forceRefresh = true,
+                )
+            }
         }
 
         fun setDataLoaded(loaded: Boolean) {
