@@ -28,16 +28,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 
 @Composable
@@ -59,7 +58,7 @@ fun CitySearchScreen(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(Color(0xAA80C4E9).copy(alpha = 0.2f))
+                .background(WeatherTheme.colors.cardSurfaceFaint)
                 .padding(20.dp),
     ) {
         TextField(
@@ -81,7 +80,7 @@ fun CitySearchScreen(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedIndicatorColor = Color.Gray,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
                 ),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
@@ -118,7 +117,7 @@ fun CityCard(
         modifier = Modifier.fillMaxWidth().clickable { onCitySelected(city) }.shadow(4.dp, RoundedCornerShape(8.dp)),
         colors =
             CardDefaults.cardColors(
-                containerColor = Color(0xFFBBDEFB),
+                containerColor = WeatherTheme.colors.citySurface,
             ),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
@@ -130,11 +129,8 @@ fun CityCard(
         ) {
             Text(
                 text = listOfNotNull(city.name, city.admin1, city.country).joinToString(" - "),
-                style =
-                    MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    ),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }

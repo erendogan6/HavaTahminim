@@ -28,18 +28,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.feature.weather.R
+import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
@@ -91,10 +87,8 @@ fun SuggestionsCard(suggestions: String) {
         )
         Text(
             text = stringResource(id = R.string.zekai_suggestions),
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(vertical = 8.dp),
-            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)),
         )
     }
     Box(
@@ -103,7 +97,7 @@ fun SuggestionsCard(suggestions: String) {
                 .fillMaxWidth()
                 .padding(16.dp)
                 .background(
-                    Color(0xAA80C4E9),
+                    WeatherTheme.colors.cardSurface,
                     RoundedCornerShape(12.dp),
                 ).padding(16.dp),
     ) {
@@ -111,11 +105,10 @@ fun SuggestionsCard(suggestions: String) {
             markdown = suggestions,
             modifier = Modifier.padding(vertical = 4.dp),
             style =
-                TextStyle(
-                    shadow = Shadow(color = Color.Gray, blurRadius = 2f),
-                    color = Color.Black,
+                MaterialTheme.typography.bodyLarge.copy(
+                    shadow = Shadow(color = WeatherTheme.colors.shadowSoft, blurRadius = 2f),
+                    color = WeatherTheme.colors.onCard,
                     fontSize = 21.sp,
-                    fontFamily = FontFamily(Font(R.font.open_sans)),
                 ),
         )
     }
@@ -127,10 +120,8 @@ fun ThinkerCard() {
         CircularProgressIndicator()
         Text(
             text = stringResource(id = R.string.zekai_thinking),
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(vertical = 8.dp),
-            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f)),
         )
     }
 }
