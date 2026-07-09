@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    id 'com.autonomousapps.dependency-analysis'
 }
 
 def localProperties = new Properties()
@@ -10,7 +11,7 @@ localProperties.load(new FileInputStream(rootProject.file("local.properties")))
 def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
 android {
     namespace = 'com.erendogan6.havatahminim'
-    compileSdk = 36
+    compileSdk = 37
     buildFeatures {
         compose = true
         buildConfig = true
@@ -19,7 +20,7 @@ android {
     defaultConfig {
         applicationId = "com.erendogan6.havatahminim"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 11
         versionName = "1.9"
         buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
@@ -76,13 +77,15 @@ dependencies {
 
     //ViewModel
     implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.androidx.lifecycle.viewmodel
 
     //Location
     implementation libs.play.services.location
 
     //Coroutines
-    implementation(libs.kotlinx.coroutines.android)
+    runtimeOnly(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.coroutines.core)
 
     //Gemini API
     implementation(libs.generativeai)
@@ -90,28 +93,28 @@ dependencies {
     //Room
     implementation libs.androidx.room.runtime
     ksp libs.androidx.room.compiler
-    implementation libs.androidx.room.ktx
 
     // Markdown Compose
     implementation libs.compose.markdown
 
     // LeakCanary
-    debugImplementation libs.leakcanary.android
+    debugRuntimeOnly libs.leakcanary.android
 
     // Chucker
     debugImplementation libs.chucker.debug
     releaseImplementation libs.chucker.release
 
     //Navigation
-    implementation libs.androidx.hilt.navigation.compose
+    implementation libs.androidx.navigation.compose
+    implementation libs.androidx.hilt.lifecycle.viewmodel.compose
 
-    implementation libs.androidx.core.ktx
-    implementation libs.androidx.lifecycle.runtime.ktx
+    implementation libs.androidx.core
+    implementation libs.androidx.activity
     implementation libs.androidx.activity.compose
     implementation platform(libs.androidx.compose.bom)
     implementation libs.androidx.ui
     implementation libs.androidx.ui.graphics
-    implementation libs.androidx.ui.tooling.preview
     implementation libs.androidx.material3
     implementation libs.androidx.compose.material.icons.extended
+    implementation libs.gson
 }
