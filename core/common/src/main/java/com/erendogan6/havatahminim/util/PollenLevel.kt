@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.util
 
-import androidx.compose.ui.graphics.Color
 import com.erendogan6.havatahminim.core.common.R
 import com.erendogan6.havatahminim.model.airquality.PollenRisk
 import com.erendogan6.havatahminim.model.airquality.PollenType
@@ -53,17 +52,6 @@ object PollenLevel {
         return (grains / veryHigh).toFloat().coerceIn(0.03f, 1f)
     }
 
-    /** Distinct, high-contrast per-species line color for the intra-day chart (and legend). */
-    fun typeColor(type: PollenType): Color =
-        when (type) {
-            PollenType.ALDER -> Color(0xFF00897B) // teal
-            PollenType.BIRCH -> Color(0xFF6D4C41) // brown
-            PollenType.GRASS -> Color(0xFF2E7D32) // green
-            PollenType.MUGWORT -> Color(0xFF8E24AA) // purple
-            PollenType.OLIVE -> Color(0xFF9E9D24) // olive
-            PollenType.RAGWEED -> Color(0xFFE53935) // red
-        }
-
     fun riskLabelRes(risk: PollenRisk): Int =
         when (risk) {
             PollenRisk.NONE -> R.string.pollen_risk_none
@@ -71,15 +59,6 @@ object PollenLevel {
             PollenRisk.MODERATE -> R.string.pollen_risk_moderate
             PollenRisk.HIGH -> R.string.pollen_risk_high
             PollenRisk.VERY_HIGH -> R.string.pollen_risk_very_high
-        }
-
-    fun riskColor(risk: PollenRisk): Color =
-        when (risk) {
-            PollenRisk.NONE -> Color(0xFF9E9E9E)
-            PollenRisk.LOW -> Color(0xFF4CAF50)
-            PollenRisk.MODERATE -> Color(0xFFFFC107)
-            PollenRisk.HIGH -> Color(0xFFFF9800)
-            PollenRisk.VERY_HIGH -> Color(0xFFF44336)
         }
 
     fun typeNameRes(type: PollenType): Int =
@@ -107,16 +86,5 @@ object AqiLevel {
             aqi <= 80 -> R.string.aqi_poor
             aqi <= 100 -> R.string.aqi_very_poor
             else -> R.string.aqi_extremely_poor
-        }
-
-    fun color(aqi: Int?): Color =
-        when {
-            aqi == null -> Color(0xFF9E9E9E)
-            aqi <= 20 -> Color(0xFF4CAF50)
-            aqi <= 40 -> Color(0xFF8BC34A)
-            aqi <= 60 -> Color(0xFFFFC107)
-            aqi <= 80 -> Color(0xFFFF9800)
-            aqi <= 100 -> Color(0xFFF44336)
-            else -> Color(0xFF9C27B0)
         }
 }
