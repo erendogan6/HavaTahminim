@@ -1,109 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Hava Tahminim</string>
-    <string name="loading_message">Gökyüzü İnceleniyor…</string>
-    <string name="hourly_forecast">Saatlik Hava Durumu</string>
-    <string name="feels_like">Hissedilen Sıcaklık</string>
-    <string name="humidity">Nem</string>
-    <string name="zekai_suggestions">ZekAI\'nin Önerileri</string>
-    <string name="zekai_thinking">ZekAI öneriler için düşünüyor…</string>
-    <string name="daily_forecast_title">7 Günlük Hava Durumu</string>
     <string name="permission_rationale_title">Konum İzni Gerekli</string>
     <string name="permission_rationale_message">Bu uygulama, mevcut konumunuza göre hava durumu verilerini almak için konum izni gerektirir.</string>
     <string name="grant_permission">İzin Ver</string>
     <string name="cancel">Vazgeç</string>
     <string name="error_title">Hata</string>
     <string name="ok">Tamam</string>
-    <string name="today">Bugün</string>
-    <string name="daily">Günlük</string>
-    <string name="zekai">ZekAI</string>
-    <string name="select_city">Konum Seç</string>
-    <string name="use_my_location">Konumumu kullan</string>
-    <string name="error_fetching_location">Konum alınırken hata oluştu</string>
-    <string name="error_saving_location">Konum kaydedilirken hata oluştu</string>
-    <string name="error_fetching_weather_data">Hava durumu verileri alınırken hata oluştu</string>
-    <string name="error_fetching_hourly_forecast">Saatlik hava durumu verileri alınırken hata oluştu</string>
-    <string name="error_fetching_weather_suggestions">Hava durumu önerileri alınırken hata oluştu. Hata: %s</string>
-    <string name="error_fetching_daily_forecast">Günlük hava durumu verileri alınırken hata oluştu</string>
-    <string name="error_fetching_cities">Şehirler alınırken hata oluştu</string>
-    <string name="general_error_message">Bir hata oluştu. Lütfen tekrar deneyin.</string>
-    <string name="city_search">Şehir Ara</string>
-    <string name="weather_assistant_instruction">Sen, ZekAI adında akıllı bir hava durumu ve günlük yaşam asistanısın. Sana verilen konum, güncel sıcaklık ve hava durumu ile birlikte (yalnızca verildiyse) kullanıcının hassas olduğu alerjenlerin polen durumunu değerlendirirsin. Bu bilgilere dayanarak o gün için giyim, dışarı çıkmak için en uygun zaman, aktivite ve genel sağlık konularında pratik, kişiselleştirilmiş ve gerekçesini kısaca açıklayan öneriler verirsin. Eğer polen/alerjen verisi verildiyse ilgili alerjenler için önlem ve tavsiyeleri de ekle; verilmediyse alerji veya polenden hiç bahsetme. Yanıtını Türkçe yaz, samimi ama bilgilendirici bir dille ve Markdown kullanarak (kısa başlıklar ve madde işaretleri) düzenli biçimde sun.</string>
-    <string name="serialization_error_message">Serileştirme Hatası</string>
-
-    <!-- WMO hava durumu kodu açıklamaları (Open-Meteo) -->
-    <string name="wmo_clear_sky">Açık</string>
-    <string name="wmo_mainly_clear">Çoğunlukla açık</string>
-    <string name="wmo_partly_cloudy">Parçalı bulutlu</string>
-    <string name="wmo_overcast">Kapalı</string>
-    <string name="wmo_fog">Sisli</string>
-    <string name="wmo_rime_fog">Kırağılı sis</string>
-    <string name="wmo_drizzle_light">Hafif çiseleme</string>
-    <string name="wmo_drizzle_moderate">Orta çiseleme</string>
-    <string name="wmo_drizzle_dense">Yoğun çiseleme</string>
-    <string name="wmo_freezing_drizzle_light">Hafif dondurucu çiseleme</string>
-    <string name="wmo_freezing_drizzle_dense">Yoğun dondurucu çiseleme</string>
-    <string name="wmo_rain_slight">Hafif yağmur</string>
-    <string name="wmo_rain_moderate">Orta yağmur</string>
-    <string name="wmo_rain_heavy">Şiddetli yağmur</string>
-    <string name="wmo_freezing_rain_light">Hafif dondurucu yağmur</string>
-    <string name="wmo_freezing_rain_heavy">Şiddetli dondurucu yağmur</string>
-    <string name="wmo_snow_slight">Hafif kar yağışı</string>
-    <string name="wmo_snow_moderate">Orta kar yağışı</string>
-    <string name="wmo_snow_heavy">Yoğun kar yağışı</string>
-    <string name="wmo_snow_grains">Kar tanecikleri</string>
-    <string name="wmo_rain_showers_slight">Hafif sağanak yağmur</string>
-    <string name="wmo_rain_showers_moderate">Orta sağanak yağmur</string>
-    <string name="wmo_rain_showers_violent">Şiddetli sağanak yağmur</string>
-    <string name="wmo_snow_showers_slight">Hafif kar sağanağı</string>
-    <string name="wmo_snow_showers_heavy">Yoğun kar sağanağı</string>
-    <string name="wmo_thunderstorm">Gök gürültülü fırtına</string>
-    <string name="wmo_thunderstorm_hail_slight">Hafif dolulu gök gürültülü fırtına</string>
-    <string name="wmo_thunderstorm_hail_heavy">Yoğun dolulu gök gürültülü fırtına</string>
-    <string name="wmo_unknown">Bilinmiyor</string>
-
-    <!-- Alerji / polen özelliği -->
-    <string name="allergy">Alerji</string>
-    <string name="allergy_settings_title">Hassas olduğum alerjenler</string>
-    <string name="pollen_section_title">Polen seviyeleri</string>
-    <string name="pollen_forecast_title">Günlük polen tahmini</string>
-    <string name="allergy_today_risk">Bugünkü polen riski</string>
-    <string name="allergy_top">En yüksek</string>
-    <string name="pollen_peak">Tepe</string>
-    <string name="pollen_next_hours">önümüzdeki 6 saat</string>
-    <string name="air_quality_section_title">Hava kalitesi</string>
-    <string name="pollen_unavailable">Polen verisi bölgenizde mevcut değil (yalnızca Avrupa).</string>
-    <string name="pollen_all_low">Tüm polen seviyeleri düşük</string>
-    <string name="pollen_unit">tane/m³</string>
-    <string name="unit_ugm3">µg/m³</string>
-
-    <string name="pollen_type_alder">Kızılağaç</string>
-    <string name="pollen_type_birch">Huş</string>
-    <string name="pollen_type_grass">Çimen</string>
-    <string name="pollen_type_mugwort">Pelin</string>
-    <string name="pollen_type_olive">Zeytin</string>
-    <string name="pollen_type_ragweed">Kısa Ambrosia</string>
-
-    <string name="pollen_risk_none">Yok</string>
-    <string name="pollen_risk_low">Düşük</string>
-    <string name="pollen_risk_moderate">Orta</string>
-    <string name="pollen_risk_high">Yüksek</string>
-    <string name="pollen_risk_very_high">Çok yüksek</string>
-
-    <string name="european_aqi">Avrupa HKİ</string>
-    <string name="pm2_5">PM2.5</string>
-    <string name="pm10">PM10</string>
-    <string name="ozone">Ozon</string>
-    <string name="aqi_unknown">Bilinmiyor</string>
-    <string name="aqi_good">İyi</string>
-    <string name="aqi_fair">Makul</string>
-    <string name="aqi_moderate">Orta</string>
-    <string name="aqi_poor">Kötü</string>
-    <string name="aqi_very_poor">Çok kötü</string>
-    <string name="aqi_extremely_poor">Aşırı kötü</string>
-
-    <string name="error_fetching_air_quality">Hava kalitesi verileri alınırken hata oluştu</string>
-
     <string name="notification_weather_title">Hava Durumu Hatırlatma</string>
     <string name="notification_weather_text">Bugünün hava durumunu kontrol ettin mi?</string>
     <string name="pollen_alert_title">Yüksek Polen Uyarısı</string>

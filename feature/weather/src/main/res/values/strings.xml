@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loading_message">Analyzing the Sky…</string>
+    <string name="hourly_forecast">Hourly Weather Forecast</string>
+    <string name="feels_like">Feels Like</string>
+    <string name="humidity">Humidity</string>
+    <string name="zekai_suggestions">ZekAI\'s Suggestions</string>
+    <string name="zekai_thinking">ZekAI is thinking about suggestions…</string>
+    <string name="daily_forecast_title">7-Day Weather Forecast</string>
+    <string name="today">Today</string>
+    <string name="daily">Daily</string>
+    <string name="zekai">ZekAI</string>
+    <string name="select_city">Select City</string>
+    <string name="use_my_location">Use my location</string>
+    <string name="error_fetching_location">Error fetching location</string>
+    <string name="city_search">Search City</string>
+    <string name="allergy">Allergy</string>
+    <string name="allergy_settings_title">My sensitive allergens</string>
+    <string name="pollen_section_title">Pollen levels</string>
+    <string name="pollen_forecast_title">Daily pollen forecast</string>
+    <string name="allergy_today_risk">Today\'s pollen risk</string>
+    <string name="allergy_top">Highest</string>
+    <string name="pollen_peak">Peak</string>
+    <string name="pollen_next_hours">next 6 hours</string>
+    <string name="air_quality_section_title">Air quality</string>
+    <string name="pollen_unavailable">Pollen data is not available in your region (Europe only).</string>
+    <string name="pollen_all_low">All pollen levels are low</string>
+    <string name="pollen_unit">grains/m³</string>
+    <string name="unit_ugm3">µg/m³</string>
+    <string name="european_aqi">European AQI</string>
+    <string name="pm2_5">PM2.5</string>
+    <string name="pm10">PM10</string>
+    <string name="ozone">Ozone</string>
+</resources>

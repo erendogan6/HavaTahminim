@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loading_message">Gökyüzü İnceleniyor…</string>
+    <string name="hourly_forecast">Saatlik Hava Durumu</string>
+    <string name="feels_like">Hissedilen Sıcaklık</string>
+    <string name="humidity">Nem</string>
+    <string name="zekai_suggestions">ZekAI\'nin Önerileri</string>
+    <string name="zekai_thinking">ZekAI öneriler için düşünüyor…</string>
+    <string name="daily_forecast_title">7 Günlük Hava Durumu</string>
+    <string name="today">Bugün</string>
+    <string name="daily">Günlük</string>
+    <string name="zekai">ZekAI</string>
+    <string name="select_city">Konum Seç</string>
+    <string name="use_my_location">Konumumu kullan</string>
+    <string name="error_fetching_location">Konum alınırken hata oluştu</string>
+    <string name="city_search">Şehir Ara</string>
+    <string name="allergy">Alerji</string>
+    <string name="allergy_settings_title">Hassas olduğum alerjenler</string>
+    <string name="pollen_section_title">Polen seviyeleri</string>
+    <string name="pollen_forecast_title">Günlük polen tahmini</string>
+    <string name="allergy_today_risk">Bugünkü polen riski</string>
+    <string name="allergy_top">En yüksek</string>
+    <string name="pollen_peak">Tepe</string>
+    <string name="pollen_next_hours">önümüzdeki 6 saat</string>
+    <string name="air_quality_section_title">Hava kalitesi</string>
+    <string name="pollen_unavailable">Polen verisi bölgenizde mevcut değil (yalnızca Avrupa).</string>
+    <string name="pollen_all_low">Tüm polen seviyeleri düşük</string>
+    <string name="pollen_unit">tane/m³</string>
+    <string name="unit_ugm3">µg/m³</string>
+    <string name="european_aqi">Avrupa HKİ</string>
+    <string name="pm2_5">PM2.5</string>
+    <string name="pm10">PM10</string>
+    <string name="ozone">Ozon</string>
+</resources>
