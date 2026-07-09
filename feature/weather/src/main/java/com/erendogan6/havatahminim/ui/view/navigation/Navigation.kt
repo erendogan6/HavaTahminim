@@ -13,13 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.erendogan6.havatahminim.feature.weather.R
+import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 
 sealed class Screen(
     val route: String,
@@ -37,7 +37,7 @@ sealed class Screen(
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-    NavigationBar(modifier = Modifier.padding(0.dp), containerColor = Color(0xAA80C4E9).copy(alpha = 0.2f)) {
+    NavigationBar(modifier = Modifier.padding(0.dp), containerColor = WeatherTheme.colors.cardSurfaceFaint) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         val screens =
