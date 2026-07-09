@@ -1,0 +1,51 @@
+plugins {
+    // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
+    id 'com.android.library'
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    id 'com.autonomousapps.dependency-analysis'
+}
+
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
+
+android {
+    namespace = 'com.erendogan6.havatahminim.core.network'
+    compileSdk = 37
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        minSdk = 26
+        buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    // Retrofit service interfaces return the Open-Meteo DTOs.
+    api project(':core:model')
+    // GeminiService resolves its localized system instruction via ResourcesProvider.
+    api project(':core:common')
+
+    api libs.retrofit
+    implementation libs.converter.gson
+    api libs.okhttp
+    implementation libs.logging.interceptor
+
+    // GeminiService exposes GenerativeModel as part of its public API.
+    api(libs.generativeai)
+
+    // Chucker + body logging are attached only in debug builds (see NetworkModule).
+    debugImplementation libs.chucker.debug
+    releaseImplementation libs.chucker.release
+
+    api(libs.hilt.android)
+    ksp libs.hilt.android.compiler
+}

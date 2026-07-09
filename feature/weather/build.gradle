@@ -1,0 +1,51 @@
+plugins {
+    // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
+    id 'com.android.library'
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    id 'com.autonomousapps.dependency-analysis'
+}
+
+android {
+    namespace = 'com.erendogan6.havatahminim.feature.weather'
+    compileSdk = 37
+
+    buildFeatures {
+        compose = true
+    }
+
+    defaultConfig {
+        minSdk = 26
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    api project(':core:data')
+    api project(':core:model')
+    api project(':core:database')
+    api project(':core:common')
+
+    implementation platform(libs.androidx.compose.bom)
+    api libs.androidx.ui
+    api libs.androidx.ui.graphics
+    implementation libs.androidx.material3
+    implementation libs.androidx.compose.material.icons.extended
+
+    implementation libs.androidx.navigation.compose
+    implementation libs.androidx.hilt.lifecycle.viewmodel.compose
+    api libs.androidx.lifecycle.viewmodel
+    implementation libs.androidx.lifecycle.viewmodel.compose
+
+    api libs.kotlinx.coroutines.core
+
+    // ZekAI renders Gemini's markdown answers.
+    implementation libs.compose.markdown
+
+    implementation(libs.hilt.android)
+    ksp libs.hilt.android.compiler
+}
