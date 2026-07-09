@@ -23,10 +23,6 @@ dependencies {
     // PollenLevel maps model enums (PollenType/PollenRisk) to string resources.
     api project(':core:model')
 
-    // PollenLevel.color() returns compose Color values (no @Composable code, so no compose plugin).
-    implementation platform(libs.androidx.compose.bom)
-    api libs.androidx.ui.graphics
-
     api(libs.hilt.android)
     ksp libs.hilt.android.compiler
 }

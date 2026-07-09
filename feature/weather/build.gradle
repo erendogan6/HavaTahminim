@@ -29,6 +29,7 @@ dependencies {
     api project(':core:model')
     api project(':core:database')
     api project(':core:common')
+    implementation project(':core:designsystem')
 
     implementation platform(libs.androidx.compose.bom)
     api libs.androidx.ui

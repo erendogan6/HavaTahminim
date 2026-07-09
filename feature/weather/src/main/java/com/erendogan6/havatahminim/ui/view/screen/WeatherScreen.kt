@@ -49,23 +49,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.extension.capitalizeWords
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -131,12 +127,12 @@ private fun ActionIconButton(
 ) {
     IconButton(
         onClick = onClick,
-        modifier = Modifier.size(42.dp).clip(CircleShape).background(Color(0x66FFFFFF)),
+        modifier = Modifier.size(42.dp).clip(CircleShape).background(WeatherTheme.colors.surfaceVeil),
     ) {
         Icon(
             imageVector = icon,
             contentDescription = stringResource(id = descRes),
-            tint = Color(0xFF1B3A4B),
+            tint = WeatherTheme.colors.ink,
         )
     }
 }
@@ -199,8 +195,7 @@ fun ErrorMessage(message: String) {
     Text(
         text = message,
         color = MaterialTheme.colorScheme.error,
-        fontWeight = FontWeight.Bold,
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.titleSmall,
         modifier = Modifier.padding(vertical = 20.dp)
     )
 }
@@ -221,6 +216,7 @@ fun SplashScreen() {
         label = "pulse",
     )
 
+    val glow = WeatherTheme.colors.glow
     CenteredColumn {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.size(200.dp)) {
             // Soft glowing halo that breathes behind the icon.
@@ -231,7 +227,7 @@ fun SplashScreen() {
                     .clip(CircleShape)
                     .background(
                         Brush.radialGradient(
-                            colors = listOf(Color(0x88FFFFFF), Color(0x33FFFFFF), Color(0x00FFFFFF))
+                            colors = listOf(glow.copy(alpha = 0.53f), glow.copy(alpha = 0.2f), glow.copy(alpha = 0f))
                         )
                     )
             )
@@ -246,11 +242,8 @@ fun SplashScreen() {
         Spacer(modifier = Modifier.height(28.dp))
         Text(
             text = stringResource(id = R.string.loading_message),
-            color = Color(0xFF1B3A4B),
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.open_sans)),
-            style = TextStyle(shadow = Shadow(color = Color.White, blurRadius = 8f))
+            color = WeatherTheme.colors.ink,
+            style = MaterialTheme.typography.headlineLarge.copy(shadow = Shadow(color = glow, blurRadius = 8f))
         )
         Spacer(modifier = Modifier.height(18.dp))
         LoadingDots()
@@ -260,6 +253,7 @@ fun SplashScreen() {
 @Composable
 private fun LoadingDots() {
     val transition = rememberInfiniteTransition(label = "dots")
+    val ink = WeatherTheme.colors.ink
     Row {
         repeat(3) { index ->
             val alpha by transition.animateFloat(
@@ -276,7 +270,7 @@ private fun LoadingDots() {
                     .padding(horizontal = 5.dp)
                     .size(11.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF1B3A4B).copy(alpha = alpha))
+                    .background(ink.copy(alpha = alpha))
             )
         }
     }
@@ -291,16 +285,13 @@ fun HourlyForecastCard(hourlyForecast: HourlyForecastBaseResponse) {
     ) {
         Text(
             text = stringResource(id = R.string.hourly_forecast),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.open_sans)),
-            style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 1f))
+            style = MaterialTheme.typography.headlineSmall
         )
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(15.dp))
-                .background(Color(0xAA80C4E9))
+                .background(WeatherTheme.colors.cardSurface)
                 .padding(10.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -319,18 +310,14 @@ fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
 
     Text(
         text = weatherState.name,
-        fontSize = 36.sp,
-        fontFamily = FontFamily(Font(R.font.merriweather)),
+        style = MaterialTheme.typography.displayMedium,
         modifier = Modifier.padding(vertical = 12.dp),
-        style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
     )
 
     Text(
         text = "${weatherState.main.temp.toInt()}°C",
-        fontSize = 50.sp,
-        fontFamily = FontFamily(Font(R.font.roboto_medium_italic)),
+        style = MaterialTheme.typography.displayLarge,
         modifier = Modifier.padding(vertical = 5.dp),
-        style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
     )
 
     Image(
@@ -341,26 +328,21 @@ fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
 
     Text(
         text = weatherState.weather[0].description.capitalizeWords(),
-        fontSize = 26.sp,
-        fontWeight = FontWeight.Bold,
-        fontFamily = FontFamily(Font(R.font.open_sans)),
-        style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
+        style = MaterialTheme.typography.headlineMedium,
     )
 
     Text(
         text = "${stringResource(id = R.string.feels_like)}: ${weatherState.main.feels_like.toInt()}°C",
-        fontSize = 22.sp,
-        fontFamily = FontFamily(Font(R.font.open_sans)),
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Normal,
         modifier = Modifier.padding(vertical = 15.dp),
-        style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
     )
 
     Text(
         text = "${stringResource(id = R.string.humidity)}: ${weatherState.main.humidity}%",
-        fontSize = 22.sp,
-        fontFamily = FontFamily(Font(R.font.open_sans)),
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Normal,
         modifier = Modifier.padding(vertical = 4.dp),
-        style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 2f))
     )
 }
 
@@ -378,13 +360,8 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
     ) {
         Text(
             text = date,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.open_sans)),
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(vertical = 6.dp),
-            style = TextStyle(
-                shadow = Shadow(color = Color.DarkGray, blurRadius = 1f)
-            )
         )
         val icon = getWeatherIcon(forecast)
         Image(
@@ -394,13 +371,8 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
         )
         Text(
             text = "${forecast.main.temp.toInt()}°C",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.open_sans)),
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 6.dp),
-            style = TextStyle(
-                shadow = Shadow(color = Color.DarkGray, blurRadius = 1f)
-            )
         )
         forecast.pop?.let { pop ->
             Row(
@@ -410,17 +382,15 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
                 Icon(
                     imageVector = Icons.Default.WaterDrop,
                     contentDescription = null,
-                    tint = Color(0xFF1565C0),
+                    tint = WeatherTheme.colors.precipitation,
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.size(2.dp))
                 Text(
                     text = "%$pop",
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1565C0),
-                    fontFamily = FontFamily(Font(R.font.open_sans)),
-                    style = TextStyle(shadow = Shadow(color = Color.DarkGray, blurRadius = 1f))
+                    color = WeatherTheme.colors.precipitation,
                 )
             }
         }
