@@ -1,0 +1,35 @@
+plugins {
+    // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
+    id 'com.android.library'
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    id 'com.autonomousapps.dependency-analysis'
+}
+
+android {
+    namespace = 'com.erendogan6.havatahminim.core.database'
+    compileSdk = 37
+
+    defaultConfig {
+        minSdk = 26
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    // DailyForecastEntity embeds DailyForecastBaseResponse (Gson-serialized blob column).
+    api project(':core:model')
+
+    api libs.androidx.room.runtime
+    // DAO methods return Flow.
+    api libs.kotlinx.coroutines.core
+    ksp libs.androidx.room.compiler
+    // Converters Gson-serializes the cached forecast into a TEXT column.
+    implementation libs.gson
+
+    api(libs.hilt.android)
+    ksp libs.hilt.android.compiler
+}

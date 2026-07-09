@@ -60,8 +60,6 @@ import kotlinx.coroutines.tasks.await
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Draw edge-to-edge behind transparent system bars. The weather backgrounds are bright,
-        // so force dark status-bar icons via SystemBarStyle.light.
         enableEdgeToEdge(
             statusBarStyle =
                 SystemBarStyle.light(

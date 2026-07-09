@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.erendogan6.havatahminim.R
+import com.erendogan6.havatahminim.feature.weather.R as FeatureR
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.ui.view.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -104,7 +105,7 @@ class NotificationReceiver : BroadcastReceiver() {
         val builder =
             NotificationCompat
                 .Builder(context, channelId)
-                .setSmallIcon(R.drawable.cloudy)
+                .setSmallIcon(FeatureR.drawable.cloudy)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(text))
