@@ -1,0 +1,30 @@
+plugins {
+    // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
+    id 'com.android.library'
+    alias(libs.plugins.kotlin.compose)
+    id 'com.autonomousapps.dependency-analysis'
+}
+
+android {
+    namespace = 'com.erendogan6.havatahminim.core.designsystem'
+    compileSdk = 37
+
+    buildFeatures {
+        compose = true
+    }
+
+    defaultConfig {
+        minSdk = 26
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.ui
+    implementation libs.androidx.ui.graphics
+    api libs.androidx.material3
+}
