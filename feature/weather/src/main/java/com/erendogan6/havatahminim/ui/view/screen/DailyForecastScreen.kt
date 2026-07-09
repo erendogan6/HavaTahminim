@@ -22,15 +22,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -39,6 +34,7 @@ import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.extension.capitalizeWords
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecast
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
 
@@ -79,10 +75,7 @@ fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
     ) {
         Text(
             text = stringResource(id = R.string.daily_forecast_title),
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily(Font(R.font.open_sans)),
-            style = TextStyle(shadow = Shadow(color = Color.Gray, blurRadius = 1f)),
+            style = MaterialTheme.typography.headlineLarge,
         )
         Spacer(modifier = Modifier.size(16.dp))
         LazyColumn(
@@ -107,7 +100,7 @@ fun DailyForecastItem(
     Card(
         colors =
             CardDefaults.cardColors(
-                containerColor = Color(0xAA80C4E9),
+                containerColor = WeatherTheme.colors.cardSurface,
             ),
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier.fillMaxWidth(),
@@ -119,14 +112,8 @@ fun DailyForecastItem(
         ) {
             Text(
                 text = day,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.open_sans)),
+                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.widthIn(min = maxWidth.dp),
-                style =
-                    TextStyle(
-                        shadow = Shadow(color = Color.DarkGray, blurRadius = 1f),
-                    ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -144,14 +131,10 @@ fun DailyForecastItem(
                 )
                 Text(
                     text = forecast.weather[0].description.capitalizeWords(),
+                    style = MaterialTheme.typography.bodyLarge,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Normal,
-                    fontFamily = FontFamily(Font(R.font.open_sans)),
                     modifier = Modifier.padding(vertical = 3.dp),
-                    style =
-                        TextStyle(
-                            shadow = Shadow(color = Color.DarkGray, blurRadius = 1f),
-                        ),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -159,17 +142,11 @@ fun DailyForecastItem(
 
             Text(
                 text = "${forecast.temp.day.toInt()}°C",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.open_sans)),
+                style = MaterialTheme.typography.headlineSmall,
                 modifier =
                     Modifier
                         .weight(0.5f)
                         .padding(start = 10.dp, end = 10.dp),
-                style =
-                    TextStyle(
-                        shadow = Shadow(color = Color.DarkGray, blurRadius = 1f),
-                    ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
