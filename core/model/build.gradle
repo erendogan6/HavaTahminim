@@ -1,0 +1,23 @@
+plugins {
+    // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
+    id 'com.android.library'
+    id 'com.autonomousapps.dependency-analysis'
+}
+
+android {
+    namespace = 'com.erendogan6.havatahminim.core.model'
+    compileSdk = 37
+
+    defaultConfig {
+        minSdk = 26
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    // Gson annotations (@SerializedName) on the DTOs.
+    implementation libs.gson
+}

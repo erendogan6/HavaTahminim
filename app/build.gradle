@@ -6,15 +6,11 @@ plugins {
     id 'com.autonomousapps.dependency-analysis'
 }
 
-def localProperties = new Properties()
-localProperties.load(new FileInputStream(rootProject.file("local.properties")))
-def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
 android {
     namespace = 'com.erendogan6.havatahminim'
     compileSdk = 37
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 
     defaultConfig {
@@ -23,7 +19,6 @@ android {
         targetSdk = 37
         versionCode = 11
         versionName = "1.9"
-        buildConfigField("String", "GEMINI_API_KEY", "\"${geminiApiKey}\"")
 
         vectorDrawables {
             useSupportLibrary = true
@@ -62,59 +57,36 @@ android {
 }
 
 dependencies {
+    implementation project(':feature:weather')
+    implementation project(':core:designsystem')
+    implementation project(':core:data')
+    implementation project(':core:common')
+    implementation project(':core:database')
+    implementation project(':core:model')
+    implementation project(':core:network')
 
-    //Retrofit
-    implementation libs.retrofit
-    implementation libs.converter.gson
-
-    //OkHttp
-    implementation libs.okhttp
-    implementation libs.logging.interceptor
-
-    //Hilt
-    implementation(libs.hilt.android)
-    ksp libs.hilt.android.compiler
-
-    //ViewModel
-    implementation libs.androidx.lifecycle.viewmodel.compose
-    implementation libs.androidx.lifecycle.viewmodel
-
-    //Location
+    //Location (MainActivity resolves the device position with FusedLocationProvider)
     implementation libs.play.services.location
-
-    //Coroutines
-    runtimeOnly(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.coroutines.core)
-
-    //Gemini API
-    implementation(libs.generativeai)
-
-    //Room
-    implementation libs.androidx.room.runtime
-    ksp libs.androidx.room.compiler
-
-    // Markdown Compose
-    implementation libs.compose.markdown
+    runtimeOnly(libs.kotlinx.coroutines.android)
 
     // LeakCanary
     debugRuntimeOnly libs.leakcanary.android
 
-    // Chucker
-    debugImplementation libs.chucker.debug
-    releaseImplementation libs.chucker.release
-
-    //Navigation
-    implementation libs.androidx.navigation.compose
+    //Hilt
+    implementation(libs.hilt.android)
+    ksp libs.hilt.android.compiler
     implementation libs.androidx.hilt.lifecycle.viewmodel.compose
 
     implementation libs.androidx.core
     implementation libs.androidx.activity
     implementation libs.androidx.activity.compose
+    implementation libs.androidx.navigation.compose
     implementation platform(libs.androidx.compose.bom)
     implementation libs.androidx.ui
     implementation libs.androidx.ui.graphics
     implementation libs.androidx.material3
-    implementation libs.androidx.compose.material.icons.extended
-    implementation libs.gson
+    implementation libs.androidx.lifecycle.viewmodel
+    implementation libs.androidx.lifecycle.viewmodel.compose
 }
