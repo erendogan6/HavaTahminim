@@ -1,0 +1,32 @@
+plugins {
+    // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
+    id 'com.android.library'
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
+    id 'com.autonomousapps.dependency-analysis'
+}
+
+android {
+    namespace = 'com.erendogan6.havatahminim.core.common'
+    compileSdk = 37
+
+    defaultConfig {
+        minSdk = 26
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    // PollenLevel maps model enums (PollenType/PollenRisk) to string resources.
+    api project(':core:model')
+
+    // PollenLevel.color() returns compose Color values (no @Composable code, so no compose plugin).
+    implementation platform(libs.androidx.compose.bom)
+    api libs.androidx.ui.graphics
+
+    api(libs.hilt.android)
+    ksp libs.hilt.android.compiler
+}
