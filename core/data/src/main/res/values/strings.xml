@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_saving_location">Error saving location</string>
+    <string name="error_fetching_weather_data">Error fetching weather data</string>
+    <string name="error_fetching_hourly_forecast">Error fetching hourly weather data</string>
+    <string name="error_fetching_weather_suggestions">Failed to fetch weather suggestions. Error: %s</string>
+    <string name="error_fetching_daily_forecast">Error fetching daily weather data</string>
+    <string name="error_fetching_cities">Error fetching cities</string>
+    <string name="general_error_message">An error occurred. Please try again.</string>
+    <string name="serialization_error_message">Serialization Error</string>
+    <string name="error_fetching_air_quality">Error fetching air quality data</string>
+</resources>
