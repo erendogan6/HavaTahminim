@@ -7,6 +7,8 @@
     <string name="cancel">Vazgeç</string>
     <string name="error_title">Hata</string>
     <string name="ok">Tamam</string>
+    <string name="no_internet_title">İnternet Bağlantısı Yok</string>
+    <string name="no_internet_message">Hava durumu verilerini almak için internet bağlantısına ihtiyacınız var. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="notification_weather_title">Hava Durumu Hatırlatma</string>
     <string name="notification_weather_text">Bugünün hava durumunu kontrol ettin mi?</string>
     <string name="pollen_alert_title">Yüksek Polen Uyarısı</string>
