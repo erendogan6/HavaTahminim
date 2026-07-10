@@ -28,8 +28,11 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,7 +44,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import com.erendogan6.havatahminim.extension.capitalizeWords
+import com.erendogan6.havatahminim.extension.toHourMinute
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
@@ -54,7 +59,6 @@ import com.erendogan6.havatahminim.ui.view.component.SplashScreen
 import com.erendogan6.havatahminim.ui.view.component.isDayTime
 import com.erendogan6.havatahminim.ui.view.component.weatherIconRes
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
-import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +71,8 @@ fun WeatherScreen(
     val errorMessage by weatherViewModel.errorMessage.collectAsStateWithLifecycle()
     val hourlyForecast by weatherViewModel.hourlyForecast.collectAsStateWithLifecycle()
     var showCitySheet by rememberSaveable { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -85,11 +91,14 @@ fun WeatherScreen(
     if (showCitySheet) {
         ModalBottomSheet(
             onDismissRequest = { showCitySheet = false },
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            sheetState = sheetState,
         ) {
             CitySearchScreen(weatherViewModel) { city ->
                 weatherViewModel.updateLocationAndFetchWeather(city.latitude, city.longitude)
-                showCitySheet = false
+                // Play the sheet's slide-out animation before removing it from composition.
+                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+                    if (!sheetState.isVisible) showCitySheet = false
+                }
             }
         }
     }
@@ -122,11 +131,18 @@ private fun WeatherContent(
     hourlyForecast: HourlyForecastBaseResponse?,
     onLoaded: () -> Unit,
 ) {
+    // Side effect belongs after composition, not during it (recompositions can be re-run or
+    // discarded). The effect is keyed on data-arrival only; rememberUpdatedState guarantees a
+    // non-restarting effect still calls the latest callback instance.
+    val currentOnLoaded by rememberUpdatedState(onLoaded)
+    val hasData = weatherState != null
+    LaunchedEffect(hasData) {
+        if (hasData) currentOnLoaded()
+    }
     when {
         errorMessage != null ->
             CenteredColumn { ErrorMessage(errorMessage) }
         weatherState != null -> {
-            onLoaded()
             if (isCompactHeight()) {
                 LandscapeWeatherContent(weatherState, hourlyForecast)
             } else {
@@ -259,8 +275,7 @@ private fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
 @Composable
 private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
     val locale = LocalConfiguration.current.locales[0]
-    val sdf = SimpleDateFormat("HH:mm", locale)
-    val date = sdf.format(forecast.dt * 1000L)
+    val date = forecast.dt.toHourMinute(locale)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
