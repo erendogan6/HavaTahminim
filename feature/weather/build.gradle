@@ -41,6 +41,7 @@ dependencies {
     implementation libs.androidx.hilt.lifecycle.viewmodel.compose
     api libs.androidx.lifecycle.viewmodel
     implementation libs.androidx.lifecycle.viewmodel.compose
+    implementation libs.androidx.lifecycle.runtime.compose
 
     api libs.kotlinx.coroutines.core
 
