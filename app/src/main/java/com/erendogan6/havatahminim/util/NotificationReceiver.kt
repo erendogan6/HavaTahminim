@@ -15,6 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.feature.weather.R as FeatureR
+import com.erendogan6.havatahminim.model.airquality.relevantTo
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.ui.view.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,7 +66,7 @@ class NotificationReceiver : BroadcastReceiver() {
         val sensitive = runCatching { repository.sensitiveAllergens() }.getOrNull().orEmpty()
         val alarming =
             airQuality.pollen
-                .filter { sensitive.isEmpty() || it.type in sensitive }
+                .relevantTo(sensitive)
                 .filter { PollenLevel.isAlarming(it.risk) }
 
         if (alarming.isEmpty()) return generic
