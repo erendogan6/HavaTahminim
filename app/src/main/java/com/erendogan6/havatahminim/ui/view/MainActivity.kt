@@ -19,7 +19,7 @@ import com.erendogan6.havatahminim.ui.component.WeatherDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -86,8 +86,8 @@ fun HavaTahminimApp() {
         val showNoInternetDialog = rememberSaveable { mutableStateOf(false) }
         val navController = rememberNavController()
 
-        val dataLoaded by weatherViewModel.dataLoaded.collectAsState()
-        val weatherState by weatherViewModel.weatherState.collectAsState()
+        val dataLoaded by weatherViewModel.dataLoaded.collectAsStateWithLifecycle()
+        val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
 
         val notificationPermissionLauncher =
             rememberLauncherForActivityResult(

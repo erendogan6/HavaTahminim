@@ -15,7 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +43,7 @@ fun CitySearchScreen(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
     onCitySelected: (City) -> Unit = {},
 ) {
-    val cityState by weatherViewModel.cities.collectAsState()
+    val cityState by weatherViewModel.cities.collectAsStateWithLifecycle()
     var searchQuery by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
