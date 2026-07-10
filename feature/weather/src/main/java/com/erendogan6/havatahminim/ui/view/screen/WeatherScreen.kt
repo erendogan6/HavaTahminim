@@ -38,7 +38,7 @@ import com.erendogan6.havatahminim.ui.component.WeatherIconButton
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,9 +73,9 @@ fun WeatherScreen(
     onLoaded: () -> Unit,
     onUseMyLocation: () -> Unit,
 ) {
-    val weatherState by weatherViewModel.weatherState.collectAsState()
-    val errorMessage by weatherViewModel.errorMessage.collectAsState()
-    val hourlyForecast by weatherViewModel.hourlyForecast.collectAsState()
+    val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
+    val errorMessage by weatherViewModel.errorMessage.collectAsStateWithLifecycle()
+    val hourlyForecast by weatherViewModel.hourlyForecast.collectAsStateWithLifecycle()
     var showCitySheet by remember { mutableStateOf(false) }
 
     WeatherBackgroundLayout(weatherState) {

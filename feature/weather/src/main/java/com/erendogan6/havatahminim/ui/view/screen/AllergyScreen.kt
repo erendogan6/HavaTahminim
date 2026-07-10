@@ -32,7 +32,7 @@ import androidx.compose.material3.Surface
 import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -66,9 +66,9 @@ import java.text.SimpleDateFormat
 
 @Composable
 fun AllergyScreen(weatherViewModel: WeatherViewModel) {
-    val weatherState by weatherViewModel.weatherState.collectAsState()
-    val airQuality by weatherViewModel.airQuality.collectAsState()
-    val selectedAllergens by weatherViewModel.allergenPrefs.collectAsState()
+    val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
+    val airQuality by weatherViewModel.airQuality.collectAsStateWithLifecycle()
+    val selectedAllergens by weatherViewModel.allergenPrefs.collectAsStateWithLifecycle()
 
     WeatherBackgroundLayout(weatherState) {
         Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
