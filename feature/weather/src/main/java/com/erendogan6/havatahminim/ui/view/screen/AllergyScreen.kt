@@ -66,27 +66,28 @@ import com.erendogan6.havatahminim.ui.view.component.PollenDayChart
 import com.erendogan6.havatahminim.ui.view.component.SplashScreen
 import com.erendogan6.havatahminim.ui.view.component.aqiColor
 import com.erendogan6.havatahminim.ui.view.component.riskColor
-import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.erendogan6.havatahminim.ui.viewModel.AllergyViewModel
 import com.erendogan6.havatahminim.util.AqiLevel
 import com.erendogan6.havatahminim.util.PollenLevel
 
 @Composable
 fun AllergyScreen(
-    weatherViewModel: WeatherViewModel,
     modifier: Modifier = Modifier,
+    viewModel: AllergyViewModel = hiltViewModel(),
 ) {
-    val airQuality by weatherViewModel.airQuality.collectAsStateWithLifecycle()
-    val selectedAllergens by weatherViewModel.allergenPrefs.collectAsStateWithLifecycle()
+    val airQuality by viewModel.airQuality.collectAsStateWithLifecycle()
+    val selectedAllergens by viewModel.allergenPrefs.collectAsStateWithLifecycle()
 
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-        if (airQuality == null) {
-            SplashScreen()
-        } else {
-            AllergyContent(
-                airQuality = airQuality!!,
-                selectedAllergens = selectedAllergens,
-                onToggleAllergen = { type, sensitive -> weatherViewModel.toggleAllergen(type, sensitive) },
-            )
+        when (val info = airQuality) {
+            null -> SplashScreen()
+            else ->
+                AllergyContent(
+                    airQuality = info,
+                    selectedAllergens = selectedAllergens,
+                    onToggleAllergen = { type, sensitive -> viewModel.toggleAllergen(type, sensitive) },
+                )
         }
     }
 }
