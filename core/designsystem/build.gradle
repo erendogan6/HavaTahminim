@@ -24,8 +24,8 @@ android {
 
 dependencies {
     implementation platform(libs.androidx.compose.bom)
-    // WeatherText/WeatherTextField expose ui types (Modifier, TextStyle, Color) in their signatures.
+    // Base components expose ui/ui-graphics types (Modifier, TextStyle, Color, Shape) in their signatures.
     api libs.androidx.ui
-    implementation libs.androidx.ui.graphics
+    api libs.androidx.ui.graphics
     api libs.androidx.material3
 }
