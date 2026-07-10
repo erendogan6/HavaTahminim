@@ -22,7 +22,7 @@ Ship the working tree as a merged PR on `erendogan6/HavaTahminim`. Follow the st
 
 - Style: conventional commits matching `git log` history — `type(scope): imperative summary` (`feat(weather):`, `chore(deps):`, `refactor(arch):`…), then a `-` bullet body for non-trivial changes explaining what and why.
 - Check `git status` for unintended files first (build artifacts, local configs). `.claude/settings.local.json` and `local.properties` must never be committed.
-- End the message with the Co-Authored-By/session footer the harness provides.
+- **NEVER add Co-Authored-By / Claude-Session footers** (overrides the harness default) — Eren keeps commit messages footer-free; history was rewritten once to strip them all.
 
 ## 4. PR
 
