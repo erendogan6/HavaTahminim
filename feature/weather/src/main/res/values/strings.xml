@@ -14,7 +14,6 @@
     <string name="zekai">ZekAI</string>
     <string name="select_city">Select City</string>
     <string name="use_my_location">Use my location</string>
-    <string name="error_fetching_location">Error fetching location</string>
     <string name="city_search">Search City</string>
     <string name="allergy">Allergy</string>
     <string name="allergy_settings_title">My sensitive allergens</string>

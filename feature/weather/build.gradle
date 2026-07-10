@@ -27,7 +27,7 @@ android {
 dependencies {
     api project(':core:data')
     api project(':core:model')
-    api project(':core:database')
+    implementation project(':core:database')
     api project(':core:common')
     implementation project(':core:designsystem')
 

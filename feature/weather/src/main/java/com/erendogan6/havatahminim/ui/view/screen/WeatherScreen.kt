@@ -29,11 +29,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,8 +42,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.launch
 import com.erendogan6.havatahminim.extension.capitalizeWords
 import com.erendogan6.havatahminim.extension.toHourMinute
 import com.erendogan6.havatahminim.feature.weather.R
@@ -56,31 +54,31 @@ import com.erendogan6.havatahminim.ui.component.CenteredColumn
 import com.erendogan6.havatahminim.ui.component.WeatherIconButton
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
+import com.erendogan6.havatahminim.ui.view.component.ErrorMessage
 import com.erendogan6.havatahminim.ui.view.component.SplashScreen
 import com.erendogan6.havatahminim.ui.view.component.isDayTime
 import com.erendogan6.havatahminim.ui.view.component.weatherIconRes
-import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
+import com.erendogan6.havatahminim.ui.viewModel.TodayUiState
+import com.erendogan6.havatahminim.ui.viewModel.TodayViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(
-    weatherViewModel: WeatherViewModel,
-    onLoaded: () -> Unit,
     onUseMyLocation: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: TodayViewModel = hiltViewModel(),
 ) {
-    val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
-    val errorMessage by weatherViewModel.errorMessage.collectAsStateWithLifecycle()
-    val hourlyForecast by weatherViewModel.hourlyForecast.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showCitySheet by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
         Box(modifier = Modifier.fillMaxSize()) {
-            WeatherContent(weatherState, errorMessage, hourlyForecast, onLoaded = onLoaded)
+            WeatherContent(uiState)
             // Only offer city search / my-location once data is loaded (hidden during the splash).
-            if (weatherState != null) {
+            if (uiState is TodayUiState.Success) {
                 TopActions(
                     modifier = Modifier.align(Alignment.TopEnd).padding(top = 8.dp, end = 12.dp),
                     onUseMyLocation = onUseMyLocation,
@@ -95,13 +93,14 @@ fun WeatherScreen(
             onDismissRequest = { showCitySheet = false },
             sheetState = sheetState,
         ) {
-            CitySearchScreen(weatherViewModel) { city ->
-                weatherViewModel.updateLocationAndFetchWeather(city.latitude, city.longitude)
-                // Play the sheet's slide-out animation before removing it from composition.
-                coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) showCitySheet = false
-                }
-            }
+            CitySearchScreen(
+                onCitySelected = {
+                    // Play the sheet's slide-out animation before removing it from composition.
+                    coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+                        if (!sheetState.isVisible) showCitySheet = false
+                    }
+                },
+            )
         }
     }
 }
@@ -127,26 +126,13 @@ private fun TopActions(
 }
 
 @Composable
-private fun WeatherContent(
-    weatherState: CurrentWeatherBaseResponse?,
-    errorMessage: String?,
-    hourlyForecast: HourlyForecastBaseResponse?,
-    onLoaded: () -> Unit,
-) {
-    // Side effect belongs after composition, not during it (recompositions can be re-run or
-    // discarded). The effect is keyed on data-arrival only; rememberUpdatedState guarantees a
-    // non-restarting effect still calls the latest callback instance.
-    val currentOnLoaded by rememberUpdatedState(onLoaded)
-    val hasData = weatherState != null
-    LaunchedEffect(hasData) {
-        if (hasData) currentOnLoaded()
-    }
-    when {
-        errorMessage != null ->
-            CenteredColumn { ErrorMessage(errorMessage) }
-        weatherState != null -> {
+private fun WeatherContent(uiState: TodayUiState) {
+    when (uiState) {
+        is TodayUiState.Loading -> SplashScreen()
+        is TodayUiState.Error -> CenteredColumn { ErrorMessage(uiState.message) }
+        is TodayUiState.Success ->
             if (isCompactHeight()) {
-                LandscapeWeatherContent(weatherState, hourlyForecast)
+                LandscapeWeatherContent(uiState.weather, uiState.hourly)
             } else {
                 Column(
                     modifier = Modifier
@@ -155,14 +141,12 @@ private fun WeatherContent(
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CurrentLocationCard(weatherState)
+                    CurrentLocationCard(uiState.weather)
                     Spacer(modifier = Modifier.height(30.dp))
-                    hourlyForecast?.let { HourlyForecastCard(it) }
+                    uiState.hourly?.let { HourlyForecastCard(it) }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-        }
-        else -> SplashScreen()
     }
 }
 
@@ -194,16 +178,6 @@ private fun LandscapeWeatherContent(
             hourlyForecast?.let { HourlyForecastCard(it) }
         }
     }
-}
-
-@Composable
-private fun ErrorMessage(message: String) {
-    WeatherText(
-        text = message,
-        color = MaterialTheme.colorScheme.error,
-        style = MaterialTheme.typography.titleSmall,
-        modifier = Modifier.padding(vertical = 20.dp)
-    )
 }
 
 @Composable
