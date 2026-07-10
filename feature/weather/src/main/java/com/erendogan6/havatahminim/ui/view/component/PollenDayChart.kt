@@ -43,6 +43,7 @@ import com.erendogan6.havatahminim.util.PollenLevel
 internal fun PollenDayChart(
     hours: List<Long>,
     series: List<PollenSeries>,
+    modifier: Modifier = Modifier,
 ) {
     val locale = LocalConfiguration.current.locales[0]
     val colors = WeatherTheme.colors
@@ -63,7 +64,7 @@ internal fun PollenDayChart(
     }
     val axisMax = (peakValue * 1.15).takeIf { it > 0.0 } ?: 1.0 // headroom so the peak isn't clipped
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth()) {
         peakType?.let { pt ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
@@ -144,9 +145,12 @@ internal fun PollenDayChart(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun ChartLegend(readings: List<PollenReading>) {
+internal fun ChartLegend(
+    readings: List<PollenReading>,
+    modifier: Modifier = Modifier,
+) {
     FlowRow(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {

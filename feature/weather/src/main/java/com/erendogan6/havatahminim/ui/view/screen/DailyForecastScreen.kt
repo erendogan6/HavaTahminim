@@ -44,6 +44,7 @@ import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 fun DailyForecastScreen(
     weatherViewModel: WeatherViewModel,
     onLoaded: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val dailyForecast by weatherViewModel.dailyForecast.collectAsStateWithLifecycle()
 
@@ -54,7 +55,7 @@ fun DailyForecastScreen(
         if (hasData) currentOnLoaded()
     }
 
-    Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
+    Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
         dailyForecast?.let { DailyForecastCard(it) } ?: SplashScreen()
     }
 }
