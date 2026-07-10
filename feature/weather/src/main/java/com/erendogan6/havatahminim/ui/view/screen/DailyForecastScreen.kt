@@ -21,7 +21,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalConfiguration
@@ -34,6 +33,8 @@ import com.erendogan6.havatahminim.extension.capitalizeWords
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecast
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
+import com.erendogan6.havatahminim.ui.view.component.SplashScreen
+import com.erendogan6.havatahminim.ui.view.component.weatherIconRes
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
 
@@ -43,20 +44,17 @@ fun DailyForecastScreen(
     onLoaded: () -> Unit,
 ) {
     val dailyForecast by weatherViewModel.dailyForecast.collectAsStateWithLifecycle()
-    val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
 
-    WeatherBackgroundLayout(weatherState) {
-        Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-            dailyForecast?.let {
-                onLoaded()
-                DailyForecastCard(it)
-            } ?: SplashScreen()
-        }
+    Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
+        dailyForecast?.let {
+            onLoaded()
+            DailyForecastCard(it)
+        } ?: SplashScreen()
     }
 }
 
 @Composable
-fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
+private fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
     val locale = LocalConfiguration.current.locales[0]
     val dayNames =
         dailyForecast.list.map {
@@ -88,7 +86,7 @@ fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
 }
 
 @Composable
-fun DailyForecastItem(
+private fun DailyForecastItem(
     forecast: DailyForecast,
     maxWidth: Float,
 ) {
@@ -115,9 +113,8 @@ fun DailyForecastItem(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.weight(1f).padding(end = 10.dp),
             ) {
-                val icon = getWeatherIconn(forecast.weather[0].main)
                 Image(
-                    painter = icon,
+                    painter = painterResource(id = weatherIconRes(forecast.weather[0].main)),
                     contentDescription = null,
                     modifier = Modifier.size(50.dp),
                 )
@@ -146,19 +143,3 @@ fun DailyForecastItem(
     }
 }
 
-@Composable
-fun getWeatherIconn(main: String): Painter {
-    val resourceId =
-        when (main) {
-            "Clouds" -> R.drawable.day_partial_cloud
-            "Clear" -> R.drawable.day_clear
-            "Snow" -> R.drawable.day_snow
-            "Rain" -> R.drawable.day_rain
-            "Drizzle" -> R.drawable.day_rain
-            "Thunderstorm" -> R.drawable.day_rain_thunder
-            "Fog" -> R.drawable.fog
-            "Mist" -> R.drawable.mist
-            else -> R.drawable.cloudy
-        }
-    return painterResource(id = resourceId)
-}
