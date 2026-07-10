@@ -243,7 +243,7 @@ private fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
     )
 
     WeatherText(
-        text = "${weatherState.main.temp.toInt()}°C",
+        text = stringResource(id = R.string.temperature_format, weatherState.main.temp.toInt()),
         style = MaterialTheme.typography.displayLarge,
         modifier = Modifier.padding(vertical = 5.dp),
     )
@@ -260,14 +260,14 @@ private fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
     )
 
     WeatherText(
-        text = "${stringResource(id = R.string.feels_like)}: ${weatherState.main.feels_like.toInt()}°C",
+        text = stringResource(id = R.string.feels_like_format, weatherState.main.feels_like.toInt()),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Normal,
         modifier = Modifier.padding(vertical = 15.dp),
     )
 
     WeatherText(
-        text = "${stringResource(id = R.string.humidity)}: ${weatherState.main.humidity}%",
+        text = stringResource(id = R.string.humidity_format, weatherState.main.humidity),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Normal,
         modifier = Modifier.padding(vertical = 4.dp),
@@ -294,7 +294,7 @@ private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
             modifier = Modifier.size(60.dp),
         )
         WeatherText(
-            text = "${forecast.main.temp.toInt()}°C",
+            text = stringResource(id = R.string.temperature_format, forecast.main.temp.toInt()),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 6.dp),
         )
@@ -311,7 +311,7 @@ private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
                 )
                 Spacer(modifier = Modifier.size(2.dp))
                 WeatherText(
-                    text = "%$pop",
+                    text = stringResource(id = R.string.pop_format, pop),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = WeatherTheme.colors.precipitation,
