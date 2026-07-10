@@ -105,7 +105,7 @@ class WeatherViewModel
                 val prefs = repository.sensitiveAllergens()
                 fetchWeatherSuggestions(
                     location = weather.name,
-                    temperature = "${weather.main.temp.toInt()}°C",
+                    temperature = resourcesProvider.getString(R.string.temperature_format, weather.main.temp.toInt()),
                     pollenSummary = buildPollenSummary(_airQuality.value, prefs),
                     lat = loc.latitude,
                     lon = loc.longitude,
@@ -163,7 +163,7 @@ class WeatherViewModel
                     onSuccess = { response ->
                         _weatherState.value = response
                         _errorMessage.value = null
-                        fetchAdditionalData(lat, lon, response.name, "${response.main.temp.toInt()}°C")
+                        fetchAdditionalData(lat, lon, response.name, resourcesProvider.getString(R.string.temperature_format, response.main.temp.toInt()))
                         logDebug("Weather data fetched successfully", response)
                         _dataLoaded.value = true
                     },
