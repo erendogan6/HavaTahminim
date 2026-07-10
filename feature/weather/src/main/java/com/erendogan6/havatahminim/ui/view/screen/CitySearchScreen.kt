@@ -15,9 +15,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -36,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.ui.component.WeatherText
+import com.erendogan6.havatahminim.ui.component.WeatherTextField
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 
@@ -61,7 +60,7 @@ fun CitySearchScreen(
                 .background(WeatherTheme.colors.cardSurfaceFaint)
                 .padding(20.dp),
     ) {
-        TextField(
+        WeatherTextField(
             value = searchQuery,
             onValueChange = {
                 searchQuery = it
@@ -69,20 +68,11 @@ fun CitySearchScreen(
                     weatherViewModel.fetchCities(it)
                 }
             },
-            label = { Text(text = stringResource(id = R.string.city_search)) },
+            label = { WeatherText(text = stringResource(id = R.string.city_search)) },
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-                    .shadow(4.dp, RoundedCornerShape(12.dp)),
-            colors =
-                TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
-                ),
-            shape = RoundedCornerShape(12.dp),
+                    .padding(bottom = 16.dp),
             singleLine = true,
             keyboardOptions =
                 KeyboardOptions(
@@ -127,7 +117,7 @@ fun CityCard(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start,
         ) {
-            Text(
+            WeatherText(
                 text = listOfNotNull(city.name, city.admin1, city.country).joinToString(" - "),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
