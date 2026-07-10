@@ -17,7 +17,7 @@ import androidx.compose.material3.Surface
 import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,8 +42,8 @@ fun DailyForecastScreen(
     weatherViewModel: WeatherViewModel,
     onLoaded: () -> Unit,
 ) {
-    val dailyForecast by weatherViewModel.dailyForecast.collectAsState()
-    val weatherState by weatherViewModel.weatherState.collectAsState()
+    val dailyForecast by weatherViewModel.dailyForecast.collectAsStateWithLifecycle()
+    val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
 
     WeatherBackgroundLayout(weatherState) {
         Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
