@@ -12,8 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -33,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherText
+import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherTextField
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
@@ -103,14 +103,11 @@ fun CityCard(
     city: City,
     onCitySelected: (City) -> Unit,
 ) {
-    Card(
+    WeatherCard(
         modifier = Modifier.fillMaxWidth().clickable { onCitySelected(city) }.shadow(4.dp, RoundedCornerShape(8.dp)),
-        colors =
-            CardDefaults.cardColors(
-                containerColor = WeatherTheme.colors.citySurface,
-            ),
+        containerColor = WeatherTheme.colors.citySurface,
         shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
+        elevation = 4.dp,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp),

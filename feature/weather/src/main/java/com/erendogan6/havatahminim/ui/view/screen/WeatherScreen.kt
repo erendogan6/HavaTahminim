@@ -31,10 +31,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
+import com.erendogan6.havatahminim.ui.component.WeatherIconButton
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -114,25 +114,15 @@ private fun TopActions(
     onSearchCity: () -> Unit,
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        ActionIconButton(Icons.Default.MyLocation, R.string.use_my_location, onUseMyLocation)
-        ActionIconButton(Icons.Default.Search, R.string.select_city, onSearchCity)
-    }
-}
-
-@Composable
-private fun ActionIconButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    descRes: Int,
-    onClick: () -> Unit,
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier.size(42.dp).clip(CircleShape).background(WeatherTheme.colors.surfaceVeil),
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = stringResource(id = descRes),
-            tint = WeatherTheme.colors.ink,
+        WeatherIconButton(
+            icon = Icons.Default.MyLocation,
+            contentDescription = stringResource(id = R.string.use_my_location),
+            onClick = onUseMyLocation,
+        )
+        WeatherIconButton(
+            icon = Icons.Default.Search,
+            contentDescription = stringResource(id = R.string.select_city),
+            onClick = onSearchCity,
         )
     }
 }
