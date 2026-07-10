@@ -32,13 +32,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.feature.weather.R
+import com.erendogan6.havatahminim.ui.component.CenteredColumn
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
-    val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
     val weatherSuggestions by weatherViewModel.weatherSuggestions.collectAsStateWithLifecycle()
 
     // Regenerate the suggestion when the tab is opened, but only if the allergen selection changed.
@@ -46,25 +46,23 @@ fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
         weatherViewModel.onZekAIOpened()
     }
 
-    WeatherBackgroundLayout(weatherState) {
-        Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Spacer(Modifier.size(30.dp))
-                weatherSuggestions?.let { SuggestionsCard(it) } ?: ThinkerCard()
-            }
+    Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.size(30.dp))
+            weatherSuggestions?.let { SuggestionsCard(it) } ?: ThinkerCard()
         }
     }
 }
 
 @Composable
-fun SuggestionsCard(suggestions: String) {
+private fun SuggestionsCard(suggestions: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -108,7 +106,7 @@ fun SuggestionsCard(suggestions: String) {
 }
 
 @Composable
-fun ThinkerCard() {
+private fun ThinkerCard() {
     CenteredColumn {
         CircularProgressIndicator()
         WeatherText(
