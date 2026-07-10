@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,20 +33,18 @@ import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.ui.component.CenteredColumn
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
-import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.erendogan6.havatahminim.ui.viewModel.ZekAiViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun ZekAIScreen(
-    weatherViewModel: WeatherViewModel,
     modifier: Modifier = Modifier,
+    viewModel: ZekAiViewModel = hiltViewModel(),
 ) {
-    val weatherSuggestions by weatherViewModel.weatherSuggestions.collectAsStateWithLifecycle()
-
-    // Regenerate the suggestion when the tab is opened, but only if the allergen selection changed.
-    LaunchedEffect(Unit) {
-        weatherViewModel.onZekAIOpened()
-    }
+    // Subscribing IS the trigger: the ViewModel's WhileSubscribed pipeline generates/refreshes
+    // the suggestion whenever this tab is open and its inputs (location, allergens) changed.
+    val weatherSuggestions by viewModel.suggestions.collectAsStateWithLifecycle()
 
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
         Column(

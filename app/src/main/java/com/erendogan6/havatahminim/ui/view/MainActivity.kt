@@ -18,11 +18,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Scaffold
-import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,20 +32,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.erendogan6.havatahminim.extension.NetworkUtils
+import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
+import com.erendogan6.havatahminim.ui.view.component.BackgroundImage
 import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
 import com.erendogan6.havatahminim.ui.view.navigation.Screen
 import com.erendogan6.havatahminim.ui.view.navigation.WeatherNavigationRail
 import com.erendogan6.havatahminim.ui.view.screen.AllergyScreen
-import com.erendogan6.havatahminim.ui.view.component.BackgroundImage
 import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
 import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
 import com.erendogan6.havatahminim.ui.view.screen.ZekAIScreen
-import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
+import com.erendogan6.havatahminim.ui.viewModel.MainViewModel
 import com.erendogan6.havatahminim.util.NotificationUtils
 import com.erendogan6.havatahminim.util.getCurrentLocation
 import com.erendogan6.havatahminim.util.isLocationServiceEnabled
@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HavaTahminimApp() {
     HavaTahminimTheme {
-        val weatherViewModel: WeatherViewModel = hiltViewModel()
+        val mainViewModel: MainViewModel = hiltViewModel()
         val context = LocalContext.current
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
         val coroutineScope = rememberCoroutineScope()
@@ -88,8 +88,10 @@ fun HavaTahminimApp() {
         val showNoInternetDialog = rememberSaveable { mutableStateOf(false) }
         val navController = rememberNavController()
 
-        val dataLoaded by weatherViewModel.dataLoaded.collectAsStateWithLifecycle()
-        val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
+        // Activity chrome keys off the shared current weather: the full-bleed background swaps
+        // from the splash photo, and the nav bar/rail appears, once the first weather arrives.
+        val weatherState by mainViewModel.currentWeather.collectAsStateWithLifecycle()
+        val weatherReady = weatherState != null
 
         val notificationPermissionLauncher =
             rememberLauncherForActivityResult(
@@ -112,23 +114,18 @@ fun HavaTahminimApp() {
                     requestNotificationPermission(notificationPermissionLauncher)
                     coroutineScope.launch {
                         if (isLocationServiceEnabled(context) && NetworkUtils.isNetworkAvailable(context)) {
-                            fetchLocationAndWeather(
-                                context,
-                                fusedLocationClient,
-                                weatherViewModel,
-                                showNoInternetDialog,
-                            )
+                            resolveGpsLocation(context, fusedLocationClient, mainViewModel, showNoInternetDialog)
                         } else {
-                            useLastOrDefaultLocation(weatherViewModel, context, showNoInternetDialog)
+                            startFromSavedOrDefault(mainViewModel, context, showNoInternetDialog)
                         }
                     }
                 } else {
-                    useLastOrDefaultLocation(weatherViewModel, context, showNoInternetDialog)
+                    startFromSavedOrDefault(mainViewModel, context, showNoInternetDialog)
                 }
             }
 
-        // Triggered by the "my location" icon on the Today screen: re-fetch the GPS position and
-        // refresh every data slice for it. Requests permission first if it isn't granted yet.
+        // Triggered by the "my location" icon on the Today screen: re-resolve the GPS position and
+        // point the whole app at it. Requests permission first if it isn't granted yet.
         val onUseMyLocation: () -> Unit = {
             if (ContextCompat.checkSelfPermission(
                     context,
@@ -138,7 +135,7 @@ fun HavaTahminimApp() {
                 coroutineScope.launch {
                     if (isLocationServiceEnabled(context) && NetworkUtils.isNetworkAvailable(context)) {
                         getCurrentLocation(context, fusedLocationClient) { lat, lon ->
-                            weatherViewModel.updateLocationAndFetchWeather(lat, lon)
+                            mainViewModel.setLocation(lat, lon)
                         }
                     } else {
                         showNoInternetDialog.value = true
@@ -150,7 +147,7 @@ fun HavaTahminimApp() {
         }
 
         LaunchedEffect(Unit) {
-            if (!dataLoaded) {
+            if (!weatherReady) {
                 if (ContextCompat.checkSelfPermission(
                         context,
                         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -159,12 +156,7 @@ fun HavaTahminimApp() {
                     locationPermissionGranted = true
                     requestNotificationPermission(notificationPermissionLauncher)
                     coroutineScope.launch {
-                        fetchLocationAndWeather(
-                            context,
-                            fusedLocationClient,
-                            weatherViewModel,
-                            showNoInternetDialog,
-                        )
+                        resolveGpsLocation(context, fusedLocationClient, mainViewModel, showNoInternetDialog)
                     }
                 } else {
                     locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -212,13 +204,13 @@ fun HavaTahminimApp() {
                 // nav bar and camera cutout in landscape.
                 contentWindowInsets = WindowInsets.safeDrawing,
                 bottomBar = {
-                    if (dataLoaded && !compactHeight) {
+                    if (weatherReady && !compactHeight) {
                         BottomNavigationBar(navController)
                     }
                 },
             ) { innerPadding ->
                 Row(modifier = Modifier.padding(innerPadding)) {
-                    if (dataLoaded && compactHeight) {
+                    if (weatherReady && compactHeight) {
                         WeatherNavigationRail(navController)
                     }
                     NavHost(
@@ -227,20 +219,16 @@ fun HavaTahminimApp() {
                         modifier = Modifier.weight(1f),
                     ) {
                         composable(Screen.Today.route) {
-                            WeatherScreen(
-                                weatherViewModel,
-                                onLoaded = { weatherViewModel.setDataLoaded(true) },
-                                onUseMyLocation = onUseMyLocation,
-                            )
+                            WeatherScreen(onUseMyLocation = onUseMyLocation)
                         }
                         composable(Screen.Daily.route) {
-                            DailyForecastScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
+                            DailyForecastScreen()
                         }
                         composable(Screen.Allergy.route) {
-                            AllergyScreen(weatherViewModel)
+                            AllergyScreen()
                         }
                         composable(Screen.ZekAI.route) {
-                            ZekAIScreen(weatherViewModel)
+                            ZekAIScreen()
                         }
                     }
                 }
@@ -249,54 +237,40 @@ fun HavaTahminimApp() {
     }
 }
 
-
 private fun requestNotificationPermission(notificationPermissionLauncher: ActivityResultLauncher<String>) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
 
-private suspend fun fetchLocationAndWeather(
+/** Resolves a GPS fix into the app-wide active location; falls back to saved/default on failure. */
+private suspend fun resolveGpsLocation(
     context: Context,
     fusedLocationClient: FusedLocationProviderClient,
-    weatherViewModel: WeatherViewModel,
+    mainViewModel: MainViewModel,
     showNoInternetDialog: MutableState<Boolean>,
 ) {
     val locationResult =
         getCurrentLocation(context, fusedLocationClient) { lat, lon ->
             if (NetworkUtils.isNetworkAvailable(context)) {
-                weatherViewModel.saveLocation(lat, lon)
-                weatherViewModel.fetchWeatherOnce(lat, lon)
+                mainViewModel.setLocation(lat, lon)
             } else {
                 showNoInternetDialog.value = true
             }
         }
 
     if (locationResult.isFailure) {
-        useLastOrDefaultLocation(weatherViewModel, context, showNoInternetDialog)
+        startFromSavedOrDefault(mainViewModel, context, showNoInternetDialog)
     }
 }
 
-private fun useLastOrDefaultLocation(
-    weatherViewModel: WeatherViewModel,
+private fun startFromSavedOrDefault(
+    mainViewModel: MainViewModel,
     context: Context,
     showNoInternetDialog: MutableState<Boolean>,
 ) {
-    val lastLocation = weatherViewModel.location.value
-    if (lastLocation != null) {
-        weatherViewModel.fetchWeatherOnce(lastLocation.latitude, lastLocation.longitude)
-    } else {
-        // Default location: Istanbul coordinates
-        val defaultLat = 41.0082
-        val defaultLon = 28.9784
-        if (NetworkUtils.isNetworkAvailable(context)) {
-            weatherViewModel.fetchWeatherOnce(defaultLat, defaultLon)
-        } else {
-            showNoInternetDialog.value = true
-        }
+    if (!NetworkUtils.isNetworkAvailable(context)) {
+        showNoInternetDialog.value = true
     }
+    mainViewModel.startFromSavedOrDefault()
 }
-
-
-
-
