@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.core.data.R as DataR
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.network.onError
+import com.erendogan6.havatahminim.network.onSuccess
+import com.erendogan6.havatahminim.repository.LocationRepository
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +35,7 @@ sealed interface TodayUiState {
 }
 
 /**
- * Today tab. Keys off the repository's active location: a location change restarts the pipeline
+ * Today tab. Keys off the active location: a location change restarts the pipeline
  * (transformLatest cancels the stale fetch), a resubscribe after background refreshes silently —
  * the last Success stays on screen instead of flashing the splash (Loading is only emitted when
  * the coordinates actually changed).
@@ -42,7 +45,8 @@ sealed interface TodayUiState {
 class TodayViewModel
     @Inject
     constructor(
-        private val repository: WeatherRepository,
+        locationRepository: LocationRepository,
+        private val weatherRepository: WeatherRepository,
         private val resourcesProvider: ResourcesProvider,
     ) : ViewModel() {
         // Confined to the main thread (viewModelScope); tracks the last rendered coordinates so
@@ -50,21 +54,23 @@ class TodayViewModel
         private var lastCoords: Pair<Double, Double>? = null
 
         val uiState: StateFlow<TodayUiState> =
-            repository.activeLocation
+            locationRepository.activeLocation
                 .filterNotNull()
                 .distinctUntilChangedBy { it.latitude to it.longitude }
                 .transformLatest { location ->
                     val coords = location.latitude to location.longitude
                     if (coords != lastCoords) emit(TodayUiState.Loading)
-                    runCall { repository.refreshCurrentWeather(location.latitude, location.longitude) }
+                    weatherRepository
+                        .refreshCurrentWeather(location.latitude, location.longitude)
                         .onSuccess { weather ->
                             lastCoords = coords
                             emit(TodayUiState.Success(weather, hourly = null))
-                            runCall { repository.getHourlyWeather(location.latitude, location.longitude) }
+                            weatherRepository
+                                .getHourlyWeather(location.latitude, location.longitude)
                                 .onSuccess { emit(TodayUiState.Success(weather, it)) }
-                                .onFailure { Log.e(TAG, "Hourly forecast failed", it) }
-                        }.onFailure {
-                            Log.e(TAG, "Weather fetch failed", it)
+                                .onError { Log.e(TAG, "Hourly forecast failed: $it") }
+                        }.onError {
+                            Log.e(TAG, "Weather fetch failed: $it")
                             lastCoords = null
                             emit(TodayUiState.Error(resourcesProvider.getString(DataR.string.error_fetching_weather_data)))
                         }
