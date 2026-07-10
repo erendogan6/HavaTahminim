@@ -15,3 +15,68 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.dependency.analysis)
 }
+
+
+// ---------------------------------------------------------------------------------------------
+// Merged unit-test coverage: ./gradlew jacocoMergedDebugReport
+// (build/reports/jacoco/merged/html/index.html + jacocoMergedDebugReport.xml for CI later)
+//
+// JaCoCo through AGP's own enableUnitTestCoverage rather than Kover: Kover locates Android
+// variants via the Kotlin Android Gradle plugin, which this project deliberately does not apply
+// (AGP 9 built-in Kotlin); Kover therefore instruments
+// nothing here (upstream: kotlinx-kover#776). AGP's instrumentation is KGP-agnostic.
+// ---------------------------------------------------------------------------------------------
+apply plugin: 'jacoco'
+
+// Coverage measures the logic layers (ViewModels, use case, repositories, utils). DI wiring,
+// generated code, and Compose UI (deliberately unit-untested by policy)
+// are excluded so the percentage tracks tested logic instead of being diluted by shells.
+def coverageExclusions = [
+    '**/di/**',
+    '**/*_Factory*', '**/*_Impl.*', '**/*_Impl$*',
+    '**/BuildConfig.*',
+    '**/hilt_aggregated_deps/**', '**/dagger/**', '**/*_HiltModules*',
+    '**/*ComposableSingletons*',
+    '**/ui/view/**', '**/ui/theme/**', '**/ui/adaptive/**', '**/ui/component/**',
+    '**/MainActivity*',
+    '**/util/NotificationUtils*', '**/util/NotificationReceiver*', '**/util/BootReceiver*',
+    '**/util/LocationUtils*',
+    '**/GeminiService*', '**/AndroidReverseGeocoder*', '**/DefaultResourcesProvider*',
+    '**/NetworkUtils*',
+    '**/*$DefaultImpls*',
+    '**/room/**', '**/model/*Dao*', '**/util/Converters*',
+]
+
+def coveredModules = [':app', ':feature:weather', ':core:data', ':core:network', ':core:common', ':core:model']
+
+tasks.register('jacocoMergedDebugReport', JacocoReport) {
+    group = 'verification'
+    description = 'Merged unit-test coverage report over every tested module (debug variant).'
+    dependsOn coveredModules.collect { "${it}:testDebugUnitTest" }
+
+    executionData.setFrom(
+        fileTree(rootDir) {
+            include '**/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec'
+        },
+    )
+    classDirectories.setFrom(
+        files(
+            coveredModules.collect { path ->
+                def dir = project(path).layout.buildDirectory.get().asFile
+                // AGP 9 built-in Kotlin emits classes here (not tmp/kotlin-classes as under KGP).
+                fileTree(new File(dir, 'intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes')) {
+                    exclude coverageExclusions
+                }
+            },
+        ),
+    )
+    sourceDirectories.setFrom(
+        files(coveredModules.collect { "${project(it).projectDir}/src/main/java" }),
+    )
+    reports {
+        html.required = true
+        xml.required = true
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco/merged/html')
+        xml.outputLocation = layout.buildDirectory.file('reports/jacoco/merged/jacocoMergedDebugReport.xml')
+    }
+}
