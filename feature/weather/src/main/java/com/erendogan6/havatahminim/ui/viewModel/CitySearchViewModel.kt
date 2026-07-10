@@ -1,0 +1,77 @@
+package com.erendogan6.havatahminim.ui.viewModel
+
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.repository.WeatherRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+/**
+ * City search sheet. The query lives in SavedStateHandle (survives process death), the results
+ * are a declarative pipeline: debounce -> flatMapLatest (a newer query cancels the in-flight
+ * older one, so responses can't land out of order). Selecting a city updates the repository's
+ * active location — every screen reacts through the data layer.
+ */
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+@HiltViewModel
+class CitySearchViewModel
+    @Inject
+    constructor(
+        private val repository: WeatherRepository,
+        private val savedStateHandle: SavedStateHandle,
+    ) : ViewModel() {
+        val query: StateFlow<String> = savedStateHandle.getStateFlow(QUERY_KEY, "")
+
+        fun onQueryChange(value: String) {
+            savedStateHandle[QUERY_KEY] = value
+        }
+
+        val cities: StateFlow<List<City>> =
+            query
+                .debounce(DEBOUNCE_MILLIS)
+                .distinctUntilChanged()
+                .flatMapLatest { q ->
+                    if (q.length < MIN_QUERY_LENGTH) {
+                        flowOf(emptyList())
+                    } else {
+                        flow { emit(repository.getCities(q)) }
+                            .catch { e ->
+                                Log.e(TAG, "City search failed", e)
+                                emit(emptyList())
+                            }
+                    }
+                }.stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+                    initialValue = emptyList(),
+                )
+
+        fun selectCity(city: City) {
+            viewModelScope.launch {
+                repository.setActiveLocation(city.latitude, city.longitude, persist = true)
+            }
+        }
+
+        private companion object {
+            const val TAG = "CitySearchViewModel"
+            const val QUERY_KEY = "city_query"
+            const val DEBOUNCE_MILLIS = 300L
+            const val MIN_QUERY_LENGTH = 3
+            const val STOP_TIMEOUT_MILLIS = 5_000L
+        }
+    }

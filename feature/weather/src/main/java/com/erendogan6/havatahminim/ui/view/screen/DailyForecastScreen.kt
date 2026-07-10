@@ -17,8 +17,6 @@ import androidx.compose.material3.Surface
 import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,25 +36,25 @@ import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBase
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.view.component.SplashScreen
 import com.erendogan6.havatahminim.ui.view.component.weatherIconRes
-import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.erendogan6.havatahminim.ui.component.CenteredColumn
+import com.erendogan6.havatahminim.ui.view.component.ErrorMessage
+import com.erendogan6.havatahminim.ui.viewModel.DailyForecastViewModel
+import com.erendogan6.havatahminim.ui.viewModel.DailyUiState
 
 @Composable
 fun DailyForecastScreen(
-    weatherViewModel: WeatherViewModel,
-    onLoaded: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: DailyForecastViewModel = hiltViewModel(),
 ) {
-    val dailyForecast by weatherViewModel.dailyForecast.collectAsStateWithLifecycle()
-
-    // See WeatherContent: notify data-arrival after composition, always via the latest callback.
-    val currentOnLoaded by rememberUpdatedState(onLoaded)
-    val hasData = dailyForecast != null
-    LaunchedEffect(hasData) {
-        if (hasData) currentOnLoaded()
-    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-        dailyForecast?.let { DailyForecastCard(it) } ?: SplashScreen()
+        when (val state = uiState) {
+            is DailyUiState.Loading -> SplashScreen()
+            is DailyUiState.Error -> CenteredColumn { ErrorMessage(state.message) }
+            is DailyUiState.Success -> DailyForecastCard(state.forecast)
+        }
     }
 }
 
