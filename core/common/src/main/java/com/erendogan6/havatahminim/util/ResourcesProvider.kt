@@ -8,6 +8,10 @@ class ResourcesProvider(private val context: Context) {
         return context.getString(resId)
     }
 
+    fun getString(resId: Int, vararg formatArgs: Any): String {
+        return context.getString(resId, *formatArgs)
+    }
+
     fun getLanguage(): String {
         return Locale.getDefault().language
     }
