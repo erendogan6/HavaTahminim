@@ -37,6 +37,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+        unitTests {
+            // android.util.Log only. Platform *logic* (Location.distanceTo, icu Calendar) was
+            // removed from JVM-tested code in the testability refactor — do not reintroduce it
+            // and lean on default values (they return 0/false/null silently).
+            returnDefaultValues = true
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -90,4 +98,10 @@ dependencies {
     implementation libs.androidx.lifecycle.viewmodel
     implementation libs.androidx.lifecycle.viewmodel.compose
     implementation libs.androidx.lifecycle.runtime.compose
+
+    testImplementation project(':core:testing')
+    testImplementation libs.junit
+    testImplementation libs.truth
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.turbine
 }

@@ -20,4 +20,7 @@ android {
 dependencies {
     // Gson annotations (@SerializedName) on the DTOs.
     implementation libs.gson
+
+    testImplementation libs.junit
+    testImplementation libs.truth
 }

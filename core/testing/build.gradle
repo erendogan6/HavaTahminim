@@ -1,0 +1,35 @@
+plugins {
+    // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
+    id 'com.android.library'
+    id 'com.autonomousapps.dependency-analysis'
+}
+
+android {
+    namespace = 'com.erendogan6.havatahminim.core.testing'
+    compileSdk = 37
+
+    defaultConfig {
+        minSdk = 26
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+// Hand-written fakes and fixtures for the zero-mock test suite. Deliberately free of Hilt/KSP/
+// Compose/assertion libraries: fakes are plain constructor-built classes and never assert.
+dependencies {
+    // Fakes implement interfaces from these modules and expose their types in public signatures.
+    api project(':core:data')
+    api project(':core:database')
+    api project(':core:network')
+    api project(':core:common')
+    api project(':core:model')
+
+    api libs.kotlinx.coroutines.core
+    // MainDispatcherRule exposes TestDispatcher.
+    api libs.kotlinx.coroutines.test
+    // The rules extend TestWatcher.
+    api libs.junit
+}
