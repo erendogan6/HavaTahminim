@@ -20,7 +20,7 @@ import androidx.compose.material3.Surface
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,8 +41,8 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
 fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
-    val weatherState by weatherViewModel.weatherState.collectAsState()
-    val weatherSuggestions by weatherViewModel.weatherSuggestions.collectAsState()
+    val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
+    val weatherSuggestions by weatherViewModel.weatherSuggestions.collectAsStateWithLifecycle()
     var isLoadingSuggestions by remember { mutableStateOf(true) }
 
     // Regenerate the suggestion when the tab is opened, but only if the allergen selection changed.
