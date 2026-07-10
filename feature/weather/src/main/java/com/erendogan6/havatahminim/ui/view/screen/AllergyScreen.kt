@@ -24,13 +24,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -147,10 +146,10 @@ private fun AllergyContent(
 private fun HeroCard(worst: PollenReading?) {
     val risk = worst?.risk ?: PollenRisk.NONE
     val onColored = WeatherTheme.colors.onColoredCard
-    Card(
-        colors = CardDefaults.cardColors(containerColor = WeatherTheme.colors.riskColor(risk)),
-        shape = RoundedCornerShape(20.dp),
+    WeatherCard(
         modifier = Modifier.fillMaxWidth(),
+        containerColor = WeatherTheme.colors.riskColor(risk),
+        shape = RoundedCornerShape(20.dp),
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
             WeatherText(
@@ -219,10 +218,9 @@ private fun PollenBarRow(
     highlighted: Boolean,
 ) {
     val container = if (highlighted) WeatherTheme.colors.cardSurfaceHighlighted else WeatherTheme.colors.cardSurface
-    Card(
-        colors = CardDefaults.cardColors(containerColor = container),
-        shape = RoundedCornerShape(15.dp),
+    WeatherCard(
         modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+        containerColor = container,
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp)) {
             Row(
@@ -316,11 +314,7 @@ private fun DailyDayCard(
     val dayWorst = worst(relevant)
     val worstRisk = dayWorst?.risk ?: PollenRisk.NONE
 
-    Card(
-        colors = CardDefaults.cardColors(containerColor = WeatherTheme.colors.cardSurface),
-        shape = RoundedCornerShape(15.dp),
-        modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
-    ) {
+    WeatherCard(modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)) {
         Column(modifier = Modifier.fillMaxWidth().clickable { onToggle() }.padding(horizontal = 14.dp, vertical = 12.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -501,11 +495,7 @@ private fun ChartLegend(readings: List<PollenReading>) {
 
 @Composable
 private fun AirQualityCard(info: AirQualityInfo) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = WeatherTheme.colors.cardSurface),
-        shape = RoundedCornerShape(15.dp),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    WeatherCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -581,11 +571,7 @@ private fun SectionTitle(text: String) {
 
 @Composable
 private fun InfoCard(message: String) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = WeatherTheme.colors.cardSurface),
-        shape = RoundedCornerShape(15.dp),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    WeatherCard(modifier = Modifier.fillMaxWidth()) {
         WeatherText(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
