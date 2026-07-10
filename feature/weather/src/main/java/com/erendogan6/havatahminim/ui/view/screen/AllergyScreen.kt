@@ -55,9 +55,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
 import com.erendogan6.havatahminim.model.airquality.DailyPollenForecast
+import com.erendogan6.havatahminim.extension.toDayName
 import com.erendogan6.havatahminim.model.airquality.PollenReading
 import com.erendogan6.havatahminim.model.airquality.PollenRisk
-import com.erendogan6.havatahminim.model.airquality.PollenSeries
+import com.erendogan6.havatahminim.model.airquality.relevantTo
+import com.erendogan6.havatahminim.model.airquality.worst
 import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.view.component.ChartLegend
@@ -68,7 +70,6 @@ import com.erendogan6.havatahminim.ui.view.component.riskColor
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.AqiLevel
 import com.erendogan6.havatahminim.util.PollenLevel
-import java.text.SimpleDateFormat
 
 @Composable
 fun AllergyScreen(weatherViewModel: WeatherViewModel) {
@@ -88,14 +89,6 @@ fun AllergyScreen(weatherViewModel: WeatherViewModel) {
     }
 }
 
-/** Allergens to summarize: the user's selection, or all six when nothing is selected. */
-private fun List<PollenReading>.relevant(selected: Set<PollenType>) =
-    filter { selected.isEmpty() || it.type in selected }
-
-/** Most concerning reading: highest risk bucket first, then highest actual concentration. */
-private fun worst(readings: List<PollenReading>): PollenReading? =
-    readings.maxWithOrNull(compareBy({ it.risk.ordinal }, { it.valueGrains ?: 0.0 }))
-
 @Composable
 private fun AllergyContent(
     airQuality: AirQualityInfo,
@@ -113,7 +106,7 @@ private fun AllergyContent(
         Spacer(Modifier.size(16.dp))
 
         if (airQuality.pollenAvailable) {
-            HeroCard(worst(airQuality.pollen.relevant(selectedAllergens)))
+            HeroCard(airQuality.pollen.relevantTo(selectedAllergens).worst())
         } else {
             InfoCard(stringResource(R.string.pollen_unavailable))
         }
@@ -125,7 +118,7 @@ private fun AllergyContent(
             Spacer(Modifier.size(20.dp))
             SectionTitle(stringResource(R.string.pollen_section_title))
             Spacer(Modifier.size(8.dp))
-            airQuality.pollen.relevant(selectedAllergens).forEach { reading ->
+            airQuality.pollen.relevantTo(selectedAllergens).forEach { reading ->
                 PollenBarRow(reading, highlighted = reading.type in selectedAllergens)
             }
 
@@ -312,9 +305,9 @@ private fun DailyDayCard(
     onToggle: () -> Unit,
 ) {
     val locale = LocalConfiguration.current.locales[0]
-    val dayName = SimpleDateFormat("EEEE", locale).format(day.date * 1000L)
-    val relevant = day.readings.relevant(selected)
-    val dayWorst = worst(relevant)
+    val dayName = day.date.toDayName(locale)
+    val relevant = day.readings.relevantTo(selected)
+    val dayWorst = relevant.worst()
     val worstRisk = dayWorst?.risk ?: PollenRisk.NONE
 
     WeatherCard(modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)) {
