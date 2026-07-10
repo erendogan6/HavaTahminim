@@ -41,7 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,6 +61,7 @@ import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.extension.capitalizeWords
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import java.text.SimpleDateFormat
@@ -76,7 +77,7 @@ fun WeatherScreen(
     val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
     val errorMessage by weatherViewModel.errorMessage.collectAsStateWithLifecycle()
     val hourlyForecast by weatherViewModel.hourlyForecast.collectAsStateWithLifecycle()
-    var showCitySheet by remember { mutableStateOf(false) }
+    var showCitySheet by rememberSaveable { mutableStateOf(false) }
 
     WeatherBackgroundLayout(weatherState) {
         Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
@@ -159,23 +160,58 @@ fun WeatherContent(weatherState: CurrentWeatherBaseResponse?,
                    hourlyForecast: HourlyForecastBaseResponse?,
                    onLoaded: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        when {
-            errorMessage != null -> ErrorMessage(errorMessage)
-            weatherState != null -> {
-                onLoaded()
-                CurrentLocationCard(weatherState)
-                Spacer(modifier = Modifier.height(30.dp))
-                hourlyForecast?.let { HourlyForecastCard(it) }
-                Spacer(modifier = Modifier.height(16.dp))
+    when {
+        errorMessage != null ->
+            CenteredColumn { ErrorMessage(errorMessage) }
+        weatherState != null -> {
+            onLoaded()
+            if (isCompactHeight()) {
+                LandscapeWeatherContent(weatherState, hourlyForecast)
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CurrentLocationCard(weatherState)
+                    Spacer(modifier = Modifier.height(30.dp))
+                    hourlyForecast?.let { HourlyForecastCard(it) }
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
-            else -> SplashScreen()
+        }
+        else -> SplashScreen()
+    }
+}
+
+/** Landscape: current conditions and the hourly forecast sit side by side, each scrolling on its own. */
+@Composable
+private fun LandscapeWeatherContent(
+    weatherState: CurrentWeatherBaseResponse,
+    hourlyForecast: HourlyForecastBaseResponse?,
+) {
+    Row(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            CurrentLocationCard(weatherState)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            hourlyForecast?.let { HourlyForecastCard(it) }
         }
     }
 }
@@ -206,13 +242,16 @@ fun SplashScreen() {
         label = "pulse",
     )
 
+    // Compact height (landscape): shrink the halo/icon and spacings so the splash fits
+    // without clipping.
+    val compact = isCompactHeight()
     val glow = WeatherTheme.colors.glow
     CenteredColumn {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(200.dp)) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.size(if (compact) 132.dp else 200.dp)) {
             // Soft glowing halo that breathes behind the icon.
             Box(
                 modifier = Modifier
-                    .size(180.dp)
+                    .size(if (compact) 118.dp else 180.dp)
                     .scale(pulse)
                     .clip(CircleShape)
                     .background(
@@ -225,17 +264,19 @@ fun SplashScreen() {
                 painter = painterResource(id = R.drawable.day_clear),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(if (compact) 80.dp else 120.dp)
                     .rotate(rotation),
             )
         }
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(if (compact) 12.dp else 28.dp))
         WeatherText(
             text = stringResource(id = R.string.loading_message),
             color = WeatherTheme.colors.ink,
-            style = MaterialTheme.typography.headlineLarge.copy(shadow = Shadow(color = glow, blurRadius = 8f))
+            style =
+                (if (compact) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.headlineLarge)
+                    .copy(shadow = Shadow(color = glow, blurRadius = 8f)),
         )
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(if (compact) 8.dp else 18.dp))
         LoadingDots()
     }
 }
