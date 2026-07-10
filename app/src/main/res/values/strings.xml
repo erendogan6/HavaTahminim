@@ -9,6 +9,8 @@
     <string name="ok">OK</string>
     <string name="no_internet_title">No Internet Connection</string>
     <string name="no_internet_message">An internet connection is required to fetch weather data. Please check your connection and try again.</string>
+    <string name="notification_channel_name">Daily Weather Reminder</string>
+    <string name="notification_channel_description">Daily weather check and pollen alert notifications</string>
     <string name="notification_weather_title">Weather Reminder</string>
     <string name="notification_weather_text">Have you checked today\'s weather?</string>
     <string name="pollen_alert_title">High Pollen Alert</string>

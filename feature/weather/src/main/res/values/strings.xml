@@ -2,8 +2,10 @@
 <resources>
     <string name="loading_message">Analyzing the Sky…</string>
     <string name="hourly_forecast">Hourly Weather Forecast</string>
-    <string name="feels_like">Feels Like</string>
-    <string name="humidity">Humidity</string>
+    <string name="temperature_format">%1$d°C</string>
+    <string name="feels_like_format">Feels Like: %1$d°C</string>
+    <string name="humidity_format">Humidity: %1$d%%</string>
+    <string name="pop_format">%1$d%%</string>
     <string name="zekai_suggestions">ZekAI\'s Suggestions</string>
     <string name="zekai_thinking">ZekAI is thinking about suggestions…</string>
     <string name="daily_forecast_title">7-Day Weather Forecast</string>
