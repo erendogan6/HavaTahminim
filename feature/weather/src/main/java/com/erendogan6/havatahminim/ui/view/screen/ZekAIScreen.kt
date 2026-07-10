@@ -17,7 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -85,7 +85,7 @@ fun SuggestionsCard(suggestions: String) {
                     .clip(CircleShape),
             contentScale = ContentScale.Crop,
         )
-        Text(
+        WeatherText(
             text = stringResource(id = R.string.zekai_suggestions),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(vertical = 8.dp),
@@ -118,7 +118,7 @@ fun SuggestionsCard(suggestions: String) {
 fun ThinkerCard() {
     CenteredColumn {
         CircularProgressIndicator()
-        Text(
+        WeatherText(
             text = stringResource(id = R.string.zekai_thinking),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(vertical = 8.dp),
