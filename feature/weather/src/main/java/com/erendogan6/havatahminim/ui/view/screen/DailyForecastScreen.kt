@@ -12,10 +12,9 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -97,14 +96,7 @@ fun DailyForecastItem(
     val dayFormat = SimpleDateFormat("EEEE", locale)
     val day = dayFormat.format(forecast.dt * 1000L)
 
-    Card(
-        colors =
-            CardDefaults.cardColors(
-                containerColor = WeatherTheme.colors.cardSurface,
-            ),
-        shape = RoundedCornerShape(15.dp),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    WeatherCard(modifier = Modifier.fillMaxWidth()) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
