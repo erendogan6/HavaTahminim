@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +29,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.erendogan6.havatahminim.extension.toHourMinute
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.airquality.PollenReading
 import com.erendogan6.havatahminim.model.airquality.PollenSeries
@@ -37,7 +37,6 @@ import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.util.PollenLevel
-import java.text.SimpleDateFormat
 
 /** Hourly line chart of pollen concentration across the day (one colored line per pollen type). */
 @Composable
@@ -46,7 +45,6 @@ internal fun PollenDayChart(
     series: List<PollenSeries>,
 ) {
     val locale = LocalConfiguration.current.locales[0]
-    val timeFmt = remember(locale) { SimpleDateFormat("HH:mm", locale) }
     val colors = WeatherTheme.colors
 
     // Global peak across the shown species: what peaks, when and how much.
@@ -76,7 +74,7 @@ internal fun PollenDayChart(
                     text =
                         "${stringResource(R.string.pollen_peak)}: " +
                             "${stringResource(PollenLevel.typeNameRes(pt))} · " +
-                            "${timeFmt.format(hours.getOrElse(peakIndex) { 0L } * 1000L)} · " +
+                            "${hours.getOrElse(peakIndex) { 0L }.toHourMinute(locale)} · " +
                             "${peakValue.toInt()} ${stringResource(R.string.pollen_unit)}",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
@@ -134,7 +132,7 @@ internal fun PollenDayChart(
             if (n > 0) {
                 listOf(0, n / 4, n / 2, 3 * n / 4, n - 1).distinct().forEach { idx ->
                     WeatherText(
-                        text = timeFmt.format(hours[idx] * 1000L),
+                        text = hours[idx].toHourMinute(locale),
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.ink,
                     )
