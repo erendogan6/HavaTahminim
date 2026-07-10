@@ -30,6 +30,8 @@ dependencies {
     implementation project(':core:database')
     api project(':core:common')
     implementation project(':core:designsystem')
+    // ApiResult/onError appear in ViewModel pipeline signatures.
+    api project(':core:network')
 
     implementation platform(libs.androidx.compose.bom)
     api libs.androidx.ui

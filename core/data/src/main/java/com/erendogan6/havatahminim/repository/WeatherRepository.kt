@@ -1,343 +1,110 @@
 package com.erendogan6.havatahminim.repository
 
-import android.content.Context
 import android.icu.util.Calendar
-import android.location.Geocoder
 import android.location.Location
-import com.erendogan6.havatahminim.core.data.R
 import com.erendogan6.havatahminim.model.DailyForecastDao
-import com.erendogan6.havatahminim.model.LocationDao
-import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
-import com.erendogan6.havatahminim.model.airquality.DailyPollenForecast
-import com.erendogan6.havatahminim.model.airquality.PollenReading
-import com.erendogan6.havatahminim.model.airquality.PollenSeries
-import com.erendogan6.havatahminim.model.airquality.PollenType
-import com.erendogan6.havatahminim.model.entity.AllergenPreferenceEntity
 import com.erendogan6.havatahminim.model.entity.DailyForecastEntity
-import com.erendogan6.havatahminim.model.entity.LocationEntity
-import com.erendogan6.havatahminim.model.entity.WeatherSuggestionEntity
 import com.erendogan6.havatahminim.model.weather.Common.Weather
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.Main
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.Sys
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecast
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.model.weather.DailyForecast.Temperature
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
-import com.erendogan6.havatahminim.model.weather.openmeteo.AirQualityResponse
 import com.erendogan6.havatahminim.model.weather.openmeteo.OpenMeteoResponse
-import com.erendogan6.havatahminim.network.AirQualityApiService
-import com.erendogan6.havatahminim.network.CityApiService
-import com.erendogan6.havatahminim.network.GeminiService
+import com.erendogan6.havatahminim.network.ApiResult
 import com.erendogan6.havatahminim.network.WeatherApiService
-import com.erendogan6.havatahminim.room.AllergenPreferenceDao
-import com.erendogan6.havatahminim.room.WeatherSuggestionDao
-import com.erendogan6.havatahminim.util.PollenLevel
+import com.erendogan6.havatahminim.network.onSuccess
+import com.erendogan6.havatahminim.network.safeApiCall
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import com.erendogan6.havatahminim.util.WmoWeather
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import com.google.ai.client.generativeai.type.SerializationException
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Single source of truth for the weather domain. Besides the fetch/cache operations it holds the
- * app's session state — the active location and the last fetched current weather — as observable
- * state, so per-screen ViewModels share data through this layer instead of through each other.
- * Must stay @Singleton: that session state is only meaningful if every ViewModel sees the same one.
+ * Weather domain: current/hourly/daily forecasts (Open-Meteo → domain mapping, per-day Room cache
+ * for the daily forecast) plus the shared current-weather session state. @Singleton is
+ * load-bearing: [currentWeather] is only meaningful if every consumer sees the same instance.
  */
 @Singleton
 class WeatherRepository
     @Inject
     constructor(
         private val weatherApiService: WeatherApiService,
-        private val airQualityApiService: AirQualityApiService,
-        private val geminiService: GeminiService,
-        private val cityApiService: CityApiService,
-        private val locationDao: LocationDao,
         private val dailyForecastDao: DailyForecastDao,
+        private val locationRepository: LocationRepository,
         private val resourcesProvider: ResourcesProvider,
-        private val weatherSuggestionDao: WeatherSuggestionDao,
-        private val allergenPreferenceDao: AllergenPreferenceDao,
-        @param:ApplicationContext private val context: Context,
     ) {
-        private val DISTANCE_THRESHOLD_METERS = 10000 // 10 km — daily forecast cache reuse radius
+        private val _currentWeather = MutableStateFlow<CurrentWeatherBaseResponse?>(null)
 
-        // ZekAI suggestion cache is invalidated when the location moves beyond this radius, the
-        // cache gets older than this, or the device language changes.
-        private val SUGGESTION_DISTANCE_THRESHOLD_METERS = 5000 // 5 km
-        private val SUGGESTION_TIME_THRESHOLD_MILLIS = 2 * 60 * 60 * 1000 // 2 hours
+        /** Last fetched current weather; shared by the Today screen, the app background, and the ZekAI prompt. */
+        val currentWeather: StateFlow<CurrentWeatherBaseResponse?> = _currentWeather.asStateFlow()
 
-        private val language: String get() = resourcesProvider.getLanguage()
-
-        suspend fun getWeather(
+        /** Fetches the current conditions and publishes the result into [currentWeather]. */
+        suspend fun refreshCurrentWeather(
             lat: Double,
             lon: Double,
-        ): CurrentWeatherBaseResponse =
-            withContext(Dispatchers.IO) {
-                try {
-                    val response = weatherApiService.getCurrentWeather(lat, lon)
-                    mapCurrentWeather(response, lat, lon)
-                } catch (e: Exception) {
-                    throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_weather_data), e)
-                }
-            }
+        ): ApiResult<CurrentWeatherBaseResponse> =
+            safeApiCall {
+                mapCurrentWeather(weatherApiService.getCurrentWeather(lat, lon), lat, lon)
+            }.onSuccess { _currentWeather.value = it }
 
         suspend fun getHourlyWeather(
             lat: Double,
             lon: Double,
-        ): HourlyForecastBaseResponse =
-            withContext(Dispatchers.IO) {
-                try {
-                    val response = weatherApiService.getHourlyWeather(lat, lon)
-                    mapHourlyWeather(response)
-                } catch (e: Exception) {
-                    throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_hourly_forecast), e)
-                }
+        ): ApiResult<HourlyForecastBaseResponse> =
+            safeApiCall {
+                mapHourlyWeather(weatherApiService.getHourlyWeather(lat, lon))
             }
 
+        /** Daily forecast, served from the per-day Room cache when the location is within 10km. */
         suspend fun getDailyWeather(
             lat: Double,
             lon: Double,
-        ): DailyForecastBaseResponse {
-            val today =
-                Calendar
-                    .getInstance()
-                    .apply {
-                        set(Calendar.HOUR_OF_DAY, 0)
-                        set(Calendar.MINUTE, 0)
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }.timeInMillis
+        ): ApiResult<DailyForecastBaseResponse> =
+            safeApiCall {
+                val today =
+                    Calendar
+                        .getInstance()
+                        .apply {
+                            set(Calendar.HOUR_OF_DAY, 0)
+                            set(Calendar.MINUTE, 0)
+                            set(Calendar.SECOND, 0)
+                            set(Calendar.MILLISECOND, 0)
+                        }.timeInMillis
 
-            val savedForecast = dailyForecastDao.getForecastByDate(today)
-
-            if (savedForecast != null) {
-                val savedLocation =
-                    Location("saved").apply {
-                        latitude = savedForecast.latitude
-                        longitude = savedForecast.longitude
-                    }
-                val currentLocation =
-                    Location("current").apply {
-                        latitude = lat
-                        longitude = lon
-                    }
-                val distance = savedLocation.distanceTo(currentLocation)
-                if (distance <= DISTANCE_THRESHOLD_METERS) {
-                    return savedForecast.forecastData
-                }
-            }
-
-            return withContext(Dispatchers.IO) {
-                try {
-                    val response = weatherApiService.getDailyWeather(lat, lon)
-                    val forecast = mapDailyWeather(response)
-                    val forecastEntity =
-                        DailyForecastEntity(
-                            date = today,
-                            latitude = lat,
-                            longitude = lon,
-                            forecastData = forecast,
-                        )
-                    dailyForecastDao.insertForecast(forecastEntity)
-                    forecast
-                } catch (e: Exception) {
-                    throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_daily_forecast), e)
-                }
-            }
-        }
-
-        suspend fun getWeatherSuggestions(
-            lat: Double,
-            lon: Double,
-            location: String,
-            temperature: String,
-            pollenSummary: String = "",
-            forceRefresh: Boolean = false,
-        ): String {
-            val cachedSuggestion = weatherSuggestionDao.getLatestSuggestion()
-            val currentLanguage = language
-
-            val needsNewSuggestion =
-                forceRefresh ||
-                    cachedSuggestion?.let {
+                val savedForecast = dailyForecastDao.getForecastByDate(today)
+                if (savedForecast != null) {
                     val savedLocation =
                         Location("saved").apply {
-                            latitude = it.latitude
-                            longitude = it.longitude
+                            latitude = savedForecast.latitude
+                            longitude = savedForecast.longitude
                         }
                     val currentLocation =
                         Location("current").apply {
                             latitude = lat
                             longitude = lon
                         }
-                    val distance = savedLocation.distanceTo(currentLocation)
-                    val timeElapsed = System.currentTimeMillis() - it.timestamp
-
-                    distance > SUGGESTION_DISTANCE_THRESHOLD_METERS ||
-                        timeElapsed > SUGGESTION_TIME_THRESHOLD_MILLIS ||
-                        it.language != currentLanguage
-                } ?: true
-
-            if (needsNewSuggestion) {
-                return withContext(Dispatchers.IO) {
-                    try {
-                        weatherSuggestionDao.deleteAllSuggestions()
-
-                        // The persona/instructions live in the model's systemInstruction
-                        // (see GeminiService); here we only send the user-specific data.
-                        val userMessage =
-                            buildString {
-                                append("Konum: $location\nSıcaklık: $temperature")
-                                if (pollenSummary.isNotBlank()) {
-                                    append("\nSeçili alerjenlerin polen durumu: $pollenSummary")
-                                }
-                            }
-                        val response = geminiService.model.generateContent(userMessage)
-                        val suggestion =
-                            response.text ?: resourcesProvider.getString(R.string.general_error_message)
-
-                        val suggestionEntity =
-                            WeatherSuggestionEntity(
-                                location = location,
-                                temperature = temperature,
-                                suggestion = suggestion,
-                                latitude = lat,
-                                longitude = lon,
-                                language = currentLanguage,
-                            )
-                        weatherSuggestionDao.insertSuggestion(suggestionEntity)
-
-                        suggestion
-                    } catch (e: SerializationException) {
-                        resourcesProvider.getString(R.string.serialization_error_message)
-                    } catch (e: Exception) {
-                        println(e.localizedMessage)
-                        resourcesProvider.getString(R.string.error_fetching_weather_suggestions)
+                    if (savedLocation.distanceTo(currentLocation) <= DISTANCE_THRESHOLD_METERS) {
+                        return@safeApiCall savedForecast.forecastData
                     }
                 }
-            } else {
-                return cachedSuggestion.suggestion
+
+                val forecast = mapDailyWeather(weatherApiService.getDailyWeather(lat, lon))
+                dailyForecastDao.insertForecast(
+                    DailyForecastEntity(
+                        date = today,
+                        latitude = lat,
+                        longitude = lon,
+                        forecastData = forecast,
+                    ),
+                )
+                forecast
             }
-        }
-
-        suspend fun getCities(query: String): List<City> =
-            withContext(Dispatchers.IO) {
-                try {
-                    cityApiService.getCities(query, language = language).results ?: emptyList()
-                } catch (e: Exception) {
-                    throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_cities), e)
-                }
-            }
-
-        suspend fun getAirQuality(
-            lat: Double,
-            lon: Double,
-        ): AirQualityInfo =
-            withContext(Dispatchers.IO) {
-                try {
-                    mapAirQuality(airQualityApiService.getAirQuality(lat, lon))
-                } catch (e: Exception) {
-                    throw RuntimeException(resourcesProvider.getString(R.string.error_fetching_air_quality), e)
-                }
-            }
-
-        // ---- Session state (in-memory SSOT) ----------------------------------------------------
-
-        private val _activeLocation = MutableStateFlow<LocationEntity?>(null)
-
-        /** The location every screen keys its data off. Set by GPS, city selection, or the saved fallback. */
-        val activeLocation: StateFlow<LocationEntity?> = _activeLocation.asStateFlow()
-
-        private val _currentWeather = MutableStateFlow<CurrentWeatherBaseResponse?>(null)
-
-        /** Last fetched current weather; shared by the Today screen, the app background, and the ZekAI prompt. */
-        val currentWeather: StateFlow<CurrentWeatherBaseResponse?> = _currentWeather.asStateFlow()
-
-        /** Seeds [activeLocation] from the persisted location once; no-op if already set. */
-        suspend fun startFromSavedLocation() {
-            if (_activeLocation.value == null) {
-                _activeLocation.value = runCatching { getSavedLocation() }.getOrNull()
-            }
-        }
-
-        /**
-         * Points the whole app at a new location. [persist] is false for the built-in fallback
-         * (Istanbul) so a guessed location never overwrites the user's real saved one.
-         */
-        suspend fun setActiveLocation(
-            latitude: Double,
-            longitude: Double,
-            persist: Boolean = true,
-        ) {
-            _activeLocation.value = LocationEntity(latitude = latitude, longitude = longitude)
-            if (persist) saveLocation(latitude, longitude)
-        }
-
-        /** [getWeather] + publishing the result into [currentWeather]. */
-        suspend fun refreshCurrentWeather(
-            lat: Double,
-            lon: Double,
-        ): CurrentWeatherBaseResponse = getWeather(lat, lon).also { _currentWeather.value = it }
-
-        // ---- Allergen preferences ---------------------------------------------------------------
-
-        fun allergenPreferences(): Flow<List<AllergenPreferenceEntity>> = allergenPreferenceDao.getAll()
-
-        /** Cold stream of the user's sensitive-allergen selection, mapped to the domain enum. */
-        fun sensitiveAllergensFlow(): Flow<Set<PollenType>> =
-            allergenPreferenceDao.getAll().map { prefs ->
-                prefs
-                    .filter { it.sensitive }
-                    .mapNotNull { runCatching { PollenType.valueOf(it.type) }.getOrNull() }
-                    .toSet()
-            }
-
-        suspend fun setAllergenPreference(
-            type: PollenType,
-            sensitive: Boolean,
-        ) {
-            withContext(Dispatchers.IO) {
-                allergenPreferenceDao.setPreference(AllergenPreferenceEntity(type.name, sensitive))
-            }
-        }
-
-        /** Allergens the user explicitly marked sensitive; empty means "treat all as relevant". */
-        suspend fun sensitiveAllergens(): Set<PollenType> =
-            withContext(Dispatchers.IO) {
-                allergenPreferenceDao
-                    .getSensitive()
-                    .mapNotNull { runCatching { PollenType.valueOf(it.type) }.getOrNull() }
-                    .toSet()
-            }
-
-        suspend fun getSavedLocation(): LocationEntity? =
-            withContext(Dispatchers.IO) {
-                locationDao.getLocation()
-            }
-
-        suspend fun saveLocation(
-            latitude: Double,
-            longitude: Double,
-        ) {
-            withContext(Dispatchers.IO) {
-                try {
-                    locationDao.insertLocation(LocationEntity(latitude = latitude, longitude = longitude))
-                } catch (e: Exception) {
-                    throw RuntimeException(resourcesProvider.getString(R.string.error_saving_location), e)
-                }
-            }
-        }
 
         // region Open-Meteo -> domain model mapping
 
@@ -346,7 +113,7 @@ class WeatherRepository
             lat: Double,
             lon: Double,
         ): CurrentWeatherBaseResponse {
-            val current = response.current ?: throw RuntimeException("Missing current weather data")
+            val current = response.current ?: error("Missing current weather data")
             val sys =
                 Sys(
                     sunrise = response.daily?.sunrise?.firstOrNull() ?: 0L,
@@ -364,7 +131,7 @@ class WeatherRepository
                     ),
                 dt = current.time,
                 sys = sys,
-                name = resolveLocationName(lat, lon),
+                name = locationRepository.resolveLocationName(lat, lon),
             )
         }
 
@@ -428,106 +195,9 @@ class WeatherRepository
                 description = resourcesProvider.getString(WmoWeather.descriptionRes(code)),
             )
 
-        private fun mapAirQuality(response: AirQualityResponse): AirQualityInfo {
-            val current = response.current
-            val rawByType =
-                mapOf(
-                    PollenType.ALDER to current?.alderPollen,
-                    PollenType.BIRCH to current?.birchPollen,
-                    PollenType.GRASS to current?.grassPollen,
-                    PollenType.MUGWORT to current?.mugwortPollen,
-                    PollenType.OLIVE to current?.olivePollen,
-                    PollenType.RAGWEED to current?.ragweedPollen,
-                )
-            val pollen =
-                rawByType.map { (type, grains) ->
-                    PollenReading(type = type, valueGrains = grains, risk = PollenLevel.risk(type, grains))
-                }
-            val hourly = response.hourly
-            val hourlyByType =
-                mapOf(
-                    PollenType.ALDER to hourly?.alderPollen.orEmpty(),
-                    PollenType.BIRCH to hourly?.birchPollen.orEmpty(),
-                    PollenType.GRASS to hourly?.grassPollen.orEmpty(),
-                    PollenType.MUGWORT to hourly?.mugwortPollen.orEmpty(),
-                    PollenType.OLIVE to hourly?.olivePollen.orEmpty(),
-                    PollenType.RAGWEED to hourly?.ragweedPollen.orEmpty(),
-                )
-            return AirQualityInfo(
-                pollen = pollen,
-                dailyForecast = buildDailyPollen(response.hourly),
-                hourlyTimes = hourly?.time.orEmpty(),
-                hourlyByType = hourlyByType,
-                pm25 = current?.pm25,
-                pm10 = current?.pm10,
-                ozone = current?.ozone,
-                europeanAqi = current?.europeanAqi,
-                pollenAvailable = pollen.any { it.valueGrains != null },
-            )
-        }
-
-        /**
-         * Open-Meteo only forecasts pollen hourly, so we aggregate the hourly series into a per-day
-         * outlook by taking each day's **peak** concentration (worst case) per pollen type. Hours
-         * are bucketed into local calendar days.
-         */
-        private fun buildDailyPollen(hourly: com.erendogan6.havatahminim.model.weather.openmeteo.AirQualityHourly?): List<DailyPollenForecast> {
-            if (hourly == null || hourly.time.isEmpty()) return emptyList()
-            val zone = java.time.ZoneId.systemDefault()
-            val seriesByType =
-                mapOf(
-                    PollenType.ALDER to hourly.alderPollen,
-                    PollenType.BIRCH to hourly.birchPollen,
-                    PollenType.GRASS to hourly.grassPollen,
-                    PollenType.MUGWORT to hourly.mugwortPollen,
-                    PollenType.OLIVE to hourly.olivePollen,
-                    PollenType.RAGWEED to hourly.ragweedPollen,
-                )
-            val indicesByDay = LinkedHashMap<java.time.LocalDate, MutableList<Int>>()
-            hourly.time.forEachIndexed { i, t ->
-                val day = java.time.Instant.ofEpochSecond(t).atZone(zone).toLocalDate()
-                indicesByDay.getOrPut(day) { mutableListOf() }.add(i)
-            }
-            return indicesByDay.values.map { indices ->
-                val readings =
-                    seriesByType.map { (type, series) ->
-                        val peak = indices.mapNotNull { idx -> series?.getOrNull(idx) }.maxOrNull()
-                        PollenReading(type, peak, PollenLevel.risk(type, peak))
-                    }
-                val hourlySeries =
-                    seriesByType.map { (type, series) ->
-                        PollenSeries(type, indices.map { idx -> series?.getOrNull(idx) })
-                    }
-                DailyPollenForecast(
-                    date = hourly.time[indices.first()],
-                    readings = readings,
-                    hours = indices.map { hourly.time[it] },
-                    hourly = hourlySeries,
-                )
-            }
-        }
-
-        /**
-         * Open-Meteo's forecast endpoint does not return a place name, so we reverse-geocode the
-         * coordinates with the platform [Geocoder]. Falls back gracefully when geocoding is
-         * unavailable or returns nothing.
-         */
-        @Suppress("DEPRECATION")
-        private fun resolveLocationName(
-            lat: Double,
-            lon: Double,
-        ): String =
-            try {
-                val geocoder = Geocoder(context, Locale(language))
-                val address = geocoder.getFromLocation(lat, lon, 1)?.firstOrNull()
-                address?.locality
-                    ?: address?.subAdminArea
-                    ?: address?.adminArea
-                    ?: address?.countryName
-                    ?: ""
-            } catch (e: Exception) {
-                ""
-            }
-
         // endregion
+
+        private companion object {
+            const val DISTANCE_THRESHOLD_METERS = 10000 // 10 km — daily forecast cache reuse radius
+        }
     }
