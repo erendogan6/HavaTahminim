@@ -35,7 +35,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -192,7 +192,7 @@ fun WeatherContent(weatherState: CurrentWeatherBaseResponse?,
 
 @Composable
 fun ErrorMessage(message: String) {
-    Text(
+    WeatherText(
         text = message,
         color = MaterialTheme.colorScheme.error,
         style = MaterialTheme.typography.titleSmall,
@@ -240,7 +240,7 @@ fun SplashScreen() {
             )
         }
         Spacer(modifier = Modifier.height(28.dp))
-        Text(
+        WeatherText(
             text = stringResource(id = R.string.loading_message),
             color = WeatherTheme.colors.ink,
             style = MaterialTheme.typography.headlineLarge.copy(shadow = Shadow(color = glow, blurRadius = 8f))
@@ -283,7 +283,7 @@ fun HourlyForecastCard(hourlyForecast: HourlyForecastBaseResponse) {
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
     ) {
-        Text(
+        WeatherText(
             text = stringResource(id = R.string.hourly_forecast),
             style = MaterialTheme.typography.headlineSmall
         )
@@ -308,13 +308,13 @@ fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
 
     Spacer(modifier = Modifier.height(24.dp))
 
-    Text(
+    WeatherText(
         text = weatherState.name,
         style = MaterialTheme.typography.displayMedium,
         modifier = Modifier.padding(vertical = 12.dp),
     )
 
-    Text(
+    WeatherText(
         text = "${weatherState.main.temp.toInt()}°C",
         style = MaterialTheme.typography.displayLarge,
         modifier = Modifier.padding(vertical = 5.dp),
@@ -326,19 +326,19 @@ fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
         modifier = Modifier.size(150.dp)
     )
 
-    Text(
+    WeatherText(
         text = weatherState.weather[0].description.capitalizeWords(),
         style = MaterialTheme.typography.headlineMedium,
     )
 
-    Text(
+    WeatherText(
         text = "${stringResource(id = R.string.feels_like)}: ${weatherState.main.feels_like.toInt()}°C",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Normal,
         modifier = Modifier.padding(vertical = 15.dp),
     )
 
-    Text(
+    WeatherText(
         text = "${stringResource(id = R.string.humidity)}: ${weatherState.main.humidity}%",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Normal,
@@ -358,7 +358,7 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
+        WeatherText(
             text = date,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(vertical = 6.dp),
@@ -369,7 +369,7 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
             contentDescription = null,
             modifier = Modifier.size(60.dp),
         )
-        Text(
+        WeatherText(
             text = "${forecast.main.temp.toInt()}°C",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 6.dp),
@@ -386,7 +386,7 @@ fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.size(2.dp))
-                Text(
+                WeatherText(
                     text = "%$pop",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,

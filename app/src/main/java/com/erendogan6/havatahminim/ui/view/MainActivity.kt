@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -295,16 +295,14 @@ fun NoInternetDialog(onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = "İnternet Bağlantısı Yok")
+            WeatherText(text = stringResource(id = R.string.no_internet_title))
         },
         text = {
-            Text(
-                text = "Hava durumu verilerini almak için internet bağlantısına ihtiyacınız var. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.",
-            )
+            WeatherText(text = stringResource(id = R.string.no_internet_message))
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text("Tamam")
+                WeatherText(stringResource(id = R.string.ok))
             }
         },
     )
@@ -318,19 +316,19 @@ fun PermissionRationaleDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = stringResource(id = R.string.permission_rationale_title))
+            WeatherText(text = stringResource(id = R.string.permission_rationale_title))
         },
         text = {
-            Text(text = stringResource(id = R.string.permission_rationale_message))
+            WeatherText(text = stringResource(id = R.string.permission_rationale_message))
         },
         confirmButton = {
             Button(onClick = onRequestPermission) {
-                Text(stringResource(id = R.string.grant_permission))
+                WeatherText(stringResource(id = R.string.grant_permission))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text(stringResource(id = R.string.cancel))
+                WeatherText(stringResource(id = R.string.cancel))
             }
         },
     )
@@ -344,14 +342,14 @@ fun ErrorDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = stringResource(id = R.string.error_title))
+            WeatherText(text = stringResource(id = R.string.error_title))
         },
         text = {
-            Text(text = message)
+            WeatherText(text = message)
         },
         confirmButton = {
             Button(onClick = onDismiss) {
-                Text(stringResource(id = R.string.ok))
+                WeatherText(stringResource(id = R.string.ok))
             }
         },
     )
