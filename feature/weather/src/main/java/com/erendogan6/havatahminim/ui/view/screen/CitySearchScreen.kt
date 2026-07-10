@@ -102,7 +102,7 @@ fun CitySearchScreen(
 }
 
 @Composable
-fun CityCard(
+private fun CityCard(
     city: City,
     onCitySelected: (City) -> Unit,
 ) {
