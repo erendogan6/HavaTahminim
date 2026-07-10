@@ -11,6 +11,7 @@ import com.erendogan6.havatahminim.repository.AirQualityRepository
 import com.erendogan6.havatahminim.repository.SuggestionRepository
 import com.erendogan6.havatahminim.util.PollenLevel
 import com.erendogan6.havatahminim.util.ResourcesProvider
+import java.time.Clock
 import javax.inject.Inject
 
 /**
@@ -25,6 +26,7 @@ class GenerateWeatherSuggestionUseCase
         private val airQualityRepository: AirQualityRepository,
         private val suggestionRepository: SuggestionRepository,
         private val resourcesProvider: ResourcesProvider,
+        private val clock: Clock,
     ) {
         suspend operator fun invoke(
             lat: Double,
@@ -60,7 +62,7 @@ class GenerateWeatherSuggestionUseCase
             if (info == null || prefs.isEmpty() || !info.pollenAvailable) return ""
             val unit = resourcesProvider.getString(R.string.pollen_unit)
             val nextLabel = resourcesProvider.getString(R.string.pollen_next_hours)
-            val now = System.currentTimeMillis() / 1000
+            val now = clock.millis() / 1000
             val startIndex = info.hourlyTimes.indexOfFirst { it >= now }.takeIf { it >= 0 } ?: 0
 
             return info.pollen
