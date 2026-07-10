@@ -15,10 +15,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,12 +45,19 @@ fun CitySearchScreen(
     onCitySelected: (City) -> Unit = {},
 ) {
     val cityState by weatherViewModel.cities.collectAsStateWithLifecycle()
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     DisposableEffect(Unit) {
         onDispose {
             weatherViewModel.clearCities()
+        }
+    }
+
+    // Keyed on the (saveable) query: also re-runs after rotation, restoring the cleared results.
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.length > 2) {
+            weatherViewModel.fetchCities(searchQuery)
         }
     }
 
@@ -62,12 +70,7 @@ fun CitySearchScreen(
     ) {
         WeatherTextField(
             value = searchQuery,
-            onValueChange = {
-                searchQuery = it
-                if (searchQuery.length > 2) {
-                    weatherViewModel.fetchCities(it)
-                }
-            },
+            onValueChange = { searchQuery = it },
             label = { WeatherText(text = stringResource(id = R.string.city_search)) },
             modifier =
                 Modifier

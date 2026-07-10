@@ -36,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -288,7 +289,7 @@ private fun DailyForecast(
     selected: Set<PollenType>,
 ) {
     // Accordion: one day expanded at a time; today (index 0) open by default.
-    var expandedIndex by remember { mutableIntStateOf(0) }
+    var expandedIndex by rememberSaveable { mutableIntStateOf(0) }
     Column(modifier = Modifier.fillMaxWidth()) {
         days.forEachIndexed { index, day ->
             DailyDayCard(
