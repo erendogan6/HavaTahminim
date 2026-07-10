@@ -67,8 +67,9 @@ class ZekAiViewModel
                     val forceRefresh = lastPrefs != null && lastPrefs != prefs
                     if (coords != lastCoords || forceRefresh) {
                         // Genuine input change: show the thinking state while regenerating.
+                        // lastSuggestion is deliberately kept — if the regeneration fails, the
+                        // previous suggestion is restored instead of an indefinite spinner.
                         emit(null)
-                        lastSuggestion = null
                     }
                     // The prompt needs the current conditions; wait until the Today pipeline (or a
                     // previous session) has published them.
