@@ -2,8 +2,10 @@
 <resources>
     <string name="loading_message">Gökyüzü İnceleniyor…</string>
     <string name="hourly_forecast">Saatlik Hava Durumu</string>
-    <string name="feels_like">Hissedilen Sıcaklık</string>
-    <string name="humidity">Nem</string>
+    <string name="temperature_format">%1$d°C</string>
+    <string name="feels_like_format">Hissedilen Sıcaklık: %1$d°C</string>
+    <string name="humidity_format">Nem: %%%1$d</string>
+    <string name="pop_format">%%%1$d</string>
     <string name="zekai_suggestions">ZekAI\'nin Önerileri</string>
     <string name="zekai_thinking">ZekAI öneriler için düşünüyor…</string>
     <string name="daily_forecast_title">7 Günlük Hava Durumu</string>

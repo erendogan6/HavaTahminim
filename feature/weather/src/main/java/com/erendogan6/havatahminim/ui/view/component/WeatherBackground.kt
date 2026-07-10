@@ -18,7 +18,7 @@ fun BackgroundImage(
     weatherState: CurrentWeatherBaseResponse?,
     modifier: Modifier = Modifier,
 ) {
-    val backgroundImage = if (weatherState != null) R.drawable.aydinlik else R.drawable.splash
+    val backgroundImage = if (weatherState != null) R.drawable.weather_background else R.drawable.splash
     val alpha = if (weatherState != null) 0.5f else 0.7f
 
     Image(
