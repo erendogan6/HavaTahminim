@@ -18,6 +18,11 @@ android {
     defaultConfig {
         minSdk = 26
     }
+    buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
+    }
     testOptions {
         unitTests {
             // android.util.Log only. Platform *logic* (Location.distanceTo, icu Calendar) was
