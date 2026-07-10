@@ -133,7 +133,7 @@ private fun DailyForecastItem(
             }
 
             WeatherText(
-                text = "${forecast.temp.day.toInt()}°C",
+                text = stringResource(id = R.string.temperature_format, forecast.temp.day.toInt()),
                 style = MaterialTheme.typography.headlineSmall,
                 modifier =
                     Modifier
