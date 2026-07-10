@@ -46,7 +46,7 @@ import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
 import com.erendogan6.havatahminim.ui.view.navigation.Screen
 import com.erendogan6.havatahminim.ui.view.navigation.WeatherNavigationRail
 import com.erendogan6.havatahminim.ui.view.screen.AllergyScreen
-import com.erendogan6.havatahminim.ui.view.screen.BackgroundImage
+import com.erendogan6.havatahminim.ui.view.component.BackgroundImage
 import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
 import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
 import com.erendogan6.havatahminim.ui.view.screen.ZekAIScreen
