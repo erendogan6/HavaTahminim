@@ -60,6 +60,11 @@ import com.erendogan6.havatahminim.model.airquality.PollenRisk
 import com.erendogan6.havatahminim.model.airquality.PollenSeries
 import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
+import com.erendogan6.havatahminim.ui.view.component.ChartLegend
+import com.erendogan6.havatahminim.ui.view.component.PollenDayChart
+import com.erendogan6.havatahminim.ui.view.component.SplashScreen
+import com.erendogan6.havatahminim.ui.view.component.aqiColor
+import com.erendogan6.havatahminim.ui.view.component.riskColor
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.AqiLevel
 import com.erendogan6.havatahminim.util.PollenLevel
@@ -67,21 +72,18 @@ import java.text.SimpleDateFormat
 
 @Composable
 fun AllergyScreen(weatherViewModel: WeatherViewModel) {
-    val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
     val airQuality by weatherViewModel.airQuality.collectAsStateWithLifecycle()
     val selectedAllergens by weatherViewModel.allergenPrefs.collectAsStateWithLifecycle()
 
-    WeatherBackgroundLayout(weatherState) {
-        Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-            if (airQuality == null) {
-                SplashScreen()
-            } else {
-                AllergyContent(
-                    airQuality = airQuality!!,
-                    selectedAllergens = selectedAllergens,
-                    onToggleAllergen = { type, sensitive -> weatherViewModel.toggleAllergen(type, sensitive) },
-                )
-            }
+    Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
+        if (airQuality == null) {
+            SplashScreen()
+        } else {
+            AllergyContent(
+                airQuality = airQuality!!,
+                selectedAllergens = selectedAllergens,
+                onToggleAllergen = { type, sensitive -> weatherViewModel.toggleAllergen(type, sensitive) },
+            )
         }
     }
 }
@@ -360,139 +362,7 @@ private fun DailyDayCard(
     }
 }
 
-/** Hourly line chart of pollen concentration across the day (one colored line per pollen type). */
-@Composable
-private fun PollenDayChart(
-    hours: List<Long>,
-    series: List<PollenSeries>,
-) {
-    val locale = LocalConfiguration.current.locales[0]
-    val timeFmt = remember(locale) { SimpleDateFormat("HH:mm", locale) }
-    val colors = WeatherTheme.colors
 
-    // Global peak across the shown species: what peaks, when and how much.
-    var peakType: PollenType? = null
-    var peakIndex = 0
-    var peakValue = 0.0
-    series.forEach { s ->
-        s.values.forEachIndexed { i, v ->
-            val value = v ?: 0.0
-            if (value > peakValue) {
-                peakValue = value
-                peakType = s.type
-                peakIndex = i
-            }
-        }
-    }
-    val axisMax = (peakValue * 1.15).takeIf { it > 0.0 } ?: 1.0 // headroom so the peak isn't clipped
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        peakType?.let { pt ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier.size(10.dp).clip(CircleShape).background(colors.typeColor(pt)),
-                )
-                Spacer(Modifier.size(6.dp))
-                WeatherText(
-                    text =
-                        "${stringResource(R.string.pollen_peak)}: " +
-                            "${stringResource(PollenLevel.typeNameRes(pt))} · " +
-                            "${timeFmt.format(hours.getOrElse(peakIndex) { 0L } * 1000L)} · " +
-                            "${peakValue.toInt()} ${stringResource(R.string.pollen_unit)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.ink,
-                )
-            }
-        }
-        Spacer(Modifier.size(8.dp))
-        Canvas(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(colors.chartBackground)
-                    .padding(horizontal = 10.dp, vertical = 12.dp),
-        ) {
-            val w = size.width
-            val h = size.height
-            listOf(0f, 0.25f, 0.5f, 0.75f, 1f).forEach { f ->
-                drawLine(
-                    color = colors.chartGrid,
-                    start = Offset(0f, h * f),
-                    end = Offset(w, h * f),
-                    strokeWidth = 1.dp.toPx(),
-                )
-            }
-            val lineStyle = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
-            series.forEach { s ->
-                val n = s.values.size
-                if (n >= 2) {
-                    val path = Path()
-                    s.values.forEachIndexed { i, v ->
-                        val x = i / (n - 1f) * w
-                        val y = h - ((v ?: 0.0) / axisMax).toFloat() * h
-                        if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
-                    }
-                    drawPath(path = path, color = colors.typeColor(s.type), style = lineStyle)
-                }
-            }
-            // Highlight the peak point.
-            peakType?.let { pt ->
-                val n = series.first { it.type == pt }.values.size
-                if (n >= 2) {
-                    val x = peakIndex / (n - 1f) * w
-                    val y = h - (peakValue / axisMax).toFloat() * h
-                    drawCircle(colors.chartBackground, radius = 5.dp.toPx(), center = Offset(x, y))
-                    drawCircle(colors.typeColor(pt), radius = 4.dp.toPx(), center = Offset(x, y))
-                }
-            }
-        }
-        Spacer(Modifier.size(6.dp))
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            val n = hours.size
-            if (n > 0) {
-                listOf(0, n / 4, n / 2, 3 * n / 4, n - 1).distinct().forEach { idx ->
-                    WeatherText(
-                        text = timeFmt.format(hours[idx] * 1000L),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = colors.ink,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun ChartLegend(readings: List<PollenReading>) {
-    FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        readings.forEach { reading ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(12.dp)
-                            .clip(CircleShape)
-                            .background(WeatherTheme.colors.typeColor(reading.type)),
-                )
-                Spacer(Modifier.size(6.dp))
-                WeatherText(
-                    text =
-                        "${stringResource(PollenLevel.typeNameRes(reading.type))} · " +
-                            stringResource(PollenLevel.riskLabelRes(reading.risk)),
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun AirQualityCard(info: AirQualityInfo) {

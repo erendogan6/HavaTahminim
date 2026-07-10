@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.ui.view.screen
+package com.erendogan6.havatahminim.ui.view.component
 
 import androidx.compose.ui.graphics.Color
 import com.erendogan6.havatahminim.model.airquality.PollenRisk
