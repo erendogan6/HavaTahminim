@@ -34,6 +34,9 @@ dependencies {
     // GeminiService resolves its localized system instruction via ResourcesProvider.
     api project(':core:common')
 
+    // safeApiCall exposes CoroutineDispatcher/suspend in its signature.
+    api libs.kotlinx.coroutines.core
+
     api libs.retrofit
     implementation libs.converter.gson
     api libs.okhttp
