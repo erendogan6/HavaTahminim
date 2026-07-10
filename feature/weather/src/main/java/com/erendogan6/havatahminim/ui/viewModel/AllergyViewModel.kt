@@ -5,7 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
 import com.erendogan6.havatahminim.model.airquality.PollenType
-import com.erendogan6.havatahminim.repository.WeatherRepository
+import com.erendogan6.havatahminim.network.getOrNull
+import com.erendogan6.havatahminim.network.onError
+import com.erendogan6.havatahminim.repository.AirQualityRepository
+import com.erendogan6.havatahminim.repository.AllergenRepository
+import com.erendogan6.havatahminim.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,10 +33,12 @@ import javax.inject.Inject
 class AllergyViewModel
     @Inject
     constructor(
-        private val repository: WeatherRepository,
+        locationRepository: LocationRepository,
+        airQualityRepository: AirQualityRepository,
+        private val allergenRepository: AllergenRepository,
     ) : ViewModel() {
         val allergenPrefs: StateFlow<Set<PollenType>> =
-            repository
+            allergenRepository
                 .sensitiveAllergensFlow()
                 .catch { e ->
                     Log.e(TAG, "Failed to observe allergen preferences", e)
@@ -44,12 +50,13 @@ class AllergyViewModel
                 )
 
         val airQuality: StateFlow<AirQualityInfo?> =
-            repository.activeLocation
+            locationRepository.activeLocation
                 .filterNotNull()
                 .distinctUntilChangedBy { it.latitude to it.longitude }
                 .mapLatest { location ->
-                    runCall { repository.getAirQuality(location.latitude, location.longitude) }
-                        .onFailure { Log.e(TAG, "Air quality fetch failed", it) }
+                    airQualityRepository
+                        .getAirQuality(location.latitude, location.longitude)
+                        .onError { Log.e(TAG, "Air quality fetch failed: $it") }
                         .getOrNull()
                 }.stateIn(
                     scope = viewModelScope,
@@ -62,7 +69,7 @@ class AllergyViewModel
             sensitive: Boolean,
         ) {
             viewModelScope.launch {
-                repository.setAllergenPreference(type, sensitive)
+                allergenRepository.setAllergenPreference(type, sensitive)
             }
         }
 

@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="error_saving_location">Konum kaydedilirken hata oluştu</string>
     <string name="error_fetching_weather_data">Hava durumu verileri alınırken hata oluştu</string>
-    <string name="error_fetching_hourly_forecast">Saatlik hava durumu verileri alınırken hata oluştu</string>
-    <string name="error_fetching_weather_suggestions">Hava durumu önerileri alınırken hata oluştu. Hata: %s</string>
     <string name="error_fetching_daily_forecast">Günlük hava durumu verileri alınırken hata oluştu</string>
-    <string name="error_fetching_cities">Şehirler alınırken hata oluştu</string>
-    <string name="general_error_message">Bir hata oluştu. Lütfen tekrar deneyin.</string>
-    <string name="serialization_error_message">Serileştirme Hatası</string>
-    <string name="error_fetching_air_quality">Hava kalitesi verileri alınırken hata oluştu</string>
 </resources>
