@@ -22,9 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +40,6 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
     val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
     val weatherSuggestions by weatherViewModel.weatherSuggestions.collectAsStateWithLifecycle()
-    var isLoadingSuggestions by remember { mutableStateOf(true) }
 
     // Regenerate the suggestion when the tab is opened, but only if the allergen selection changed.
     LaunchedEffect(Unit) {
@@ -61,10 +57,7 @@ fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(Modifier.size(30.dp))
-                weatherSuggestions?.let {
-                    SuggestionsCard(it)
-                    isLoadingSuggestions = false
-                } ?: ThinkerCard()
+                weatherSuggestions?.let { SuggestionsCard(it) } ?: ThinkerCard()
             }
         }
     }
