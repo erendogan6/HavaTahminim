@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Scaffold
 import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
-import com.erendogan6.havatahminim.ui.component.WeatherDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -32,14 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.extension.NetworkUtils
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
@@ -52,12 +49,12 @@ import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
 import com.erendogan6.havatahminim.ui.view.screen.ZekAIScreen
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import com.erendogan6.havatahminim.util.NotificationUtils
+import com.erendogan6.havatahminim.util.getCurrentLocation
+import com.erendogan6.havatahminim.util.isLocationServiceEnabled
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -252,11 +249,6 @@ fun HavaTahminimApp() {
     }
 }
 
-private fun isLocationServiceEnabled(context: Context): Boolean {
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as android.location.LocationManager
-    return locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER) ||
-        locationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER)
-}
 
 private fun requestNotificationPermission(notificationPermissionLauncher: ActivityResultLauncher<String>) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -305,69 +297,6 @@ private fun useLastOrDefaultLocation(
     }
 }
 
-@Composable
-fun NoInternetDialog(onDismiss: () -> Unit) {
-    WeatherDialog(
-        title = stringResource(id = R.string.no_internet_title),
-        message = stringResource(id = R.string.no_internet_message),
-        confirmText = stringResource(id = R.string.ok),
-        onConfirm = onDismiss,
-        onDismissRequest = onDismiss,
-    )
-}
 
-@Composable
-fun PermissionRationaleDialog(
-    onDismiss: () -> Unit,
-    onRequestPermission: () -> Unit,
-) {
-    WeatherDialog(
-        title = stringResource(id = R.string.permission_rationale_title),
-        message = stringResource(id = R.string.permission_rationale_message),
-        confirmText = stringResource(id = R.string.grant_permission),
-        onConfirm = onRequestPermission,
-        onDismissRequest = onDismiss,
-        dismissText = stringResource(id = R.string.cancel),
-        onDismiss = onDismiss,
-    )
-}
 
-@Composable
-fun ErrorDialog(
-    message: String,
-    onDismiss: () -> Unit,
-) {
-    WeatherDialog(
-        title = stringResource(id = R.string.error_title),
-        message = message,
-        confirmText = stringResource(id = R.string.ok),
-        onConfirm = onDismiss,
-        onDismissRequest = onDismiss,
-    )
-}
 
-suspend fun getCurrentLocation(
-    context: Context,
-    fusedLocationClient: FusedLocationProviderClient,
-    onNewLocation: (Double, Double) -> Unit,
-): Result<Unit> =
-    runCatching {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            ) == PermissionChecker.PERMISSION_GRANTED
-        ) {
-            val location =
-                fusedLocationClient
-                    .getCurrentLocation(
-                        Priority.PRIORITY_HIGH_ACCURACY,
-                        null,
-                    ).await()
-
-            location?.let {
-                onNewLocation(it.latitude, it.longitude)
-            } ?: throw Exception("Konum alınamadı")
-        } else {
-            throw Exception("İzin verilmedi")
-        }
-    }

@@ -17,6 +17,8 @@ import androidx.compose.material3.Surface
 import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,13 +32,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.extension.capitalizeWords
+import com.erendogan6.havatahminim.extension.toDayName
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecast
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.view.component.SplashScreen
 import com.erendogan6.havatahminim.ui.view.component.weatherIconRes
 import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
-import java.text.SimpleDateFormat
 
 @Composable
 fun DailyForecastScreen(
@@ -45,21 +47,22 @@ fun DailyForecastScreen(
 ) {
     val dailyForecast by weatherViewModel.dailyForecast.collectAsStateWithLifecycle()
 
+    // See WeatherContent: notify data-arrival after composition, always via the latest callback.
+    val currentOnLoaded by rememberUpdatedState(onLoaded)
+    val hasData = dailyForecast != null
+    LaunchedEffect(hasData) {
+        if (hasData) currentOnLoaded()
+    }
+
     Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-        dailyForecast?.let {
-            onLoaded()
-            DailyForecastCard(it)
-        } ?: SplashScreen()
+        dailyForecast?.let { DailyForecastCard(it) } ?: SplashScreen()
     }
 }
 
 @Composable
 private fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
     val locale = LocalConfiguration.current.locales[0]
-    val dayNames =
-        dailyForecast.list.map {
-            SimpleDateFormat("EEEE", locale).format(it.dt * 1000L)
-        }
+    val dayNames = dailyForecast.list.map { it.dt.toDayName(locale) }
     val maxWidth = dayNames.maxOfOrNull { it.length } ?: 0
 
     Spacer(modifier = Modifier.size(30.dp))
@@ -91,8 +94,7 @@ private fun DailyForecastItem(
     maxWidth: Float,
 ) {
     val locale = LocalConfiguration.current.locales[0]
-    val dayFormat = SimpleDateFormat("EEEE", locale)
-    val day = dayFormat.format(forecast.dt * 1000L)
+    val day = forecast.dt.toDayName(locale)
 
     WeatherCard(modifier = Modifier.fillMaxWidth()) {
         Row(
