@@ -37,13 +37,25 @@ import com.erendogan6.havatahminim.util.PollenLevel
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import com.erendogan6.havatahminim.util.WmoWeather
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import com.google.ai.client.generativeai.type.SerializationException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
+import javax.inject.Singleton
 
+/**
+ * Single source of truth for the weather domain. Besides the fetch/cache operations it holds the
+ * app's session state — the active location and the last fetched current weather — as observable
+ * state, so per-screen ViewModels share data through this layer instead of through each other.
+ * Must stay @Singleton: that session state is only meaningful if every ViewModel sees the same one.
+ */
+@Singleton
 class WeatherRepository
     @Inject
     constructor(
@@ -240,7 +252,56 @@ class WeatherRepository
                 }
             }
 
+        // ---- Session state (in-memory SSOT) ----------------------------------------------------
+
+        private val _activeLocation = MutableStateFlow<LocationEntity?>(null)
+
+        /** The location every screen keys its data off. Set by GPS, city selection, or the saved fallback. */
+        val activeLocation: StateFlow<LocationEntity?> = _activeLocation.asStateFlow()
+
+        private val _currentWeather = MutableStateFlow<CurrentWeatherBaseResponse?>(null)
+
+        /** Last fetched current weather; shared by the Today screen, the app background, and the ZekAI prompt. */
+        val currentWeather: StateFlow<CurrentWeatherBaseResponse?> = _currentWeather.asStateFlow()
+
+        /** Seeds [activeLocation] from the persisted location once; no-op if already set. */
+        suspend fun startFromSavedLocation() {
+            if (_activeLocation.value == null) {
+                _activeLocation.value = runCatching { getSavedLocation() }.getOrNull()
+            }
+        }
+
+        /**
+         * Points the whole app at a new location. [persist] is false for the built-in fallback
+         * (Istanbul) so a guessed location never overwrites the user's real saved one.
+         */
+        suspend fun setActiveLocation(
+            latitude: Double,
+            longitude: Double,
+            persist: Boolean = true,
+        ) {
+            _activeLocation.value = LocationEntity(latitude = latitude, longitude = longitude)
+            if (persist) saveLocation(latitude, longitude)
+        }
+
+        /** [getWeather] + publishing the result into [currentWeather]. */
+        suspend fun refreshCurrentWeather(
+            lat: Double,
+            lon: Double,
+        ): CurrentWeatherBaseResponse = getWeather(lat, lon).also { _currentWeather.value = it }
+
+        // ---- Allergen preferences ---------------------------------------------------------------
+
         fun allergenPreferences(): Flow<List<AllergenPreferenceEntity>> = allergenPreferenceDao.getAll()
+
+        /** Cold stream of the user's sensitive-allergen selection, mapped to the domain enum. */
+        fun sensitiveAllergensFlow(): Flow<Set<PollenType>> =
+            allergenPreferenceDao.getAll().map { prefs ->
+                prefs
+                    .filter { it.sensitive }
+                    .mapNotNull { runCatching { PollenType.valueOf(it.type) }.getOrNull() }
+                    .toSet()
+            }
 
         suspend fun setAllergenPreference(
             type: PollenType,
