@@ -3,7 +3,6 @@ package com.erendogan6.havatahminim.ui.view.screen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,11 +71,14 @@ import com.erendogan6.havatahminim.util.AqiLevel
 import com.erendogan6.havatahminim.util.PollenLevel
 
 @Composable
-fun AllergyScreen(weatherViewModel: WeatherViewModel) {
+fun AllergyScreen(
+    weatherViewModel: WeatherViewModel,
+    modifier: Modifier = Modifier,
+) {
     val airQuality by weatherViewModel.airQuality.collectAsStateWithLifecycle()
     val selectedAllergens by weatherViewModel.allergenPrefs.collectAsStateWithLifecycle()
 
-    Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
+    Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
         if (airQuality == null) {
             SplashScreen()
         } else {
@@ -310,8 +312,11 @@ private fun DailyDayCard(
     val dayWorst = relevant.worst()
     val worstRisk = dayWorst?.risk ?: PollenRisk.NONE
 
-    WeatherCard(modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)) {
-        Column(modifier = Modifier.fillMaxWidth().clickable { onToggle() }.padding(horizontal = 14.dp, vertical = 12.dp)) {
+    WeatherCard(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+        onClick = onToggle,
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
