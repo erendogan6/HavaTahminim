@@ -16,7 +16,10 @@ import androidx.core.content.ContextCompat
 import com.erendogan6.havatahminim.R
 import com.erendogan6.havatahminim.feature.weather.R as FeatureR
 import com.erendogan6.havatahminim.model.airquality.relevantTo
-import com.erendogan6.havatahminim.repository.WeatherRepository
+import com.erendogan6.havatahminim.network.getOrNull
+import com.erendogan6.havatahminim.repository.AirQualityRepository
+import com.erendogan6.havatahminim.repository.AllergenRepository
+import com.erendogan6.havatahminim.repository.LocationRepository
 import com.erendogan6.havatahminim.ui.view.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +30,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NotificationReceiver : BroadcastReceiver() {
     @Inject
-    lateinit var repository: WeatherRepository
+    lateinit var locationRepository: LocationRepository
+
+    @Inject
+    lateinit var airQualityRepository: AirQualityRepository
+
+    @Inject
+    lateinit var allergenRepository: AllergenRepository
 
     override fun onReceive(
         context: Context,
@@ -57,13 +66,14 @@ class NotificationReceiver : BroadcastReceiver() {
             context.getString(R.string.notification_weather_title) to
                 context.getString(R.string.notification_weather_text)
 
-        val location = runCatching { repository.getSavedLocation() }.getOrNull() ?: return generic
+        val location = runCatching { locationRepository.getSavedLocation() }.getOrNull() ?: return generic
         val airQuality =
-            runCatching { repository.getAirQuality(location.latitude, location.longitude) }
+            airQualityRepository
+                .getAirQuality(location.latitude, location.longitude)
                 .getOrNull() ?: return generic
         if (!airQuality.pollenAvailable) return generic
 
-        val sensitive = runCatching { repository.sensitiveAllergens() }.getOrNull().orEmpty()
+        val sensitive = runCatching { allergenRepository.sensitiveAllergens() }.getOrNull().orEmpty()
         val alarming =
             airQuality.pollen
                 .relevantTo(sensitive)
