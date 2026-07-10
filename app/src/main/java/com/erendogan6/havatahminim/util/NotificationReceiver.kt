@@ -86,8 +86,8 @@ class NotificationReceiver : BroadcastReceiver() {
         val channelId = "daily_notification_channel"
 
         if (notificationManager.getNotificationChannel(channelId) == null) {
-            val channelName = "Daily Notification Channel"
-            val channelDescription = "Channel for daily weather check notifications"
+            val channelName = context.getString(R.string.notification_channel_name)
+            val channelDescription = context.getString(R.string.notification_channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel =
                 NotificationChannel(channelId, channelName, importance).apply {
