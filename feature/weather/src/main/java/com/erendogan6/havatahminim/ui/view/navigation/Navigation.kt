@@ -9,7 +9,7 @@ import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
+import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -50,7 +50,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         screens.forEach { screen ->
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = stringResource(id = screen.title)) },
-                label = { Text(stringResource(id = screen.title)) },
+                label = { WeatherText(stringResource(id = screen.title)) },
                 selected = currentRoute == screen.route,
                 onClick = {
                     navController.navigate(screen.route) {

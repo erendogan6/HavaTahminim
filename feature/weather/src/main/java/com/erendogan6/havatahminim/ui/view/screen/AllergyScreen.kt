@@ -31,7 +31,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -153,12 +153,12 @@ private fun HeroCard(worst: PollenReading?) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
-            Text(
+            WeatherText(
                 text = stringResource(R.string.allergy_today_risk),
                 color = onColored,
                 style = MaterialTheme.typography.bodyLarge,
             )
-            Text(
+            WeatherText(
                 text = stringResource(PollenLevel.riskLabelRes(risk)).uppercase(),
                 color = onColored,
                 style =
@@ -167,7 +167,7 @@ private fun HeroCard(worst: PollenReading?) {
                     ),
             )
             if (worst != null && risk != PollenRisk.NONE) {
-                Text(
+                WeatherText(
                     text =
                         "${stringResource(R.string.allergy_top)}: " +
                             stringResource(PollenLevel.typeNameRes(worst.type)),
@@ -193,7 +193,7 @@ private fun AllergenSelector(
                 .background(WeatherTheme.colors.surfaceVeil)
                 .padding(12.dp),
     ) {
-        Text(
+        WeatherText(
             text = stringResource(R.string.allergy_settings_title),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
@@ -205,7 +205,7 @@ private fun AllergenSelector(
                 FilterChip(
                     selected = isSelected,
                     onClick = { onToggle(type, !isSelected) },
-                    label = { Text(stringResource(PollenLevel.typeNameRes(type))) },
+                    label = { WeatherText(stringResource(PollenLevel.typeNameRes(type))) },
                     colors = FilterChipDefaults.filterChipColors(selectedContainerColor = WeatherTheme.colors.cardSurface),
                 )
             }
@@ -230,11 +230,11 @@ private fun PollenBarRow(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
+                WeatherText(
                     text = stringResource(PollenLevel.typeNameRes(reading.type)),
                     style = MaterialTheme.typography.titleSmall,
                 )
-                Text(
+                WeatherText(
                     text = "${(reading.valueGrains ?: 0.0).toInt()} ${stringResource(R.string.pollen_unit)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = WeatherTheme.colors.mutedText,
@@ -249,7 +249,7 @@ private fun PollenBarRow(
                     )
                 }
                 Spacer(Modifier.size(10.dp))
-                Text(
+                WeatherText(
                     text = stringResource(PollenLevel.riskLabelRes(reading.risk)),
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Bold,
@@ -327,7 +327,7 @@ private fun DailyDayCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
+                WeatherText(
                     text = dayName.replaceFirstChar { it.uppercase(locale) },
                     style = MaterialTheme.typography.titleSmall,
                 )
@@ -348,7 +348,7 @@ private fun DailyDayCard(
                 val active = relevant.filter { it.risk != PollenRisk.NONE }
                 Column(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
                     if (active.isEmpty()) {
-                        Text(
+                        WeatherText(
                             text = stringResource(R.string.pollen_all_low),
                             style = MaterialTheme.typography.bodyMedium,
                             color = WeatherTheme.colors.mutedText,
@@ -398,7 +398,7 @@ private fun PollenDayChart(
                     modifier = Modifier.size(10.dp).clip(CircleShape).background(colors.typeColor(pt)),
                 )
                 Spacer(Modifier.size(6.dp))
-                Text(
+                WeatherText(
                     text =
                         "${stringResource(R.string.pollen_peak)}: " +
                             "${stringResource(PollenLevel.typeNameRes(pt))} · " +
@@ -459,7 +459,7 @@ private fun PollenDayChart(
             val n = hours.size
             if (n > 0) {
                 listOf(0, n / 4, n / 2, 3 * n / 4, n - 1).distinct().forEach { idx ->
-                    Text(
+                    WeatherText(
                         text = timeFmt.format(hours[idx] * 1000L),
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.ink,
@@ -488,7 +488,7 @@ private fun ChartLegend(readings: List<PollenReading>) {
                             .background(WeatherTheme.colors.typeColor(reading.type)),
                 )
                 Spacer(Modifier.size(6.dp))
-                Text(
+                WeatherText(
                     text =
                         "${stringResource(PollenLevel.typeNameRes(reading.type))} · " +
                             stringResource(PollenLevel.riskLabelRes(reading.risk)),
@@ -512,7 +512,7 @@ private fun AirQualityCard(info: AirQualityInfo) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
+                WeatherText(
                     text = stringResource(R.string.european_aqi),
                     style = MaterialTheme.typography.titleSmall,
                 )
@@ -538,8 +538,8 @@ private fun MetricRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
     ) {
-        Text(label, style = MaterialTheme.typography.bodyLarge)
-        Text(
+        WeatherText(label, style = MaterialTheme.typography.bodyLarge)
+        WeatherText(
             text = value?.let { "${it.toInt()} ${stringResource(R.string.unit_ugm3)}" } ?: "-",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
@@ -559,7 +559,7 @@ private fun RiskBadge(
                 .background(color)
                 .padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
-        Text(
+        WeatherText(
             text = text,
             color = WeatherTheme.colors.onColoredCard,
             style = MaterialTheme.typography.labelLarge,
@@ -569,7 +569,7 @@ private fun RiskBadge(
 
 @Composable
 private fun SectionTitle(text: String) {
-    Text(
+    WeatherText(
         text = text,
         style =
             MaterialTheme.typography.titleLarge.copy(
@@ -586,7 +586,7 @@ private fun InfoCard(message: String) {
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Text(
+        WeatherText(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(16.dp),

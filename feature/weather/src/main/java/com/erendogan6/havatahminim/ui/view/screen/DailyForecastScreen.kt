@@ -16,7 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -73,7 +73,7 @@ fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
+        WeatherText(
             text = stringResource(id = R.string.daily_forecast_title),
             style = MaterialTheme.typography.headlineLarge,
         )
@@ -110,7 +110,7 @@ fun DailyForecastItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 8.dp),
         ) {
-            Text(
+            WeatherText(
                 text = day,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.widthIn(min = maxWidth.dp),
@@ -129,7 +129,7 @@ fun DailyForecastItem(
                     contentDescription = null,
                     modifier = Modifier.size(50.dp),
                 )
-                Text(
+                WeatherText(
                     text = forecast.weather[0].description.capitalizeWords(),
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 18.sp,
@@ -140,7 +140,7 @@ fun DailyForecastItem(
                 )
             }
 
-            Text(
+            WeatherText(
                 text = "${forecast.temp.day.toInt()}°C",
                 style = MaterialTheme.typography.headlineSmall,
                 modifier =
