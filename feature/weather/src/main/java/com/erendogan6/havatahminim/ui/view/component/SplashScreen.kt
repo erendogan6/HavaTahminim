@@ -37,7 +37,7 @@ import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 
 /** Animated loading state shown by every tab until its data slice arrives. */
 @Composable
-internal fun SplashScreen() {
+internal fun SplashScreen(modifier: Modifier = Modifier) {
     val transition = rememberInfiniteTransition(label = "splash")
     val rotation by transition.animateFloat(
         initialValue = 0f,
@@ -56,7 +56,7 @@ internal fun SplashScreen() {
     // without clipping.
     val compact = isCompactHeight()
     val glow = WeatherTheme.colors.glow
-    CenteredColumn {
+    CenteredColumn(modifier = modifier) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.size(if (compact) 132.dp else 200.dp)) {
             // Soft glowing halo that breathes behind the icon.
             Box(

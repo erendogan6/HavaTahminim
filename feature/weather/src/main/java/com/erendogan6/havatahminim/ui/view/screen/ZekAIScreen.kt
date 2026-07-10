@@ -38,7 +38,10 @@ import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @Composable
-fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
+fun ZekAIScreen(
+    weatherViewModel: WeatherViewModel,
+    modifier: Modifier = Modifier,
+) {
     val weatherSuggestions by weatherViewModel.weatherSuggestions.collectAsStateWithLifecycle()
 
     // Regenerate the suggestion when the tab is opened, but only if the allergen selection changed.
@@ -46,7 +49,7 @@ fun ZekAIScreen(weatherViewModel: WeatherViewModel) {
         weatherViewModel.onZekAIOpened()
     }
 
-    Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
+    Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
         Column(
             modifier =
                 Modifier

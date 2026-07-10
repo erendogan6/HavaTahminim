@@ -1,7 +1,6 @@
 package com.erendogan6.havatahminim.ui.view.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +22,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -42,6 +40,7 @@ import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
 @Composable
 fun CitySearchScreen(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
     onCitySelected: (City) -> Unit = {},
 ) {
     val cityState by weatherViewModel.cities.collectAsStateWithLifecycle()
@@ -63,7 +62,7 @@ fun CitySearchScreen(
 
     Column(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .background(WeatherTheme.colors.cardSurfaceFaint)
                 .padding(20.dp),
@@ -107,7 +106,8 @@ private fun CityCard(
     onCitySelected: (City) -> Unit,
 ) {
     WeatherCard(
-        modifier = Modifier.fillMaxWidth().clickable { onCitySelected(city) }.shadow(4.dp, RoundedCornerShape(8.dp)),
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { onCitySelected(city) },
         containerColor = WeatherTheme.colors.citySurface,
         shape = RoundedCornerShape(8.dp),
         elevation = 4.dp,
