@@ -9,16 +9,17 @@ import com.google.ai.client.generativeai.type.generationConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** The Gemini adapter behind [SuggestionGenerator] — the deliberately untested SDK shim. */
 @Singleton
 class GeminiService
     @Inject
     constructor(
         private val resourcesProvider: ResourcesProvider,
-    ) {
+    ) : SuggestionGenerator {
         private val systemInstruction: String
             get() = resourcesProvider.getString(R.string.weather_assistant_instruction)
 
-        val model: GenerativeModel by lazy {
+        private val model: GenerativeModel by lazy {
             GenerativeModel(
                 "gemini-2.5-flash",
                 apiKey = GEMINI_API_KEY,
@@ -36,4 +37,6 @@ class GeminiService
                 systemInstruction = content { text(systemInstruction) },
             )
         }
+
+        override suspend fun generate(userMessage: String): String? = model.generateContent(userMessage).text
     }
