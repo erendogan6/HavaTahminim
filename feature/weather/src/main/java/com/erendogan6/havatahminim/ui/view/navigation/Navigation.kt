@@ -2,7 +2,6 @@ package com.erendogan6.havatahminim.ui.view.navigation
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
@@ -54,10 +53,13 @@ private fun NavHostController.navigateSingleTopTo(route: String) {
 
 /** Bottom destinations bar for portrait (regular-height) windows. */
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun BottomNavigationBar(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    NavigationBar(modifier = Modifier.padding(0.dp), containerColor = WeatherTheme.colors.cardSurfaceFaint) {
+    NavigationBar(modifier = modifier, containerColor = WeatherTheme.colors.cardSurfaceFaint) {
         screens.forEach { screen ->
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = stringResource(id = screen.title)) },
@@ -74,10 +76,14 @@ fun BottomNavigationBar(navController: NavHostController) {
  * vertical space. Insets are zeroed because the host applies them via the Scaffold padding.
  */
 @Composable
-fun WeatherNavigationRail(navController: NavHostController) {
+fun WeatherNavigationRail(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     NavigationRail(
+        modifier = modifier,
         containerColor = WeatherTheme.colors.cardSurfaceFaint,
         windowInsets = WindowInsets(0.dp),
     ) {
