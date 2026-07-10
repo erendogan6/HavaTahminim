@@ -35,30 +35,17 @@ import com.erendogan6.havatahminim.ui.component.WeatherText
 import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherTextField
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
-import com.erendogan6.havatahminim.ui.viewModel.WeatherViewModel
+import com.erendogan6.havatahminim.ui.viewModel.CitySearchViewModel
 
 @Composable
 fun CitySearchScreen(
-    weatherViewModel: WeatherViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
+    viewModel: CitySearchViewModel = hiltViewModel(),
     onCitySelected: (City) -> Unit = {},
 ) {
-    val cityState by weatherViewModel.cities.collectAsStateWithLifecycle()
-    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val cityState by viewModel.cities.collectAsStateWithLifecycle()
+    val searchQuery by viewModel.query.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    DisposableEffect(Unit) {
-        onDispose {
-            weatherViewModel.clearCities()
-        }
-    }
-
-    // Keyed on the (saveable) query: also re-runs after rotation, restoring the cleared results.
-    LaunchedEffect(searchQuery) {
-        if (searchQuery.length > 2) {
-            weatherViewModel.fetchCities(searchQuery)
-        }
-    }
 
     Column(
         modifier =
@@ -69,7 +56,7 @@ fun CitySearchScreen(
     ) {
         WeatherTextField(
             value = searchQuery,
-            onValueChange = { searchQuery = it },
+            onValueChange = viewModel::onQueryChange,
             label = { WeatherText(text = stringResource(id = R.string.city_search)) },
             modifier =
                 Modifier
@@ -94,7 +81,13 @@ fun CitySearchScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(cityState) { city ->
-                CityCard(city, onCitySelected)
+                CityCard(
+                    city = city,
+                    onCitySelected = {
+                        viewModel.selectCity(it)
+                        onCitySelected(it)
+                    },
+                )
             }
         }
     }
