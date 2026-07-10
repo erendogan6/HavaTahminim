@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -66,6 +67,7 @@ fun WeatherScreen(
     weatherViewModel: WeatherViewModel,
     onLoaded: () -> Unit,
     onUseMyLocation: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
     val errorMessage by weatherViewModel.errorMessage.collectAsStateWithLifecycle()
@@ -74,7 +76,7 @@ fun WeatherScreen(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
-    Surface(color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
+    Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
         Box(modifier = Modifier.fillMaxSize()) {
             WeatherContent(weatherState, errorMessage, hourlyForecast, onLoaded = onLoaded)
             // Only offer city search / my-location once data is loaded (hidden during the splash).
@@ -106,7 +108,7 @@ fun WeatherScreen(
 
 @Composable
 private fun TopActions(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onUseMyLocation: () -> Unit,
     onSearchCity: () -> Unit,
 ) {
@@ -174,7 +176,7 @@ private fun LandscapeWeatherContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxSize()
+                .fillMaxHeight()
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -184,7 +186,7 @@ private fun LandscapeWeatherContent(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxSize()
+                .fillMaxHeight()
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
