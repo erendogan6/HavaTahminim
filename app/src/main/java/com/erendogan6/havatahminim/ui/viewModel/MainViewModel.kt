@@ -3,6 +3,7 @@ package com.erendogan6.havatahminim.ui.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.repository.LocationRepository
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -18,9 +19,10 @@ import javax.inject.Inject
 class MainViewModel
     @Inject
     constructor(
-        private val repository: WeatherRepository,
+        private val locationRepository: LocationRepository,
+        weatherRepository: WeatherRepository,
     ) : ViewModel() {
-        val currentWeather: StateFlow<CurrentWeatherBaseResponse?> = repository.currentWeather
+        val currentWeather: StateFlow<CurrentWeatherBaseResponse?> = weatherRepository.currentWeather
 
         /** GPS fix or a picked city: point the whole app at it and persist it. */
         fun setLocation(
@@ -28,7 +30,7 @@ class MainViewModel
             lon: Double,
         ) {
             viewModelScope.launch {
-                repository.setActiveLocation(lat, lon, persist = true)
+                locationRepository.setActiveLocation(lat, lon, persist = true)
             }
         }
 
@@ -38,9 +40,9 @@ class MainViewModel
          */
         fun startFromSavedOrDefault() {
             viewModelScope.launch {
-                repository.startFromSavedLocation()
-                if (repository.activeLocation.value == null) {
-                    repository.setActiveLocation(DEFAULT_LAT, DEFAULT_LON, persist = false)
+                locationRepository.startFromSavedLocation()
+                if (locationRepository.activeLocation.value == null) {
+                    locationRepository.setActiveLocation(DEFAULT_LAT, DEFAULT_LON, persist = false)
                 }
             }
         }
