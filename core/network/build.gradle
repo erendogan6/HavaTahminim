@@ -42,8 +42,8 @@ dependencies {
     api libs.okhttp
     implementation libs.logging.interceptor
 
-    // GeminiService exposes GenerativeModel as part of its public API.
-    api(libs.generativeai)
+    // The GenerativeModel is a private implementation detail behind SuggestionGenerator.
+    implementation(libs.generativeai)
 
     // Chucker + body logging are attached only in debug builds (see NetworkModule).
     debugImplementation libs.chucker.debug

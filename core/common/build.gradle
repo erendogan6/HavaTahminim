@@ -23,6 +23,9 @@ dependencies {
     // PollenLevel maps model enums (PollenType/PollenRisk) to string resources.
     api project(':core:model')
 
+    // DispatchersModule provides CoroutineDispatcher (public signature).
+    api libs.kotlinx.coroutines.core
+
     api(libs.hilt.android)
     ksp libs.hilt.android.compiler
 }
