@@ -14,10 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import com.erendogan6.havatahminim.ui.component.WeatherText
+import com.erendogan6.havatahminim.ui.component.WeatherDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -292,19 +290,12 @@ private fun useLastOrDefaultLocation(
 
 @Composable
 fun NoInternetDialog(onDismiss: () -> Unit) {
-    AlertDialog(
+    WeatherDialog(
+        title = stringResource(id = R.string.no_internet_title),
+        message = stringResource(id = R.string.no_internet_message),
+        confirmText = stringResource(id = R.string.ok),
+        onConfirm = onDismiss,
         onDismissRequest = onDismiss,
-        title = {
-            WeatherText(text = stringResource(id = R.string.no_internet_title))
-        },
-        text = {
-            WeatherText(text = stringResource(id = R.string.no_internet_message))
-        },
-        confirmButton = {
-            Button(onClick = onDismiss) {
-                WeatherText(stringResource(id = R.string.ok))
-            }
-        },
     )
 }
 
@@ -313,24 +304,14 @@ fun PermissionRationaleDialog(
     onDismiss: () -> Unit,
     onRequestPermission: () -> Unit,
 ) {
-    AlertDialog(
+    WeatherDialog(
+        title = stringResource(id = R.string.permission_rationale_title),
+        message = stringResource(id = R.string.permission_rationale_message),
+        confirmText = stringResource(id = R.string.grant_permission),
+        onConfirm = onRequestPermission,
         onDismissRequest = onDismiss,
-        title = {
-            WeatherText(text = stringResource(id = R.string.permission_rationale_title))
-        },
-        text = {
-            WeatherText(text = stringResource(id = R.string.permission_rationale_message))
-        },
-        confirmButton = {
-            Button(onClick = onRequestPermission) {
-                WeatherText(stringResource(id = R.string.grant_permission))
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                WeatherText(stringResource(id = R.string.cancel))
-            }
-        },
+        dismissText = stringResource(id = R.string.cancel),
+        onDismiss = onDismiss,
     )
 }
 
@@ -339,19 +320,12 @@ fun ErrorDialog(
     message: String,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
+    WeatherDialog(
+        title = stringResource(id = R.string.error_title),
+        message = message,
+        confirmText = stringResource(id = R.string.ok),
+        onConfirm = onDismiss,
         onDismissRequest = onDismiss,
-        title = {
-            WeatherText(text = stringResource(id = R.string.error_title))
-        },
-        text = {
-            WeatherText(text = message)
-        },
-        confirmButton = {
-            Button(onClick = onDismiss) {
-                WeatherText(stringResource(id = R.string.ok))
-            }
-        },
     )
 }
 
