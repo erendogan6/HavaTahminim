@@ -12,9 +12,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Scaffold
+import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
 import com.erendogan6.havatahminim.ui.component.WeatherDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +44,7 @@ import com.erendogan6.havatahminim.extension.NetworkUtils
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
 import com.erendogan6.havatahminim.ui.view.navigation.Screen
+import com.erendogan6.havatahminim.ui.view.navigation.WeatherNavigationRail
 import com.erendogan6.havatahminim.ui.view.screen.AllergyScreen
 import com.erendogan6.havatahminim.ui.view.screen.BackgroundImage
 import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
@@ -195,6 +200,10 @@ fun HavaTahminimApp() {
             NoInternetDialog { showNoInternetDialog.value = false }
         }
 
+        // Compact height (landscape phone): navigation moves from the bottom bar to a side
+        // rail so the content keeps its vertical space.
+        val compactHeight = isCompactHeight()
+
         Box(modifier = Modifier.fillMaxSize()) {
             // Full-bleed background drawn behind the transparent system bars. The per-screen
             // content (below) stays inset via the Scaffold's innerPadding.
@@ -202,32 +211,40 @@ fun HavaTahminimApp() {
 
             Scaffold(
                 containerColor = Color.Transparent,
+                // safeDrawing (systemBars + display cutout) keeps content clear of the side
+                // nav bar and camera cutout in landscape.
+                contentWindowInsets = WindowInsets.safeDrawing,
                 bottomBar = {
-                    if (dataLoaded) {
+                    if (dataLoaded && !compactHeight) {
                         BottomNavigationBar(navController)
                     }
                 },
             ) { innerPadding ->
-                NavHost(
-                    navController,
-                    startDestination = Screen.Today.route,
-                    modifier = Modifier.padding(innerPadding),
-                ) {
-                    composable(Screen.Today.route) {
-                        WeatherScreen(
-                            weatherViewModel,
-                            onLoaded = { weatherViewModel.setDataLoaded(true) },
-                            onUseMyLocation = onUseMyLocation,
-                        )
+                Row(modifier = Modifier.padding(innerPadding)) {
+                    if (dataLoaded && compactHeight) {
+                        WeatherNavigationRail(navController)
                     }
-                    composable(Screen.Daily.route) {
-                        DailyForecastScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
-                    }
-                    composable(Screen.Allergy.route) {
-                        AllergyScreen(weatherViewModel)
-                    }
-                    composable(Screen.ZekAI.route) {
-                        ZekAIScreen(weatherViewModel)
+                    NavHost(
+                        navController,
+                        startDestination = Screen.Today.route,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        composable(Screen.Today.route) {
+                            WeatherScreen(
+                                weatherViewModel,
+                                onLoaded = { weatherViewModel.setDataLoaded(true) },
+                                onUseMyLocation = onUseMyLocation,
+                            )
+                        }
+                        composable(Screen.Daily.route) {
+                            DailyForecastScreen(weatherViewModel, onLoaded = { weatherViewModel.setDataLoaded(true) })
+                        }
+                        composable(Screen.Allergy.route) {
+                            AllergyScreen(weatherViewModel)
+                        }
+                        composable(Screen.ZekAI.route) {
+                            ZekAIScreen(weatherViewModel)
+                        }
                     }
                 }
             }
