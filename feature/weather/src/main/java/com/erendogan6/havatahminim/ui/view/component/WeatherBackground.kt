@@ -14,7 +14,10 @@ import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherB
  * (public: it is part of the feature's cross-module surface).
  */
 @Composable
-fun BackgroundImage(weatherState: CurrentWeatherBaseResponse?) {
+fun BackgroundImage(
+    weatherState: CurrentWeatherBaseResponse?,
+    modifier: Modifier = Modifier,
+) {
     val backgroundImage = if (weatherState != null) R.drawable.aydinlik else R.drawable.splash
     val alpha = if (weatherState != null) 0.5f else 0.7f
 
@@ -22,7 +25,7 @@ fun BackgroundImage(weatherState: CurrentWeatherBaseResponse?) {
         painter = painterResource(id = backgroundImage),
         contentDescription = null,
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         alpha = alpha
     )
 }
