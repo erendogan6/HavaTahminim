@@ -27,8 +27,6 @@ dependencies {
     api project(':core:common')
 
     api libs.kotlinx.coroutines.core
-    // Repository calls geminiService.model.generateContent and catches SerializationException.
-    implementation(libs.generativeai)
 
     api(libs.hilt.android)
     ksp libs.hilt.android.compiler

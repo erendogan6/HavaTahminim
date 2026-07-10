@@ -1,18 +1,17 @@
 package com.erendogan6.havatahminim.util
 
-import android.content.Context
-import java.util.Locale
+/**
+ * Resolves localized strings and the current language off the UI layer (repositories, ViewModels,
+ * the suggestion prompt). An interface so JVM tests can substitute a fake without a mocking
+ * library; the production implementation is [DefaultResourcesProvider].
+ */
+interface ResourcesProvider {
+    fun getString(resId: Int): String
 
-class ResourcesProvider(private val context: Context) {
-    fun getString(resId: Int): String {
-        return context.getString(resId)
-    }
+    fun getString(
+        resId: Int,
+        vararg formatArgs: Any,
+    ): String
 
-    fun getString(resId: Int, vararg formatArgs: Any): String {
-        return context.getString(resId, *formatArgs)
-    }
-
-    fun getLanguage(): String {
-        return Locale.getDefault().language
-    }
+    fun getLanguage(): String
 }
