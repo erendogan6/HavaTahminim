@@ -72,6 +72,14 @@ def koverExcludedClasses = [
 
 allprojects {
     plugins.withId('org.jetbrains.kotlinx.kover') {
+        // Kover writes reports over the previous run without cleaning the directory; since the
+        // package -> ns-N page numbering shifts between generations, stale pages from an older
+        // run survive and show outdated numbers. Delete the task's own outputs first.
+        tasks.matching { it.name.startsWith('koverHtmlReport') || it.name.startsWith('koverXmlReport') }.configureEach {
+            doFirst {
+                outputs.files.each { it.deleteDir() || it.delete() }
+            }
+        }
         kover {
             reports {
                 filters {
