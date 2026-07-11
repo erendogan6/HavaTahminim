@@ -2,6 +2,7 @@ plugins {
     // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
     id 'com.android.library'
     id 'com.autonomousapps.dependency-analysis'
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -10,11 +11,6 @@ android {
 
     defaultConfig {
         minSdk = 26
-    }
-    buildTypes {
-        debug {
-            enableUnitTestCoverage = true
-        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

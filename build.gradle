@@ -14,69 +14,63 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.dependency.analysis)
+    alias(libs.plugins.kover)
 }
 
 
+
 // ---------------------------------------------------------------------------------------------
-// Merged unit-test coverage: ./gradlew jacocoMergedDebugReport
-// (build/reports/jacoco/merged/html/index.html + jacocoMergedDebugReport.xml for CI later)
+// Merged unit-test coverage: ./gradlew koverHtmlReportDebug  (HTML: build/reports/kover/htmlDebug)
+//                            ./gradlew koverXmlReportDebug   (XML for CI: build/reports/kover/reportDebug.xml)
 //
-// JaCoCo through AGP's own enableUnitTestCoverage rather than Kover: Kover locates Android
-// variants via the Kotlin Android Gradle plugin, which this project deliberately does not apply
-// (AGP 9 built-in Kotlin — see the classloader gotcha in CLAUDE.md); Kover therefore instruments
-// nothing here (upstream: kotlinx-kover#776). AGP's instrumentation is KGP-agnostic.
+// Kover 0.9.8+ supports AGP 9's built-in Kotlin (0.9.1 did not — it located variants through the
+// Kotlin Android Gradle plugin this repo deliberately never applies, and produced empty reports).
+// Kotlin-aware measurement + built-in merging + koverVerify thresholds for CI later.
 // ---------------------------------------------------------------------------------------------
-apply plugin: 'jacoco'
+dependencies {
+    kover project(':app')
+    kover project(':feature:weather')
+    kover project(':core:data')
+    kover project(':core:network')
+    kover project(':core:common')
+    kover project(':core:model')
+}
 
-// Coverage measures the logic layers (ViewModels, use case, repositories, utils). DI wiring,
-// generated code, and Compose UI (deliberately unit-untested by policy — see CLAUDE.md Testing)
-// are excluded so the percentage tracks tested logic instead of being diluted by shells.
-def coverageExclusions = [
-    '**/di/**',
-    '**/*_Factory*', '**/*_Impl.*', '**/*_Impl$*',
-    '**/BuildConfig.*',
-    '**/hilt_aggregated_deps/**', '**/dagger/**', '**/*_HiltModules*',
-    '**/*ComposableSingletons*',
-    '**/ui/view/**', '**/ui/theme/**', '**/ui/adaptive/**', '**/ui/component/**',
-    '**/MainActivity*',
-    '**/util/NotificationUtils*', '**/util/NotificationReceiver*', '**/util/BootReceiver*',
-    '**/util/LocationUtils*',
-    '**/GeminiService*', '**/AndroidReverseGeocoder*', '**/DefaultResourcesProvider*',
-    '**/NetworkUtils*',
-    '**/*$DefaultImpls*',
-    '**/room/**', '**/model/*Dao*', '**/util/Converters*',
-]
-
-def coveredModules = [':app', ':feature:weather', ':core:data', ':core:network', ':core:common', ':core:model']
-
-tasks.register('jacocoMergedDebugReport', JacocoReport) {
-    group = 'verification'
-    description = 'Merged unit-test coverage report over every tested module (debug variant).'
-    dependsOn coveredModules.collect { "${it}:testDebugUnitTest" }
-
-    executionData.setFrom(
-        fileTree(rootDir) {
-            include '**/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec'
-        },
-    )
-    classDirectories.setFrom(
-        files(
-            coveredModules.collect { path ->
-                def dir = project(path).layout.buildDirectory.get().asFile
-                // AGP 9 built-in Kotlin emits classes here (not tmp/kotlin-classes as under KGP).
-                fileTree(new File(dir, 'intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes')) {
-                    exclude coverageExclusions
-                }
-            },
-        ),
-    )
-    sourceDirectories.setFrom(
-        files(coveredModules.collect { "${project(it).projectDir}/src/main/java" }),
-    )
+kover {
     reports {
-        html.required = true
-        xml.required = true
-        html.outputLocation = layout.buildDirectory.dir('reports/jacoco/merged/html')
-        xml.outputLocation = layout.buildDirectory.file('reports/jacoco/merged/jacocoMergedDebugReport.xml')
+        filters {
+            excludes {
+                // DI wiring, generated code, and UI shells are execution-path glue, not logic;
+                // Compose UI and the platform shims are unit-untested by policy (CLAUDE.md Testing).
+                annotatedBy(
+                    "dagger.Module",
+                    "dagger.hilt.android.HiltAndroidApp",
+                    "androidx.compose.runtime.Composable",
+                )
+                classes(
+                    "*.di.*",
+                    "*_Factory", "*_Factory\$*", "*_*Factory",
+                    "*_Impl", "*_Impl\$*",
+                    "*.BuildConfig",
+                    "hilt_aggregated_deps.*",
+                    "dagger.hilt.internal.*",
+                    "*_HiltModules*",
+                    "*ComposableSingletons*",
+                    "*\$DefaultImpls",
+                    "com.erendogan6.havatahminim.ui.view.*",
+                    "com.erendogan6.havatahminim.ui.theme.*",
+                    "com.erendogan6.havatahminim.ui.adaptive.*",
+                    "com.erendogan6.havatahminim.ui.component.*",
+                    "com.erendogan6.havatahminim.util.Notification*",
+                    "com.erendogan6.havatahminim.util.BootReceiver*",
+                    "com.erendogan6.havatahminim.util.LocationUtils*",
+                    "com.erendogan6.havatahminim.extension.NetworkUtils*",
+                    "com.erendogan6.havatahminim.network.GeminiService*",
+                    "com.erendogan6.havatahminim.repository.AndroidReverseGeocoder*",
+                    "com.erendogan6.havatahminim.util.DefaultResourcesProvider*",
+                    "com.erendogan6.havatahminim.util.Converters*",
+                )
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     id 'com.autonomousapps.dependency-analysis'
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -30,7 +31,6 @@ android {
             minifyEnabled = true
             shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            enableUnitTestCoverage = true
         }
         release {
             minifyEnabled = true

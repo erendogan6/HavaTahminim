@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     id 'com.autonomousapps.dependency-analysis'
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -17,11 +18,6 @@ android {
 
     defaultConfig {
         minSdk = 26
-    }
-    buildTypes {
-        debug {
-            enableUnitTestCoverage = true
-        }
     }
     testOptions {
         unitTests {
