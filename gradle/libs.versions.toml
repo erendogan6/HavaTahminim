@@ -8,6 +8,7 @@ hiltAndroidGradlePlugin = "2.60.1"
 hiltNavigationCompose = "1.4.0"
 kotlin = "2.4.0"
 dagp = "3.16.1"
+kover = "0.9.8"
 coreKtx = "1.19.0"
 kotlinxCoroutinesAndroid = "1.11.0"
 kotlinxCoroutinesPlayServices = "1.11.0"
@@ -70,6 +71,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dagp" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroidGradlePlugin" }
