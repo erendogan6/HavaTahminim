@@ -36,40 +36,50 @@ dependencies {
     kover project(':core:model')
 }
 
-kover {
-    reports {
-        filters {
-            excludes {
-                // DI wiring, generated code, and UI shells are execution-path glue, not logic;
-                // Compose UI and the platform shims are unit-untested by policy.
-                annotatedBy(
-                    "dagger.Module",
-                    "dagger.hilt.android.HiltAndroidApp",
-                    "androidx.compose.runtime.Composable",
-                )
-                classes(
-                    "*.di.*",
-                    "*_Factory", "*_Factory\$*", "*_*Factory",
-                    "*_Impl", "*_Impl\$*",
-                    "*.BuildConfig",
-                    "hilt_aggregated_deps.*",
-                    "dagger.hilt.internal.*",
-                    "*_HiltModules*",
-                    "*ComposableSingletons*",
-                    "*\$DefaultImpls",
-                    "com.erendogan6.havatahminim.ui.view.*",
-                    "com.erendogan6.havatahminim.ui.theme.*",
-                    "com.erendogan6.havatahminim.ui.adaptive.*",
-                    "com.erendogan6.havatahminim.ui.component.*",
-                    "com.erendogan6.havatahminim.util.Notification*",
-                    "com.erendogan6.havatahminim.util.BootReceiver*",
-                    "com.erendogan6.havatahminim.util.LocationUtils*",
-                    "com.erendogan6.havatahminim.extension.NetworkUtils*",
-                    "com.erendogan6.havatahminim.network.GeminiService*",
-                    "com.erendogan6.havatahminim.repository.AndroidReverseGeocoder*",
-                    "com.erendogan6.havatahminim.util.DefaultResourcesProvider*",
-                    "com.erendogan6.havatahminim.util.Converters*",
-                )
+// Coverage measures the logic layers; DI wiring, generated code, Compose UI, and the
+// deliberately-untested platform shims are excluded so the percentage
+// isn't diluted by shells. NOTE: Kover applies filters in the module that OWNS the classes —
+// root-level reports.filters only cover root's (nonexistent) classes — so the same filter set
+// is injected into every Kover-applying project below.
+def koverExcludedAnnotations = [
+    'dagger.Module',
+    'dagger.hilt.android.HiltAndroidApp',
+    'androidx.compose.runtime.Composable',
+]
+def koverExcludedClasses = [
+    '*.di.*',
+    '*_Factory', '*_Factory\$*', '*_*Factory',
+    '*_Impl', '*_Impl\$*',
+    '*.BuildConfig',
+    'hilt_aggregated_deps.*',
+    'dagger.hilt.internal.*',
+    '*_HiltModules*',
+    '*ComposableSingletons*',
+    '*\$DefaultImpls',
+    'com.erendogan6.havatahminim.ui.view.*',
+    'com.erendogan6.havatahminim.ui.theme.*',
+    'com.erendogan6.havatahminim.ui.adaptive.*',
+    'com.erendogan6.havatahminim.ui.component.*',
+    'com.erendogan6.havatahminim.util.Notification*',
+    'com.erendogan6.havatahminim.util.BootReceiver*',
+    'com.erendogan6.havatahminim.util.LocationUtils*',
+    'com.erendogan6.havatahminim.extension.NetworkUtils*',
+    'com.erendogan6.havatahminim.network.GeminiService*',
+    'com.erendogan6.havatahminim.repository.AndroidReverseGeocoder*',
+    'com.erendogan6.havatahminim.util.DefaultResourcesProvider*',
+    'com.erendogan6.havatahminim.util.Converters*',
+]
+
+allprojects {
+    plugins.withId('org.jetbrains.kotlinx.kover') {
+        kover {
+            reports {
+                filters {
+                    excludes {
+                        annotatedBy(koverExcludedAnnotations as String[])
+                        classes(koverExcludedClasses)
+                    }
+                }
             }
         }
     }
