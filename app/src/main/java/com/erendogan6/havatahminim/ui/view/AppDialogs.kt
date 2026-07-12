@@ -31,17 +31,3 @@ internal fun PermissionRationaleDialog(
         onDismiss = onDismiss,
     )
 }
-
-@Composable
-internal fun ErrorDialog(
-    message: String,
-    onDismiss: () -> Unit,
-) {
-    WeatherDialog(
-        title = stringResource(id = R.string.error_title),
-        message = message,
-        confirmText = stringResource(id = R.string.ok),
-        onConfirm = onDismiss,
-        onDismissRequest = onDismiss,
-    )
-}
