@@ -2,6 +2,7 @@ plugins {
     // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
     id 'com.android.library'
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     id 'com.autonomousapps.dependency-analysis'
@@ -49,6 +50,7 @@ dependencies {
     implementation libs.androidx.compose.material.icons.extended
 
     implementation libs.androidx.navigation.compose
+    implementation libs.kotlinx.serialization.core
     implementation libs.androidx.hilt.lifecycle.viewmodel.compose
     api libs.androidx.lifecycle.viewmodel
     implementation libs.androidx.lifecycle.viewmodel.compose
