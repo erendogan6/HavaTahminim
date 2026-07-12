@@ -56,6 +56,9 @@ dependencies {
 
     api libs.kotlinx.coroutines.core
 
+    // Animated weather icons (Today screen center + loading splash).
+    implementation libs.lottie.compose
+
     // ZekAI renders Gemini's markdown answers.
     implementation libs.compose.markdown
 
