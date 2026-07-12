@@ -5,7 +5,6 @@
     <string name="permission_rationale_message">This app requires location permission to fetch weather data based on your current location.</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="cancel">Cancel</string>
-    <string name="error_title">Error</string>
     <string name="ok">OK</string>
     <string name="no_internet_title">No Internet Connection</string>
     <string name="no_internet_message">An internet connection is required to fetch weather data. Please check your connection and try again.</string>

@@ -5,7 +5,6 @@
     <string name="permission_rationale_message">Bu uygulama, mevcut konumunuza göre hava durumu verilerini almak için konum izni gerektirir.</string>
     <string name="grant_permission">İzin Ver</string>
     <string name="cancel">Vazgeç</string>
-    <string name="error_title">Hata</string>
     <string name="ok">Tamam</string>
     <string name="no_internet_title">İnternet Bağlantısı Yok</string>
     <string name="no_internet_message">Hava durumu verilerini almak için internet bağlantısına ihtiyacınız var. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
