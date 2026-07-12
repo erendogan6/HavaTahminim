@@ -56,6 +56,7 @@ import com.erendogan6.havatahminim.ui.component.WeatherText
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.view.component.ErrorMessage
 import com.erendogan6.havatahminim.ui.view.component.SplashScreen
+import com.erendogan6.havatahminim.ui.view.component.WeatherConditionIcon
 import com.erendogan6.havatahminim.ui.view.component.isDayTime
 import com.erendogan6.havatahminim.ui.view.component.weatherIconRes
 import com.erendogan6.havatahminim.ui.viewModel.TodayUiState
@@ -222,10 +223,10 @@ private fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
         modifier = Modifier.padding(vertical = 5.dp),
     )
 
-    Image(
-        painter = painterResource(id = weatherIconRes(weatherState.weather[0].main, weatherState.isDayTime())),
-        contentDescription = null,
-        modifier = Modifier.size(150.dp)
+    WeatherConditionIcon(
+        main = weatherState.weather[0].main,
+        isDayTime = weatherState.isDayTime(),
+        modifier = Modifier.size(150.dp),
     )
 
     WeatherText(
