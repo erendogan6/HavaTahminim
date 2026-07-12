@@ -62,7 +62,9 @@ fun BottomNavigationBar(
     NavigationBar(modifier = modifier, containerColor = WeatherTheme.colors.cardSurfaceFaint) {
         screens.forEach { screen ->
             NavigationBarItem(
-                icon = { Icon(screen.icon, contentDescription = stringResource(id = screen.title)) },
+                // The label already announces the destination; a CD on the icon would make
+                // TalkBack read every item twice.
+                icon = { Icon(screen.icon, contentDescription = null) },
                 label = { WeatherText(stringResource(id = screen.title)) },
                 selected = currentRoute == screen.route,
                 onClick = { navController.navigateSingleTopTo(screen.route) },
@@ -90,7 +92,7 @@ fun WeatherNavigationRail(
         CenteredRailContent {
             screens.forEach { screen ->
                 NavigationRailItem(
-                    icon = { Icon(screen.icon, contentDescription = stringResource(id = screen.title)) },
+                    icon = { Icon(screen.icon, contentDescription = null) },
                     label = { WeatherText(stringResource(id = screen.title)) },
                     selected = currentRoute == screen.route,
                     onClick = { navController.navigateSingleTopTo(screen.route) },
