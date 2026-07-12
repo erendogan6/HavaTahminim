@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -209,6 +210,18 @@ private fun HourlyForecastCard(hourlyForecast: HourlyForecastBaseResponse) {
 
 @Composable
 private fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
+    // One TalkBack node for the whole current-conditions block: a single swipe reads
+    // "city, temperature, condition, feels-like, humidity" instead of five separate stops.
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.semantics(mergeDescendants = true) {},
+    ) {
+        CurrentLocationCardContent(weatherState)
+    }
+}
+
+@Composable
+private fun CurrentLocationCardContent(weatherState: CurrentWeatherBaseResponse) {
     Spacer(modifier = Modifier.height(24.dp))
 
     WeatherText(
@@ -256,7 +269,9 @@ private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        // Merge so TalkBack reads each hour as one node: "15:00, partly cloudy, 25°C, rain 30%".
+        modifier = Modifier.semantics(mergeDescendants = true) {},
     ) {
         WeatherText(
             text = date,
@@ -265,7 +280,8 @@ private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
         )
         Image(
             painter = painterResource(id = weatherIconRes(forecast.weather[0].main, forecast.isDayTime())),
-            contentDescription = null,
+            // The icon is the ONLY carrier of the condition in this item — it must speak.
+            contentDescription = forecast.weather[0].description,
             modifier = Modifier.size(60.dp),
         )
         WeatherText(
@@ -280,7 +296,8 @@ private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
             ) {
                 Icon(
                     imageVector = Icons.Default.WaterDrop,
-                    contentDescription = null,
+                    // Without this, the merged announcement ends in a bare "30%" with no meaning.
+                    contentDescription = stringResource(id = R.string.a11y_precipitation_probability),
                     tint = WeatherTheme.colors.precipitation,
                     modifier = Modifier.size(15.dp)
                 )

@@ -32,4 +32,8 @@
     <string name="pm2_5">PM2.5</string>
     <string name="pm10">PM10</string>
     <string name="ozone">Ozon</string>
+    <string name="a11y_precipitation_probability">Yağış olasılığı</string>
+    <string name="a11y_expanded">Genişletildi</string>
+    <string name="a11y_collapsed">Daraltıldı</string>
+    <string name="a11y_pollen_chart">Saatlik polen yoğunluğu grafiği</string>
 </resources>
