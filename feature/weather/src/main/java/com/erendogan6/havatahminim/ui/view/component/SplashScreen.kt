@@ -1,13 +1,11 @@
 package com.erendogan6.havatahminim.ui.view.component
 
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -22,13 +20,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
 import com.erendogan6.havatahminim.ui.component.CenteredColumn
@@ -39,12 +39,6 @@ import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 @Composable
 internal fun SplashScreen(modifier: Modifier = Modifier) {
     val transition = rememberInfiniteTransition(label = "splash")
-    val rotation by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(tween(durationMillis = 9000, easing = LinearEasing)),
-        label = "rotation",
-    )
     val pulse by transition.animateFloat(
         initialValue = 0.9f,
         targetValue = 1.18f,
@@ -70,12 +64,10 @@ internal fun SplashScreen(modifier: Modifier = Modifier) {
                         )
                     )
             )
-            Image(
-                painter = painterResource(id = R.drawable.day_clear),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(if (compact) 80.dp else 120.dp)
-                    .rotate(rotation),
+            LottieAnimation(
+                composition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.anim_loading_clouds)).value,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(if (compact) 100.dp else 150.dp),
             )
         }
         Spacer(modifier = Modifier.height(if (compact) 12.dp else 28.dp))
