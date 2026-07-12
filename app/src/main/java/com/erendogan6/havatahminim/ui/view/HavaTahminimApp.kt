@@ -26,19 +26,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.view.component.BackgroundImage
 import com.erendogan6.havatahminim.ui.view.navigation.BottomNavigationBar
-import com.erendogan6.havatahminim.ui.view.navigation.Screen
+import com.erendogan6.havatahminim.ui.view.navigation.WeatherNavHost
 import com.erendogan6.havatahminim.ui.view.navigation.WeatherNavigationRail
-import com.erendogan6.havatahminim.ui.view.screen.AllergyScreen
-import com.erendogan6.havatahminim.ui.view.screen.DailyForecastScreen
-import com.erendogan6.havatahminim.ui.view.screen.WeatherScreen
-import com.erendogan6.havatahminim.ui.view.screen.ZekAIScreen
 import com.erendogan6.havatahminim.ui.viewModel.MainViewModel
 import com.erendogan6.havatahminim.util.NotificationUtils
 
@@ -156,24 +150,11 @@ fun HavaTahminimApp() {
                     if (weatherReady && compactHeight) {
                         WeatherNavigationRail(navController)
                     }
-                    NavHost(
-                        navController,
-                        startDestination = Screen.Today.route,
+                    WeatherNavHost(
+                        navController = navController,
+                        onUseMyLocation = onUseMyLocation,
                         modifier = Modifier.weight(1f),
-                    ) {
-                        composable(Screen.Today.route) {
-                            WeatherScreen(onUseMyLocation = onUseMyLocation)
-                        }
-                        composable(Screen.Daily.route) {
-                            DailyForecastScreen()
-                        }
-                        composable(Screen.Allergy.route) {
-                            AllergyScreen()
-                        }
-                        composable(Screen.ZekAI.route) {
-                            ZekAIScreen()
-                        }
-                    }
+                    )
                 }
             }
         }
