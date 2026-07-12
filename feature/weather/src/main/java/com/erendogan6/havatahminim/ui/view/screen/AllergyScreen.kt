@@ -48,6 +48,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
@@ -150,7 +153,7 @@ private fun HeroCard(worst: PollenReading?) {
         containerColor = WeatherTheme.colors.riskColor(risk),
         shape = RoundedCornerShape(20.dp),
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().padding(20.dp).semantics(mergeDescendants = true) {}) {
             WeatherText(
                 text = stringResource(R.string.allergy_today_risk),
                 color = onColored,
@@ -221,7 +224,13 @@ private fun PollenBarRow(
         modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
         containerColor = container,
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp)) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
+                    .semantics(mergeDescendants = true) {},
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -313,8 +322,16 @@ private fun DailyDayCard(
     val dayWorst = relevant.worst()
     val worstRisk = dayWorst?.risk ?: PollenRisk.NONE
 
+    val expandedLabel = stringResource(R.string.a11y_expanded)
+    val collapsedLabel = stringResource(R.string.a11y_collapsed)
     WeatherCard(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+        // The clickable card is already one merged Button node; stateDescription tells
+        // TalkBack whether the accordion day is open before it reads the content.
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp)
+                .semantics { stateDescription = if (expanded) expandedLabel else collapsedLabel },
         onClick = onToggle,
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp)) {
@@ -396,7 +413,8 @@ private fun MetricRow(
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
+        // "PM2.5, 8 µg/m³" as one node instead of two disconnected stops.
+        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp).semantics(mergeDescendants = true) {},
     ) {
         WeatherText(label, style = MaterialTheme.typography.bodyLarge)
         WeatherText(
@@ -435,7 +453,8 @@ private fun SectionTitle(text: String) {
             MaterialTheme.typography.titleLarge.copy(
                 shadow = Shadow(color = WeatherTheme.colors.shadowSoft, blurRadius = 1f),
             ),
-        modifier = Modifier.fillMaxWidth(),
+        // Real heading semantics: TalkBack users can jump section-to-section.
+        modifier = Modifier.fillMaxWidth().semantics { heading() },
     )
 }
 
