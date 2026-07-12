@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.erendogan6.havatahminim.extension.toHourMinute
@@ -64,6 +66,16 @@ internal fun PollenDayChart(
     }
     val axisMax = (peakValue * 1.15).takeIf { it > 0.0 } ?: 1.0 // headroom so the peak isn't clipped
 
+    // A Canvas is invisible to TalkBack; describe the one insight the chart encodes (the peak).
+    val chartDescription =
+        peakType?.let { pt ->
+            stringResource(R.string.a11y_pollen_chart) + ". " +
+                stringResource(R.string.pollen_peak) + ": " +
+                stringResource(PollenLevel.typeNameRes(pt)) + ", " +
+                hours.getOrElse(peakIndex) { 0L }.toHourMinute(locale) + ", " +
+                peakValue.toInt() + " " + stringResource(R.string.pollen_unit)
+        } ?: stringResource(R.string.a11y_pollen_chart)
+
     Column(modifier = modifier.fillMaxWidth()) {
         peakType?.let { pt ->
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -88,6 +100,7 @@ internal fun PollenDayChart(
             modifier =
                 Modifier
                     .fillMaxWidth()
+                    .semantics { contentDescription = chartDescription }
                     .height(160.dp)
                     .clip(RoundedCornerShape(14.dp))
                     .background(colors.chartBackground)
