@@ -1,0 +1,61 @@
+package com.erendogan6.havatahminim.ui.view.component
+
+import androidx.annotation.RawRes
+import androidx.compose.foundation.Image
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.erendogan6.havatahminim.feature.weather.R
+
+/**
+ * The Today screen's hero condition icon: a looping Lottie animation when one exists for the
+ * category/daytime pair, otherwise the same static drawable as everywhere else. The daily and
+ * hourly lists deliberately stay on static icons.
+ */
+@Composable
+internal fun WeatherConditionIcon(
+    main: String,
+    isDayTime: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val animationRes = weatherAnimationRes(main, isDayTime)
+    if (animationRes != null) {
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(animationRes))
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            modifier = modifier,
+        )
+    } else {
+        Image(
+            painter = painterResource(id = weatherIconRes(main, isDayTime)),
+            contentDescription = null,
+            modifier = modifier,
+        )
+    }
+}
+
+/**
+ * Animated counterpart of [weatherIconRes] for the categories that have one; null falls back to
+ * the static drawable (e.g. the unknown-category "cloudy" bucket has no animation on purpose).
+ */
+@RawRes
+internal fun weatherAnimationRes(
+    main: String,
+    isDayTime: Boolean,
+): Int? =
+    when (main) {
+        "Clear" -> if (isDayTime) R.raw.anim_clear_day else R.raw.anim_clear_night
+        "Clouds" -> if (isDayTime) R.raw.anim_clouds_day else R.raw.anim_clouds_night
+        "Rain", "Drizzle" -> if (isDayTime) R.raw.anim_rain_day else R.raw.anim_rain_night
+        "Snow" -> if (isDayTime) R.raw.anim_snow_day else R.raw.anim_snow_night
+        "Thunderstorm" -> if (isDayTime) R.raw.anim_thunder_day else R.raw.anim_thunder_night
+        "Fog" -> R.raw.anim_fog
+        "Mist" -> R.raw.anim_mist
+        else -> null
+    }
