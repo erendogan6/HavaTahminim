@@ -32,4 +32,8 @@
     <string name="pm2_5">PM2.5</string>
     <string name="pm10">PM10</string>
     <string name="ozone">Ozone</string>
+    <string name="a11y_precipitation_probability">Precipitation probability</string>
+    <string name="a11y_expanded">Expanded</string>
+    <string name="a11y_collapsed">Collapsed</string>
+    <string name="a11y_pollen_chart">Hourly pollen concentration chart</string>
 </resources>
