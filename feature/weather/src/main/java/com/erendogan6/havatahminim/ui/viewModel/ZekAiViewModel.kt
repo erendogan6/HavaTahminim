@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.domain.GenerateWeatherSuggestionUseCase
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * ZekAI tab. The suggestion is a function of (location, sensitive allergens): the pipeline is
@@ -86,7 +86,7 @@ class ZekAiViewModel
                         lastSuggestion = it
                         emit(it)
                     }.onError {
-                        Log.e(TAG, "Suggestion generation failed: $it")
+                        Timber.e("Suggestion generation failed: $it")
                         emit(lastSuggestion)
                     }
                 }.stateIn(
@@ -94,8 +94,4 @@ class ZekAiViewModel
                     started = WhileUiSubscribed,
                     initialValue = null,
                 )
-
-        private companion object {
-            const val TAG = "ZekAiViewModel"
-        }
     }

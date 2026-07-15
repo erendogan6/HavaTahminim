@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * City search sheet. The query lives in SavedStateHandle (survives process death), the results
@@ -53,7 +53,7 @@ class CitySearchViewModel
                             val result =
                                 locationRepository
                                     .searchCities(q)
-                                    .onError { Log.e(TAG, "City search failed: $it") }
+                                    .onError { Timber.e("City search failed: $it") }
                             emit(result.getOrNull().orEmpty())
                         }
                     }
@@ -70,7 +70,6 @@ class CitySearchViewModel
         }
 
         private companion object {
-            const val TAG = "CitySearchViewModel"
             const val QUERY_KEY = "city_query"
             const val DEBOUNCE_MILLIS = 300L
             const val MIN_QUERY_LENGTH = 3
