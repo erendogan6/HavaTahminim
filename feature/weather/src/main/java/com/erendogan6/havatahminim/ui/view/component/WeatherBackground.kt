@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 
 /** Full-bleed photo backdrop drawn behind the transparent Scaffold in :app. */
 @Composable
@@ -25,4 +27,12 @@ fun BackgroundImage(
         modifier = modifier.fillMaxSize(),
         alpha = alpha
     )
+}
+
+@Preview(heightDp = 320)
+@Composable
+private fun BackgroundImageSplashPreview() {
+    HavaTahminimTheme(dynamicColor = false) {
+        BackgroundImage(weatherState = null)
+    }
 }
