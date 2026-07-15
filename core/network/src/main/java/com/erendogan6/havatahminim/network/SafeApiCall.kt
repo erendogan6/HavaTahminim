@@ -11,8 +11,9 @@ import java.io.IOException
  * taxonomy (IOException → Network, HttpException → Http, rest → Unknown) and — critically —
  * rethrows [CancellationException] so a cancelled pipeline is never mistaken for an error.
  *
- * The dispatcher is deliberately NOT defaulted: callers inject `@IoDispatcher`, so no call site
- * can silently escape a test's virtual-time scheduler by falling back to the real Dispatchers.IO.
+ * There is intentionally no default for [dispatcher]: callers inject `@IoDispatcher`, so no call
+ * site can silently escape a test's virtual-time scheduler by falling back to the real
+ * Dispatchers.IO.
  */
 suspend fun <T> safeApiCall(
     dispatcher: CoroutineDispatcher,

@@ -9,7 +9,7 @@ import com.google.ai.client.generativeai.type.generationConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** The Gemini adapter behind [SuggestionGenerator] — the deliberately untested SDK shim. */
+/** Gemini adapter behind [SuggestionGenerator] — thin SDK glue, exercised on device rather than in unit tests. */
 @Singleton
 class GeminiService
     @Inject

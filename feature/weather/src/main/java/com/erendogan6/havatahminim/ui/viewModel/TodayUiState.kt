@@ -4,15 +4,11 @@ import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherB
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 
 /**
- * The Today screen's rendering contract, produced by [TodayViewModel] (the domain→UI shaping
- * lives there; repositories only ever return domain models).
+ * What the Today screen renders. Exactly one of loading / [error] / [weather] is active per
+ * emission, and the screen resolves them in that order of precedence.
  *
- * Flat-state contract: the fields are morally exclusive — every emission constructs a fresh
- * instance setting exactly one facet (loading / error / content), never a mix. The type system
- * doesn't enforce that (a deliberate trade against a sealed hierarchy), so the render precedence
- * is fixed instead: **isLoading > error > weather**, and the ViewModel tests pin each emission's
- * full shape. [hourly] is the one intentional second facet: it arrives after [weather] in a
- * second emission, so the conditions card renders without waiting for the hourly strip.
+ * [hourly] trails [weather] by one emission on purpose: the current-conditions card shows up as
+ * soon as it's available instead of waiting for the hourly strip.
  */
 data class TodayUiState(
     val isLoading: Boolean = true,

@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.erendogan6.havatahminim.model.entity.DailyForecastEntity
 
+/** Room access for the per-day forecast cache. */
 @Dao
 interface DailyForecastDao {
     @Query("SELECT * FROM daily_forecast WHERE date = :date")

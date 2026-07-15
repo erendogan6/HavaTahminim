@@ -6,6 +6,7 @@ import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** [ResourcesProvider] backed by the application context. */
 @Singleton
 class DefaultResourcesProvider
     @Inject
