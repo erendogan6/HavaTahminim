@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.detekt) apply false
     alias(libs.plugins.dependency.analysis)
     alias(libs.plugins.kover)
 }
@@ -69,6 +70,30 @@ def koverExcludedClasses = [
     'com.erendogan6.havatahminim.util.DefaultResourcesProvider*',
     'com.erendogan6.havatahminim.util.Converters*',
 ]
+
+// Detekt (incl. the ktlint formatting ruleset) runs per module; configuration is centralized
+// here, mirroring the Kover injection below. UI modules get the base-component import bans on
+// top of the shared config.
+def detektUiModules = [':app', ':feature:weather']
+allprojects {
+    plugins.withId('io.gitlab.arturbosch.detekt') {
+        detekt {
+            buildUponDefaultConfig = true
+            parallel = true
+            def configs = [file("$rootDir/config/detekt/detekt.yml")]
+            if (project.path in detektUiModules) {
+                configs += file("$rootDir/config/detekt/detekt-ui.yml")
+            }
+            config.setFrom(configs)
+        }
+    }
+}
+
+// One-time per clone: point git at the committed hooks (pre-commit -> detekt).
+tasks.register('installGitHooks', Exec) {
+    description = 'Points git core.hooksPath at the committed .githooks directory.'
+    commandLine 'git', 'config', 'core.hooksPath', '.githooks'
+}
 
 allprojects {
     plugins.withId('org.jetbrains.kotlinx.kover') {

@@ -1,5 +1,6 @@
 package com.erendogan6.havatahminim.repository
 
+import com.erendogan6.havatahminim.core.common.di.IoDispatcher
 import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
 import com.erendogan6.havatahminim.model.airquality.DailyPollenForecast
 import com.erendogan6.havatahminim.model.airquality.PollenReading
@@ -9,13 +10,12 @@ import com.erendogan6.havatahminim.model.weather.openmeteo.AirQualityHourly
 import com.erendogan6.havatahminim.model.weather.openmeteo.AirQualityResponse
 import com.erendogan6.havatahminim.network.AirQualityApiService
 import com.erendogan6.havatahminim.network.ApiResult
-import com.erendogan6.havatahminim.core.common.di.IoDispatcher
 import com.erendogan6.havatahminim.network.safeApiCall
-import kotlinx.coroutines.CoroutineDispatcher
 import com.erendogan6.havatahminim.util.PollenLevel
+import kotlinx.coroutines.CoroutineDispatcher
+import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
-import java.time.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 

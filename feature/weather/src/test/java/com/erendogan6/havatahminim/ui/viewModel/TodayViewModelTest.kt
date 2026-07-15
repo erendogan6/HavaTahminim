@@ -1,7 +1,6 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
 import app.cash.turbine.test
-import com.erendogan6.havatahminim.core.data.R as DataR
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.network.ApiResult
 import com.erendogan6.havatahminim.testing.fixture.TestCoords
@@ -18,6 +17,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import com.erendogan6.havatahminim.core.data.R as DataR
 
 class TodayViewModelTest {
     @get:Rule
@@ -86,7 +86,9 @@ class TodayViewModelTest {
             viewModel().uiState.test {
                 assertThat(awaitItem()).isEqualTo(TodayUiState())
                 assertThat(awaitItem())
-                    .isEqualTo(TodayUiState(isLoading = false, error = "res:${DataR.string.error_fetching_weather_data}"))
+                    .isEqualTo(
+                        TodayUiState(isLoading = false, error = "res:${DataR.string.error_fetching_weather_data}"),
+                    )
             }
         }
 

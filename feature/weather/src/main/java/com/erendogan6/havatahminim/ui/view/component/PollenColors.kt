@@ -27,6 +27,7 @@ internal fun WeatherColors.typeColor(type: PollenType): Color =
     }
 
 /** European AQI bands reuse the risk ramp, plus the two AQI-only bands (fair / extremely poor). */
+@Suppress("MagicNumber") // European AQI band edges, mirroring AqiLevel.labelRes.
 internal fun WeatherColors.aqiColor(aqi: Int?): Color =
     when {
         aqi == null -> riskNone

@@ -2,7 +2,6 @@ package com.erendogan6.havatahminim.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erendogan6.havatahminim.core.data.R as DataR
 import com.erendogan6.havatahminim.network.onError
 import com.erendogan6.havatahminim.network.onSuccess
 import com.erendogan6.havatahminim.network.userMessageRes
@@ -16,10 +15,14 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
+import com.erendogan6.havatahminim.core.data.R as DataR
 
-/** Daily tab. Same location-keyed pipeline as [TodayViewModel]; the repository's per-day Room cache keeps refetches cheap. */
+/**
+ * Daily tab. Same location-keyed pipeline as [TodayViewModel]; the repository's per-day Room
+ * cache keeps refetches cheap.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class DailyForecastViewModel
@@ -46,7 +49,9 @@ class DailyForecastViewModel
                         }.onError {
                             Timber.e("Daily forecast failed: $it")
                             lastCoords = null
-                            emit(DailyUiState(isLoading = false, error = resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_daily_forecast))))
+                            val messageRes = it.userMessageRes(DataR.string.error_fetching_daily_forecast)
+                            val message = resourcesProvider.getString(messageRes)
+                            emit(DailyUiState(isLoading = false, error = message))
                         }
                 }.stateIn(
                     scope = viewModelScope,

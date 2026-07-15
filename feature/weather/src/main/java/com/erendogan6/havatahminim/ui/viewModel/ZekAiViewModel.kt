@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * ZekAI tab. The pipeline is keyed on (location, allergens): nothing is generated until the tab
@@ -68,7 +68,8 @@ class ZekAiViewModel
                         lat = location.latitude,
                         lon = location.longitude,
                         locationName = weather.name,
-                        temperature = resourcesProvider.getString(R.string.temperature_format, weather.main.temp.toInt()),
+                        temperature =
+                            resourcesProvider.getString(R.string.temperature_format, weather.main.temp.toInt()),
                         allergens = prefs,
                         forceRefresh = forceRefresh,
                     ).onSuccess {

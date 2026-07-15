@@ -27,7 +27,7 @@ class AndroidReverseGeocoder
     constructor(
         @param:ApplicationContext private val context: Context,
     ) : ReverseGeocoder {
-        @Suppress("DEPRECATION")
+        @Suppress("DEPRECATION", "TooGenericExceptionCaught", "SwallowedException") // Failures degrade to "".
         override fun resolve(
             lat: Double,
             lon: Double,
