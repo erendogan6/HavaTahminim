@@ -12,6 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import timber.log.Timber
 
+/** Maps the Room rows to [PollenType]s; writes are best-effort (logged, never thrown). */
 @Singleton
 class AllergenRepositoryImpl
     @Inject

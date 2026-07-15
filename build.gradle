@@ -72,11 +72,11 @@ def koverExcludedClasses = [
 
 allprojects {
     plugins.withId('org.jetbrains.kotlinx.kover') {
-        // The ONLY human-facing report is the merged root one. A subproject's own report counts
-        // just that module's tests (cross-module coverage lands elsewhere), so :app's local page
-        // shows a misleading ~47% while the true merged figure is ~98% — twice now a partial
-        // report reached a human. Disabling the subproject report tasks makes the wrong page
-        // impossible to generate; the merged report reads Kover's internal artifacts, not these.
+        // Only the merged root report is meaningful. A subproject's own report counts just that
+        // module's tests (cross-module coverage lands elsewhere), so e.g. :app's local page shows
+        // a misleading ~47% against the true merged ~98%. Disabling the subproject report tasks
+        // makes the misleading page impossible to generate; the merged report reads Kover's
+        // internal artifacts, not these outputs.
         if (project != rootProject) {
             tasks.matching { it.name.startsWith('koverHtmlReport') || it.name.startsWith('koverXmlReport') }
                 .configureEach { enabled = false }

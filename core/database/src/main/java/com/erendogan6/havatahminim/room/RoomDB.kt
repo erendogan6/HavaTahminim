@@ -23,6 +23,10 @@ import com.erendogan6.havatahminim.util.Converters
     version = 5,
     exportSchema = false,
 )
+/**
+ * App database. Bump [version] and register a Migration in DatabaseModule on every schema change —
+ * exportSchema is off, so there is no generated history to fall back on.
+ */
 @TypeConverters(Converters::class)
 abstract class RoomDB : RoomDatabase() {
     abstract fun locationDao(): LocationDao

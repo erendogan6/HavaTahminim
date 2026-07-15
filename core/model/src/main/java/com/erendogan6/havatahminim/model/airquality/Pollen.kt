@@ -19,6 +19,7 @@ enum class PollenRisk {
     VERY_HIGH,
 }
 
+/** A pollen type's current concentration and derived risk; [valueGrains] is null when unavailable. */
 data class PollenReading(
     val type: PollenType,
     val valueGrains: Double?,

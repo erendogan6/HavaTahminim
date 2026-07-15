@@ -21,9 +21,9 @@ import timber.log.Timber
 
 /**
  * Today tab. Keys off the active location: a location change restarts the pipeline
- * (transformLatest cancels the stale fetch), a resubscribe after background refreshes silently —
- * the last Success stays on screen instead of flashing the splash (Loading is only emitted when
- * the coordinates actually changed).
+ * (transformLatest cancels the stale fetch), while a plain resubscribe refreshes silently —
+ * the last loaded weather stays on screen and the splash only shows when the coordinates
+ * actually changed.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel

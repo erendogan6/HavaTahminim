@@ -7,6 +7,7 @@ import androidx.room.Query
 import com.erendogan6.havatahminim.model.entity.AllergenPreferenceEntity
 import kotlinx.coroutines.flow.Flow
 
+/** Room access for the user's per-pollen sensitivity flags. */
 @Dao
 interface AllergenPreferenceDao {
     @Query("SELECT * FROM allergen_preferences")

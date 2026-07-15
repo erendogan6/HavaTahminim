@@ -33,7 +33,7 @@ interface DeviceLocationSource {
     suspend fun currentLocation(): DeviceLocation?
 }
 
-/** Fused-provider implementation. Deliberately untested platform shim. */
+/** Fused-provider implementation — pure platform glue, exercised on device rather than in unit tests. */
 @Singleton
 class FusedDeviceLocationSource
     @Inject

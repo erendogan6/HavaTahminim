@@ -14,7 +14,7 @@ interface ConnectivityChecker {
     fun isOnline(): Boolean
 }
 
-/** Delegates to [NetworkUtils]. Deliberately untested platform shim. */
+/** Delegates to [NetworkUtils] — pure platform glue, exercised on device rather than in unit tests. */
 @Singleton
 class AndroidConnectivityChecker
     @Inject
