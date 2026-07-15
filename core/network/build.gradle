@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     id 'com.autonomousapps.dependency-analysis'
+    id 'io.gitlab.arturbosch.detekt'
     alias(libs.plugins.kover)
 }
 
@@ -30,6 +31,8 @@ android {
 }
 
 dependencies {
+    detektPlugins libs.detekt.formatting
+
     // Retrofit service interfaces return the Open-Meteo DTOs.
     api project(':core:model')
     // GeminiService resolves its localized system instruction via ResourcesProvider.

@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.erendogan6.havatahminim.R
-import com.erendogan6.havatahminim.feature.weather.R as FeatureR
 import com.erendogan6.havatahminim.model.airquality.relevantTo
 import com.erendogan6.havatahminim.network.getOrNull
 import com.erendogan6.havatahminim.repository.AirQualityRepository
@@ -26,8 +25,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
+import com.erendogan6.havatahminim.feature.weather.R as FeatureR
 
 /**
  * Fires the daily reminder, upgraded to a pollen alert when a relevant pollen level is alarming.
@@ -44,6 +44,7 @@ class NotificationReceiver : BroadcastReceiver() {
     @Inject
     lateinit var allergenRepository: AllergenRepository
 
+    @Suppress("TooGenericExceptionCaught") // Crash guard: never take the app down for a notification.
     override fun onReceive(
         context: Context,
         intent: Intent,
@@ -67,6 +68,7 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     /** Pollen-alert title/text when a relevant allergen is high today, the generic reminder otherwise. */
+    @Suppress("ReturnCount") // Early-return guards.
     private suspend fun buildNotificationContent(context: Context): Pair<String, String> {
         val generic =
             context.getString(R.string.notification_weather_title) to
@@ -131,7 +133,11 @@ class NotificationReceiver : BroadcastReceiver() {
                 .setAutoCancel(true)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            val granted =
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED
+            if (granted) {
+                @Suppress("ForbiddenMethodCall") // Unique notification id, not time logic.
                 NotificationManagerCompat.from(context).notify(System.currentTimeMillis().toInt(), builder.build())
             }
         } else {

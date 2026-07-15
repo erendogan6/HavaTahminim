@@ -72,9 +72,12 @@ class LocationRepositoryImplTest {
         runTest {
             val failingDao =
                 object : com.erendogan6.havatahminim.model.LocationDao {
-                    override suspend fun getLocation() = throw IllegalStateException("db corrupt")
+                    override suspend fun getLocation(): com.erendogan6.havatahminim.model.entity.LocationEntity =
+                        error("db corrupt")
 
-                    override suspend fun insertLocation(location: com.erendogan6.havatahminim.model.entity.LocationEntity) = 0L
+                    override suspend fun insertLocation(
+                        location: com.erendogan6.havatahminim.model.entity.LocationEntity,
+                    ) = 0L
                 }
             val repository =
                 LocationRepositoryImpl(

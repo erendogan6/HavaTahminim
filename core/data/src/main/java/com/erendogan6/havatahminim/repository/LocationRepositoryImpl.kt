@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import timber.log.Timber
 
 /** Singleton so every consumer shares the same [activeLocation]. */
 @Singleton
@@ -48,7 +48,9 @@ class LocationRepositoryImpl
             _activeLocation.value = LocationEntity(latitude = latitude, longitude = longitude)
             if (persist) {
                 withContext(ioDispatcher) {
-                    runCatching { locationDao.insertLocation(LocationEntity(latitude = latitude, longitude = longitude)) }
+                    runCatching {
+                        locationDao.insertLocation(LocationEntity(latitude = latitude, longitude = longitude))
+                    }
                         .onFailure { Timber.e(it, "Failed to persist location") }
                 }
             }

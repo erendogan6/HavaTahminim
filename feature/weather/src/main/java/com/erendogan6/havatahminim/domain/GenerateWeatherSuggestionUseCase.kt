@@ -10,9 +10,9 @@ import com.erendogan6.havatahminim.repository.AirQualityRepository
 import com.erendogan6.havatahminim.repository.SuggestionRepository
 import com.erendogan6.havatahminim.util.PollenLevel
 import com.erendogan6.havatahminim.util.ResourcesProvider
+import timber.log.Timber
 import java.time.Clock
 import javax.inject.Inject
-import timber.log.Timber
 
 /**
  * Generates the ZekAI suggestion: air quality feeds the prompt, Gemini produces the text.
@@ -60,7 +60,7 @@ class GenerateWeatherSuggestionUseCase
             if (info == null || prefs.isEmpty() || !info.pollenAvailable) return ""
             val unit = resourcesProvider.getString(R.string.pollen_unit)
             val nextLabel = resourcesProvider.getString(R.string.pollen_next_hours)
-            val now = clock.millis() / 1000
+            val now = clock.millis() / MILLIS_PER_SECOND
             val startIndex = info.hourlyTimes.indexOfFirst { it >= now }.takeIf { it >= 0 } ?: 0
 
             return info.pollen
@@ -71,10 +71,15 @@ class GenerateWeatherSuggestionUseCase
                     val currentValue = (reading.valueGrains ?: 0.0).toInt()
                     val series = info.hourlyByType[reading.type].orEmpty()
                     val next6 =
-                        (startIndex until startIndex + 6)
+                        (startIndex until startIndex + PROMPT_HORIZON_HOURS)
                             .mapNotNull { series.getOrNull(it) }
                             .joinToString(", ") { it.toInt().toString() }
                     "$name: $currentRisk ($currentValue $unit); $nextLabel: $next6 $unit"
                 }
+        }
+
+        private companion object {
+            const val MILLIS_PER_SECOND = 1000L
+            const val PROMPT_HORIZON_HOURS = 6
         }
     }

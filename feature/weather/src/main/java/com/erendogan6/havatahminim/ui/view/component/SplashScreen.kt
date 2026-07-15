@@ -42,7 +42,8 @@ internal fun SplashScreen(modifier: Modifier = Modifier) {
     val pulse by transition.animateFloat(
         initialValue = 0.9f,
         targetValue = 1.18f,
-        animationSpec = infiniteRepeatable(tween(durationMillis = 1200, easing = FastOutSlowInEasing), RepeatMode.Reverse),
+        animationSpec =
+            infiniteRepeatable(tween(durationMillis = 1200, easing = FastOutSlowInEasing), RepeatMode.Reverse),
         label = "pulse",
     )
 

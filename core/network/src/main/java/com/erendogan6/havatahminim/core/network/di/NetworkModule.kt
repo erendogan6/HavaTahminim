@@ -21,6 +21,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    private const val TIMEOUT_SECONDS = 30L
+
     @Provides
     @Singleton
     fun provideOkHttpClient(
@@ -39,9 +41,9 @@ object NetworkModule {
             builder.addInterceptor(chuckerInterceptor)
         }
 
-        builder.connectTimeout(30, TimeUnit.SECONDS)
-        builder.readTimeout(30, TimeUnit.SECONDS)
-        builder.writeTimeout(30, TimeUnit.SECONDS)
+        builder.connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        builder.readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        builder.writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
 
         return builder.build()
     }

@@ -77,7 +77,8 @@ class WeatherRepositoryImpl
 
                 val savedForecast = dailyForecastDao.getForecastByDate(today)
                 if (savedForecast != null &&
-                    distanceMeters(savedForecast.latitude, savedForecast.longitude, lat, lon) <= DISTANCE_THRESHOLD_METERS
+                    distanceMeters(savedForecast.latitude, savedForecast.longitude, lat, lon) <=
+                        DISTANCE_THRESHOLD_METERS
                 ) {
                     return@safeApiCall savedForecast.forecastData
                 }
@@ -112,9 +113,9 @@ class WeatherRepositoryImpl
                 main =
                     Main(
                         temp = current.temperature,
-                        feels_like = current.apparentTemperature,
-                        temp_min = current.temperature,
-                        temp_max = current.temperature,
+                        feelsLike = current.apparentTemperature,
+                        tempMin = current.temperature,
+                        tempMax = current.temperature,
                         humidity = current.humidity,
                     ),
                 dt = current.time,
@@ -130,7 +131,7 @@ class WeatherRepositoryImpl
                     sunrise = response.daily?.sunrise?.firstOrNull() ?: 0L,
                     sunset = response.daily?.sunset?.firstOrNull() ?: 0L,
                 )
-            val nowSeconds = clock.millis() / 1000
+            val nowSeconds = clock.millis() / MILLIS_PER_SECOND
             // Open-Meteo returns hours from 00:00 of the local day; start from the upcoming hour.
             val startIndex = hourly.time.indexOfFirst { it >= nowSeconds }.takeIf { it >= 0 } ?: 0
 
@@ -143,9 +144,9 @@ class WeatherRepositoryImpl
                             main =
                                 Main(
                                     temp = hourly.temperature.getOrElse(i) { 0.0 },
-                                    feels_like = hourly.temperature.getOrElse(i) { 0.0 },
-                                    temp_min = hourly.temperature.getOrElse(i) { 0.0 },
-                                    temp_max = hourly.temperature.getOrElse(i) { 0.0 },
+                                    feelsLike = hourly.temperature.getOrElse(i) { 0.0 },
+                                    tempMin = hourly.temperature.getOrElse(i) { 0.0 },
+                                    tempMax = hourly.temperature.getOrElse(i) { 0.0 },
                                     humidity = 0,
                                 ),
                             dt = hourly.time[i],
@@ -186,6 +187,7 @@ class WeatherRepositoryImpl
         // endregion
 
         private companion object {
+            const val MILLIS_PER_SECOND = 1000L
             const val DISTANCE_THRESHOLD_METERS = 10000.0 // daily forecast cache reuse radius
         }
     }

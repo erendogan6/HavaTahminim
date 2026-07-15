@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.repository
 
-import com.erendogan6.havatahminim.core.common.R as CommonR
 import com.erendogan6.havatahminim.model.weather.openmeteo.CurrentBlock
 import com.erendogan6.havatahminim.model.weather.openmeteo.DailyBlock
 import com.erendogan6.havatahminim.model.weather.openmeteo.HourlyBlock
@@ -20,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.io.IOException
 import java.time.LocalDate
+import com.erendogan6.havatahminim.core.common.R as CommonR
 
 class WeatherRepositoryImplTest {
     private val api = FakeWeatherApiService()
@@ -60,7 +60,7 @@ class WeatherRepositoryImplTest {
 
             val weather = (result as ApiResult.Success).data
             assertThat(weather.main.temp).isEqualTo(27.4)
-            assertThat(weather.main.feels_like).isEqualTo(29.1)
+            assertThat(weather.main.feelsLike).isEqualTo(29.1)
             assertThat(weather.main.humidity).isEqualTo(63)
             assertThat(weather.dt).isEqualTo(TestTime.EPOCH_SECONDS)
             assertThat(weather.sys.sunrise).isEqualTo(100L)
@@ -135,7 +135,8 @@ class WeatherRepositoryImplTest {
                         ),
                 )
 
-            val list = repository().getHourlyWeather(TestCoords.ISTANBUL_LAT, TestCoords.ISTANBUL_LON).getOrNull()!!.list
+            val list =
+                repository().getHourlyWeather(TestCoords.ISTANBUL_LAT, TestCoords.ISTANBUL_LON).getOrNull()!!.list
 
             assertThat(list.first().dt).isEqualTo(TestTime.EPOCH_SECONDS) // 12:00, not 10:00
             assertThat(list).hasSize(4)
@@ -151,7 +152,8 @@ class WeatherRepositoryImplTest {
                     hourly = HourlyBlock(time = hours, temperature = hours.map { 20.0 }, weatherCode = hours.map { 0 }),
                 )
 
-            val list = repository().getHourlyWeather(TestCoords.ISTANBUL_LAT, TestCoords.ISTANBUL_LON).getOrNull()!!.list
+            val list =
+                repository().getHourlyWeather(TestCoords.ISTANBUL_LAT, TestCoords.ISTANBUL_LON).getOrNull()!!.list
 
             assertThat(list).hasSize(3)
         }
@@ -161,7 +163,8 @@ class WeatherRepositoryImplTest {
         runTest {
             api.hourlyResponse = OpenMeteoResponse(hourly = null)
 
-            val list = repository().getHourlyWeather(TestCoords.ISTANBUL_LAT, TestCoords.ISTANBUL_LON).getOrNull()!!.list
+            val list =
+                repository().getHourlyWeather(TestCoords.ISTANBUL_LAT, TestCoords.ISTANBUL_LON).getOrNull()!!.list
 
             assertThat(list).isEmpty()
         }
@@ -176,7 +179,8 @@ class WeatherRepositoryImplTest {
                     hourly = HourlyBlock(time = hours, temperature = listOf(21.0), weatherCode = emptyList()),
                 )
 
-            val list = repository().getHourlyWeather(TestCoords.ISTANBUL_LAT, TestCoords.ISTANBUL_LON).getOrNull()!!.list
+            val list =
+                repository().getHourlyWeather(TestCoords.ISTANBUL_LAT, TestCoords.ISTANBUL_LON).getOrNull()!!.list
 
             assertThat(list).hasSize(3)
             assertThat(list[1].main.temp).isEqualTo(0.0)
