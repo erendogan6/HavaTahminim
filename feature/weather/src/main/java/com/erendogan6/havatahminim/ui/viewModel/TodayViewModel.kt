@@ -8,6 +8,7 @@ import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherB
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.network.onError
 import com.erendogan6.havatahminim.network.onSuccess
+import com.erendogan6.havatahminim.network.userMessageRes
 import com.erendogan6.havatahminim.repository.LocationRepository
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.util.ResourcesProvider
@@ -71,7 +72,7 @@ class TodayViewModel
                         }.onError {
                             Log.e(TAG, "Weather fetch failed: $it")
                             lastCoords = null
-                            emit(TodayUiState.Error(resourcesProvider.getString(DataR.string.error_fetching_weather_data)))
+                            emit(TodayUiState.Error(resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_weather_data))))
                         }
                 }.stateIn(
                     scope = viewModelScope,
