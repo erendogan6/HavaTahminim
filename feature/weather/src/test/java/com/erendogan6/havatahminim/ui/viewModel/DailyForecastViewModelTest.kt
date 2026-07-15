@@ -50,7 +50,7 @@ class DailyForecastViewModelTest {
             viewModel().uiState.test {
                 assertThat(awaitItem()).isEqualTo(DailyUiState.Loading)
                 assertThat(awaitItem())
-                    .isEqualTo(DailyUiState.Error("res:${DataR.string.error_fetching_daily_forecast}"))
+                    .isEqualTo(DailyUiState.Error("res:${DataR.string.error_server}")) // Http(500) maps globally
             }
         }
 
