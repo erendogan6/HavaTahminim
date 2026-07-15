@@ -1,9 +1,8 @@
 package com.erendogan6.havatahminim.network
 
 /**
- * The app's common response envelope. Open-Meteo/Gemini return no envelope of their own, so the
- * envelope lives on our side: every repository operation that crosses a process boundary returns
- * an [ApiResult] instead of throwing, and the error taxonomy is typed rather than string-matched.
+ * Common response envelope: repository operations return this instead of throwing, with a typed
+ * error taxonomy.
  */
 sealed interface ApiResult<out T> {
     data class Success<T>(
@@ -11,7 +10,7 @@ sealed interface ApiResult<out T> {
     ) : ApiResult<T>
 
     sealed interface Error : ApiResult<Nothing> {
-        /** No connectivity / DNS / timeout — anything surfacing as an IOException. */
+        /** No connectivity, DNS failure or timeout (anything surfacing as an IOException). */
         data object Network : Error
 
         /** Server replied non-2xx. */

@@ -3,8 +3,8 @@ package com.erendogan6.havatahminim.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Raw palette. `internal` on purpose: nothing outside the design system may touch a hex value —
- * consumers go through [androidx.compose.material3.MaterialTheme.colorScheme] or [WeatherColors].
+ * Raw palette, internal to the design system. Consumers go through
+ * [androidx.compose.material3.MaterialTheme.colorScheme] or [WeatherColors].
  */
 internal object Palette {
     // Brand blues

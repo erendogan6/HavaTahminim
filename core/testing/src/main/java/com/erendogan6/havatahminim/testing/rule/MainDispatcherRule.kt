@@ -10,9 +10,8 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 /**
- * Replaces Dispatchers.Main (viewModelScope's home) with a [TestDispatcher] for the duration of
- * a test. `runTest` (coroutines-test ≥1.7) automatically adopts Main's scheduler once setMain is
- * applied, so tests need no extra scheduler plumbing — virtual time just works.
+ * Swaps Dispatchers.Main for a [TestDispatcher] during a test; runTest then adopts its scheduler,
+ * putting viewModelScope under virtual time.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherRule(

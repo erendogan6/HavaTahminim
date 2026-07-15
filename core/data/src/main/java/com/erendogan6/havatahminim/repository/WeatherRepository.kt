@@ -13,10 +13,7 @@ interface WeatherRepository {
     /** Last fetched current weather; shared by the Today screen, the app background, and the ZekAI prompt. */
     val currentWeather: StateFlow<CurrentWeatherBaseResponse?>
 
-    /**
-     * Fetches the current conditions. Contract: on success the result is also published into
-     * [currentWeather] (fakes must honor this — consumers rely on it).
-     */
+    /** Fetches the current conditions; on success the result is also published into [currentWeather]. */
     suspend fun refreshCurrentWeather(
         lat: Double,
         lon: Double,

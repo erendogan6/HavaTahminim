@@ -68,8 +68,7 @@ class SafeApiCallTest {
                     delay(10_000)
                     "done"
                 }
-            // Completing at all (runTest default timeout is 60s real time) proves the injected
-            // dispatcher shares the test scheduler — the seam PR-A exists for.
+            // Completing at all proves the injected dispatcher shares the test scheduler.
             assertThat(result).isEqualTo(ApiResult.Success("done"))
         }
 }

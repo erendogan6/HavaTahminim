@@ -16,12 +16,9 @@ import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 private val CardShape = RoundedCornerShape(15.dp)
 
 /**
- * The app's base card: the translucent sky-blue surface drawn over the photo background.
- * All cards in `:app` and feature modules go through this — never call Material3 [Card]
- * directly outside the design system. Defaults cover the common case; pass [containerColor]/
- * [shape]/[elevation] only where a screen genuinely deviates (hero risk card, city results).
- * For tappable cards pass [onClick] instead of a `clickable` modifier — Card clips the ripple
- * and touch target to [shape].
+ * Base card (translucent surface over the photo background); use this instead of Material3
+ * [Card] outside the design system. For tappable cards pass [onClick] rather than a
+ * `clickable` modifier, so the ripple clips to [shape].
  */
 @Composable
 fun WeatherCard(

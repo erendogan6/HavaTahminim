@@ -20,10 +20,8 @@ import javax.inject.Inject
 import timber.log.Timber
 
 /**
- * Today tab. Keys off the active location: a location change restarts the pipeline
- * (transformLatest cancels the stale fetch), while a plain resubscribe refreshes silently —
- * the last loaded weather stays on screen and the splash only shows when the coordinates
- * actually changed.
+ * Today tab. A location change restarts the pipeline (transformLatest cancels the stale fetch);
+ * a plain resubscribe refreshes silently, so the splash only shows when the coordinates changed.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -34,8 +32,7 @@ class TodayViewModel
         private val weatherRepository: WeatherRepository,
         private val resourcesProvider: ResourcesProvider,
     ) : ViewModel() {
-        // Confined to the main thread (viewModelScope); tracks the last rendered coordinates so
-        // Loading only shows for genuine location changes.
+        // Last rendered coordinates; loading is only emitted when they change.
         private var lastCoords: Pair<Double, Double>? = null
 
         val uiState: StateFlow<TodayUiState> =

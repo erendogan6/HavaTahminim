@@ -7,10 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * The single activity. It does nothing but host the Compose tree — all UI, navigation and
- * permission handling live in [HavaTahminimApp].
- */
+/** Single activity; everything lives in [HavaTahminimApp]. */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

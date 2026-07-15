@@ -8,9 +8,8 @@ import java.time.Clock
 import javax.inject.Singleton
 
 /**
- * Wall-clock time as an injected dependency. Anything time-dependent (cache TTLs, "today" keys,
- * "upcoming hour" cutoffs) reads this [Clock] instead of `System.currentTimeMillis()`, so tests
- * pin time with `Clock.fixed(...)`.
+ * Time as an injected [Clock] instead of `System.currentTimeMillis()`, so tests can pin it with
+ * `Clock.fixed(...)`.
  */
 @Module
 @InstallIn(SingletonComponent::class)

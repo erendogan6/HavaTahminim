@@ -8,12 +8,9 @@ import kotlin.math.sqrt
 private const val EARTH_RADIUS_METERS = 6_371_000.0
 
 /**
- * Great-circle distance between two coordinates in meters (haversine).
- *
- * Replaces `android.location.Location.distanceTo` so distance logic is pure JVM and unit-testable
- * (the Android implementation is unavailable off-device, and `returnDefaultValues` would silently
- * return 0). Haversine assumes a spherical Earth; the drift vs the WGS84 ellipsoid is <0.5%,
- * immaterial against the app's 5 km / 10 km cache thresholds.
+ * Great-circle distance in meters (haversine). Pure JVM replacement for
+ * `android.location.Location.distanceTo`; the <0.5% spherical-Earth drift is immaterial against
+ * the app's 5/10 km cache thresholds.
  */
 fun distanceMeters(
     lat1: Double,

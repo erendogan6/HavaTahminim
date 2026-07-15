@@ -64,9 +64,8 @@ class AllergyViewModelTest {
     @Test
     fun `an air quality failure pins null even after previous data`() =
         runTest {
-            // Deliberate pin: on a location change whose fetch fails, mapLatest emits getOrNull() =
-            // null — the screen falls back to the splash rather than showing stale data for the
-            // wrong location.
+            // On a failed fetch after a location change, null is emitted: better the splash
+            // than stale data for the wrong location.
             val info = airQualityInfoFixture()
             airQualityRepository.result = ApiResult.Success(info)
             locationRepository.activeLocationState.value = locationEntityFixture()

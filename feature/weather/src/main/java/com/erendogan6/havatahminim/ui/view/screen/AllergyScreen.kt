@@ -325,8 +325,7 @@ private fun DailyDayCard(
     val expandedLabel = stringResource(R.string.a11y_expanded)
     val collapsedLabel = stringResource(R.string.a11y_collapsed)
     WeatherCard(
-        // The clickable card is already one merged Button node; stateDescription tells
-        // TalkBack whether the accordion day is open before it reads the content.
+        // stateDescription tells TalkBack whether the day is expanded.
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -413,7 +412,7 @@ private fun MetricRow(
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        // "PM2.5, 8 µg/m³" as one node instead of two disconnected stops.
+        // TalkBack reads label and value as one node.
         modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp).semantics(mergeDescendants = true) {},
     ) {
         WeatherText(label, style = MaterialTheme.typography.bodyLarge)
@@ -453,7 +452,7 @@ private fun SectionTitle(text: String) {
             MaterialTheme.typography.titleLarge.copy(
                 shadow = Shadow(color = WeatherTheme.colors.shadowSoft, blurRadius = 1f),
             ),
-        // Real heading semantics: TalkBack users can jump section-to-section.
+        // Heading semantics enable TalkBack section jumps.
         modifier = Modifier.fillMaxWidth().semantics { heading() },
     )
 }

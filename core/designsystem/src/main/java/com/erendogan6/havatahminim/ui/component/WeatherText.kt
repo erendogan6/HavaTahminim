@@ -12,12 +12,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 
 /**
- * The app's base text component. All text in `:app` and feature modules goes through this —
- * never call Material3 [Text] directly outside the design system — so app-wide text behavior
- * (defaults, future auto-sizing/emphasis/locale tweaks) is managed in one place.
- *
- * The API is deliberately narrower than M3 [Text]: only the parameters the app actually uses.
- * Widen it here when a real need appears instead of bypassing the component.
+ * Base text component; use this instead of Material3 [Text] outside the design system.
+ * Exposes only the parameters the app uses; widen here rather than bypassing.
  */
 @Composable
 fun WeatherText(
