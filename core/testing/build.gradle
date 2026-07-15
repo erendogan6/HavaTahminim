@@ -2,6 +2,7 @@ plugins {
     // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
     id 'com.android.library'
     id 'com.autonomousapps.dependency-analysis'
+    id 'io.gitlab.arturbosch.detekt'
 }
 
 android {
@@ -20,6 +21,8 @@ android {
 // Hand-written fakes and fixtures for the zero-mock test suite. Deliberately free of Hilt/KSP/
 // Compose/assertion libraries: fakes are plain constructor-built classes and never assert.
 dependencies {
+    detektPlugins libs.detekt.formatting
+
     // Fakes implement interfaces from these modules and expose their types in public signatures.
     api project(':core:data')
     api project(':core:database')

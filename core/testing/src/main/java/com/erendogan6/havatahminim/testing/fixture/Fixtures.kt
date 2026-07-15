@@ -65,7 +65,7 @@ fun currentWeatherFixture(
 ): CurrentWeatherBaseResponse =
     CurrentWeatherBaseResponse(
         weather = listOf(Weather(main = category, description = description)),
-        main = Main(temp = temp, feels_like = feelsLike, temp_min = temp, temp_max = temp, humidity = humidity),
+        main = Main(temp = temp, feelsLike = feelsLike, tempMin = temp, tempMax = temp, humidity = humidity),
         dt = dt,
         sys = Sys(sunrise = sunrise, sunset = sunset),
         name = name,

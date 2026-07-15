@@ -76,6 +76,7 @@ class SuggestionRepositoryImpl
             }
 
         /** Retries RESOURCE_EXHAUSTED (Gemini rate limit) with 1s/2s/4s backoff; rethrows cancellation. */
+        @Suppress("TooGenericExceptionCaught") // The SDK reports rate limits as bare exceptions with a marker message.
         private suspend fun <T> withRateLimitRetry(block: suspend () -> T): T {
             var attempt = 0
             while (true) {
