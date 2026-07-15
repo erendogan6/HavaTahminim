@@ -41,6 +41,9 @@ dependencies {
     api project(':core:network')
 
     implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.ui.tooling.preview
+    debugImplementation platform(libs.androidx.compose.bom)
+    debugImplementation libs.androidx.ui.tooling
     api libs.androidx.ui
     api libs.androidx.ui.graphics
     implementation libs.androidx.material3
