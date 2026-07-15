@@ -2,4 +2,7 @@
 <resources>
     <string name="error_fetching_weather_data">Hava durumu verileri alınırken hata oluştu</string>
     <string name="error_fetching_daily_forecast">Günlük hava durumu verileri alınırken hata oluştu</string>
+    <string name="error_no_internet">İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="error_server">Servis geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="error_rate_limited">Çok fazla istek gönderildi. Lütfen birazdan tekrar deneyin.</string>
 </resources>

@@ -7,6 +7,7 @@ import com.erendogan6.havatahminim.core.data.R as DataR
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.network.onError
 import com.erendogan6.havatahminim.network.onSuccess
+import com.erendogan6.havatahminim.network.userMessageRes
 import com.erendogan6.havatahminim.repository.LocationRepository
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.util.ResourcesProvider
@@ -58,7 +59,7 @@ class DailyForecastViewModel
                         }.onError {
                             Log.e(TAG, "Daily forecast failed: $it")
                             lastCoords = null
-                            emit(DailyUiState.Error(resourcesProvider.getString(DataR.string.error_fetching_daily_forecast)))
+                            emit(DailyUiState.Error(resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_daily_forecast))))
                         }
                 }.stateIn(
                     scope = viewModelScope,
