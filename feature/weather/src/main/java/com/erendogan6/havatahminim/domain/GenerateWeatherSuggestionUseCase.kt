@@ -15,10 +15,10 @@ import javax.inject.Inject
 import timber.log.Timber
 
 /**
- * The one genuine use case in the app: generating a ZekAI suggestion is an orchestration across
- * two repositories (air quality feeds the prompt, Gemini produces the text) plus prompt building —
- * business logic that belongs to neither a single repository nor the presentation layer.
- * A failed air-quality call must not block the suggestion; the prompt just omits pollen data.
+ * Generates the ZekAI suggestion. Orchestrates two repositories — air quality feeds the prompt,
+ * Gemini produces the text — plus the prompt building itself, which is why this lives in a use
+ * case rather than either repository. A failed air-quality call must not block the suggestion;
+ * the prompt simply omits pollen data.
  */
 class GenerateWeatherSuggestionUseCase
     @Inject
