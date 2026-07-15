@@ -16,7 +16,7 @@ import kotlinx.coroutines.yield
 class FakeLocationDao : LocationDao {
     var stored: LocationEntity? = null
 
-    /** Thrown once by the next insert — exercises best-effort persistence paths. */
+    /** Thrown once by the next insert. */
     var insertError: Exception? = null
 
     override suspend fun getLocation(): LocationEntity? {
@@ -77,7 +77,7 @@ class FakeWeatherSuggestionDao : WeatherSuggestionDao {
 class FakeAllergenPreferenceDao : AllergenPreferenceDao {
     private val rows = MutableStateFlow<Map<String, AllergenPreferenceEntity>>(emptyMap())
 
-    /** Thrown once by the next write — exercises best-effort persistence paths. */
+    /** Thrown once by the next write. */
     var setError: Exception? = null
 
     fun seed(vararg entities: AllergenPreferenceEntity) {

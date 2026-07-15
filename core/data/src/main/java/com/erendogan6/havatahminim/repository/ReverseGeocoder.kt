@@ -7,10 +7,7 @@ import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * The seam over the platform [Geocoder]: keeps `Context` (and the deprecated blocking API) out of
- * [LocationRepository], so location logic stays JVM-testable.
- */
+/** Reverse geocoding behind an interface, for testability. */
 interface ReverseGeocoder {
     /** Best human-readable name for the coordinates, or "" when geocoding is unavailable. */
     fun resolve(
@@ -21,9 +18,8 @@ interface ReverseGeocoder {
 }
 
 /**
- * Open-Meteo's forecast endpoint does not return a place name, so we reverse-geocode the
- * coordinates with the platform [Geocoder]. Falls back gracefully when geocoding is unavailable
- * or returns nothing. Pure platform glue, exercised on device rather than in unit tests.
+ * Platform [Geocoder] implementation; Open-Meteo returns no place name, so the coordinates are
+ * reverse-geocoded here. Returns "" when geocoding is unavailable.
  */
 @Singleton
 class AndroidReverseGeocoder

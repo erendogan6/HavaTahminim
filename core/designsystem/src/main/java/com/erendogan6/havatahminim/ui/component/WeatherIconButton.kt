@@ -12,11 +12,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 
-/**
- * The app's base icon button: a circular white-veil chip with ink-tinted icon, legible over
- * the photo background. Use this for icon actions in `:app` and feature modules instead of
- * raw Material3 [IconButton] + [Icon] pairs.
- */
+/** Base icon button (circular veil chip, legible over the photo); use instead of raw M3 [IconButton]. */
 @Composable
 fun WeatherIconButton(
     icon: ImageVector,

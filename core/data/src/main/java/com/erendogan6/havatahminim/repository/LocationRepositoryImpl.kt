@@ -17,7 +17,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import timber.log.Timber
 
-/** @Singleton is load-bearing: [activeLocation] is only meaningful if every consumer sees the same one. */
+/** Singleton so every consumer shares the same [activeLocation]. */
 @Singleton
 class LocationRepositoryImpl
     @Inject

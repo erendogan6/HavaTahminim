@@ -3,15 +3,8 @@ package com.erendogan6.havatahminim.util
 import com.erendogan6.havatahminim.core.common.R
 
 /**
- * Maps Open-Meteo WMO weather codes
- * (https://open-meteo.com/en/docs -> "Weather variable documentation") onto the two pieces of
- * information the UI needs:
- *
- *  - [category]: a coarse bucket string ("Clear", "Clouds", "Rain"...) that the icon
- *    mapping (`weatherIconRes` in :feature:weather) understands. Kept identical to the
- *    old OpenWeather `weather.main` values so the drawable mapping did not have to change.
- *  - [descriptionRes]: a localized string resource describing the condition. Open-Meteo returns no
- *    text description, so we provide our own TR/EN strings.
+ * Maps WMO weather codes to an icon-category bucket ([category], matching the drawable mapping)
+ * and a localized description ([descriptionRes]); Open-Meteo itself returns neither.
  */
 object WmoWeather {
     fun category(code: Int): String =

@@ -129,7 +129,7 @@ private fun TopActions(
 
 @Composable
 private fun WeatherContent(uiState: TodayUiState) {
-    // Fixed precedence over the flat state (see TodayUiState KDoc): loading > error > content.
+    // Precedence: loading > error > content.
     val weather = uiState.weather
     when {
         uiState.isLoading -> SplashScreen()
@@ -213,8 +213,7 @@ private fun HourlyForecastCard(hourlyForecast: HourlyForecastBaseResponse) {
 
 @Composable
 private fun CurrentLocationCard(weatherState: CurrentWeatherBaseResponse) {
-    // One TalkBack node for the whole current-conditions block: a single swipe reads
-    // "city, temperature, condition, feels-like, humidity" instead of five separate stops.
+    // One TalkBack node for the whole block instead of five separate stops.
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.semantics(mergeDescendants = true) {},
@@ -273,7 +272,7 @@ private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        // Merge so TalkBack reads each hour as one node: "15:00, partly cloudy, 25°C, rain 30%".
+        // TalkBack reads each hour as one node.
         modifier = Modifier.semantics(mergeDescendants = true) {},
     ) {
         WeatherText(
@@ -283,7 +282,7 @@ private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
         )
         Image(
             painter = painterResource(id = weatherIconRes(forecast.weather[0].main, forecast.isDayTime())),
-            // The icon is the ONLY carrier of the condition in this item — it must speak.
+            // The icon is the only carrier of the condition here, so it gets a description.
             contentDescription = forecast.weather[0].description,
             modifier = Modifier.size(60.dp),
         )
@@ -299,7 +298,6 @@ private fun HourlyForecastItem(forecast: CurrentWeatherBaseResponse) {
             ) {
                 Icon(
                     imageVector = Icons.Default.WaterDrop,
-                    // Without this, the merged announcement ends in a bare "30%" with no meaning.
                     contentDescription = stringResource(id = R.string.a11y_precipitation_probability),
                     tint = WeatherTheme.colors.precipitation,
                     modifier = Modifier.size(15.dp)

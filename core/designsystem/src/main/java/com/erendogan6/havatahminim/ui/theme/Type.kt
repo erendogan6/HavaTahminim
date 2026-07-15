@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.sp
 import com.erendogan6.havatahminim.core.designsystem.R
 
 // The app's three families. Open Sans and Roboto Medium Italic are downloadable-font XMLs,
-// Merriweather is bundled. Only this file may reference R.font — screens use Typography roles.
+// Merriweather is bundled. Only this file may reference R.font; screens use Typography roles.
 val OpenSans = FontFamily(Font(R.font.open_sans))
 val Merriweather = FontFamily(Font(R.font.merriweather))
 val RobotoMediumItalic = FontFamily(Font(R.font.roboto_medium_italic))
@@ -20,9 +20,8 @@ val RobotoMediumItalic = FontFamily(Font(R.font.roboto_medium_italic))
 private val TextShadow = Shadow(color = Palette.ShadowDark, blurRadius = 2f)
 
 /**
- * Display/headline/title roles are tuned to this app's hero text (temperature, location, section
- * titles) and bake in the legibility shadow; body/label roles keep Material3's standard sizes so
- * M3 components (text fields, chips, nav bar) look right out of the box.
+ * Display/headline/title roles are tuned for the app's hero text and carry the legibility shadow;
+ * body/label roles keep the Material3 defaults so M3 components look right.
  */
 val Typography =
     Typography(

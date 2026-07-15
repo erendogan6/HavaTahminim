@@ -3,12 +3,8 @@ package com.erendogan6.havatahminim.model.weather.openmeteo
 import com.google.gson.annotations.SerializedName
 
 /**
- * Raw response of the Open-Meteo Air Quality endpoint
- * (https://air-quality-api.open-meteo.com/v1/air-quality).
- *
- * Pollen variables are only produced by the CAMS Europe model, so outside Europe they come back
- * as `null` — every pollen field is therefore nullable. Requested with `timeformat=unixtime`
- * (epoch-second [Long] timestamps) like the weather forecast DTOs.
+ * Raw Open-Meteo air-quality response. Pollen is only modelled for Europe, so every pollen field
+ * is nullable.
  */
 data class AirQualityResponse(
     @SerializedName("current") val current: AirQualityCurrent? = null,

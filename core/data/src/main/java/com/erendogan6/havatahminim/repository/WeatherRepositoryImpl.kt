@@ -29,9 +29,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Open-Meteo → domain mapping + per-day Room cache for the daily forecast. All time reads go
- * through the injected [Clock]; distance checks use the pure [distanceMeters]. @Singleton is
- * load-bearing: [currentWeather] is only meaningful if every consumer sees the same instance.
+ * Open-Meteo to domain mapping plus the per-day Room cache for the daily forecast. Singleton so
+ * every consumer shares the same [currentWeather].
  */
 @Singleton
 class WeatherRepositoryImpl
@@ -187,6 +186,6 @@ class WeatherRepositoryImpl
         // endregion
 
         private companion object {
-            const val DISTANCE_THRESHOLD_METERS = 10000.0 // 10 km — daily forecast cache reuse radius
+            const val DISTANCE_THRESHOLD_METERS = 10000.0 // daily forecast cache reuse radius
         }
     }

@@ -9,10 +9,7 @@ import androidx.compose.ui.res.painterResource
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 
-/**
- * The full-bleed photo backdrop drawn once behind the transparent Scaffold in MainActivity
- * (public: it is part of the feature's cross-module surface).
- */
+/** Full-bleed photo backdrop drawn behind the transparent Scaffold in :app. */
 @Composable
 fun BackgroundImage(
     weatherState: CurrentWeatherBaseResponse?,

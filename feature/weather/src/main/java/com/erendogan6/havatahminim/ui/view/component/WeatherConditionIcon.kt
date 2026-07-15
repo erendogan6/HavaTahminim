@@ -14,8 +14,7 @@ import com.erendogan6.havatahminim.feature.weather.R
 
 /**
  * The Today screen's hero condition icon: a looping Lottie animation when one exists for the
- * category/daytime pair, otherwise the same static drawable as everywhere else. The daily and
- * hourly lists deliberately stay on static icons.
+ * category/daytime pair, otherwise the static drawable.
  */
 @Composable
 internal fun WeatherConditionIcon(
@@ -40,10 +39,7 @@ internal fun WeatherConditionIcon(
     }
 }
 
-/**
- * Animated counterpart of [weatherIconRes] for the categories that have one; null falls back to
- * the static drawable (e.g. the unknown-category "cloudy" bucket has no animation on purpose).
- */
+/** Animated counterpart of [weatherIconRes]; null means no animation exists for the category. */
 @RawRes
 internal fun weatherAnimationRes(
     main: String,

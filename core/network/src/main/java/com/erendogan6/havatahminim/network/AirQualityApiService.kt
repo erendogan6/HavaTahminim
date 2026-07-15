@@ -5,9 +5,8 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 /**
- * Open-Meteo Air Quality API (https://air-quality-api.open-meteo.com/v1/air-quality). No API key
- * required. Provides pollen (Europe only) plus general air-quality metrics. Same time conventions
- * as [WeatherApiService] (`timeformat=unixtime`, `timezone=auto`).
+ * Open-Meteo air quality API: AQI metrics plus pollen (Europe only). Same time conventions as
+ * [WeatherApiService].
  */
 interface AirQualityApiService {
     @GET("v1/air-quality")

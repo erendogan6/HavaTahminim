@@ -5,10 +5,8 @@ import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 
 /**
- * The app's base alert dialog: title + message + confirm button, with an optional dismiss
- * button. All dialogs in `:app` and feature modules go through this — never call Material3
- * [AlertDialog] directly outside the design system. The message deliberately overrides
- * [WeatherText]'s `maxLines = 3` default so long localized messages never clip.
+ * Base alert dialog; use this instead of Material3 [AlertDialog] outside the design system.
+ * The message overrides [WeatherText]'s maxLines default so long localized text doesn't clip.
  */
 @Composable
 fun WeatherDialog(

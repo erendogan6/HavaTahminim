@@ -15,7 +15,7 @@ import java.time.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Cache decisions use the injected [Clock]; the Gemini call runs on the injected dispatcher. */
+/** Gemini suggestion with a Room cache; freshness checks use the injected [Clock]. */
 @Singleton
 class SuggestionRepositoryImpl
     @Inject
@@ -49,8 +49,7 @@ class SuggestionRepositoryImpl
 
                 weatherSuggestionDao.deleteAllSuggestions()
 
-                // The persona/instructions live in the model's systemInstruction (see GeminiService);
-                // here we only send the user-specific data.
+                // The persona lives in the model's systemInstruction; this is only the user data.
                 val userMessage =
                     buildString {
                         append("Konum: $location\nSıcaklık: $temperature")
@@ -76,10 +75,7 @@ class SuggestionRepositoryImpl
                 suggestion
             }
 
-        /**
-         * Gemini's free tier rate-limits with RESOURCE_EXHAUSTED; retry with exponential backoff
-         * (1s/2s/4s). Cancellation is rethrown — never retried, never swallowed.
-         */
+        /** Retries RESOURCE_EXHAUSTED (Gemini rate limit) with 1s/2s/4s backoff; rethrows cancellation. */
         private suspend fun <T> withRateLimitRetry(block: suspend () -> T): T {
             var attempt = 0
             while (true) {

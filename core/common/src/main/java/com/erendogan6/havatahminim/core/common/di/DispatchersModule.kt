@@ -7,7 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
-/** Only IO is provided — no speculative Default/Main bindings until something needs them. */
+/** IO is the only dispatcher anything injects today. */
 @Module
 @InstallIn(SingletonComponent::class)
 object DispatchersModule {

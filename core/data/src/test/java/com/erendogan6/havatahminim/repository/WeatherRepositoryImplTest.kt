@@ -172,7 +172,7 @@ class WeatherRepositoryImplTest {
             val hours = (0..2).map { TestTime.EPOCH_SECONDS + it * 3600L }
             api.hourlyResponse =
                 OpenMeteoResponse(
-                    // temperature/weatherCode arrays shorter than time — real Open-Meteo glitch shape.
+                    // temperature/weatherCode arrays shorter than time, a real Open-Meteo glitch shape.
                     hourly = HourlyBlock(time = hours, temperature = listOf(21.0), weatherCode = emptyList()),
                 )
 

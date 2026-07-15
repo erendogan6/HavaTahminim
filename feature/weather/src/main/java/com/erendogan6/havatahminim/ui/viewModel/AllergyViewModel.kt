@@ -22,10 +22,9 @@ import javax.inject.Inject
 import timber.log.Timber
 
 /**
- * Allergy tab. Two independent slices: the Room-backed allergen selection (cold upstream shared
- * with WhileSubscribed) and the location-keyed air quality fetch. Air quality deliberately never
- * emits an interim value, so returning to the tab keeps showing the previous data while the
- * refetch runs; `null` (the splash) only appears before the very first result.
+ * Allergy tab: the Room-backed allergen selection plus the location-keyed air quality fetch.
+ * Air quality emits no interim value, so returning to the tab keeps the previous data on screen;
+ * null (the splash) only appears before the first result.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel

@@ -4,14 +4,9 @@ import androidx.annotation.StringRes
 import com.erendogan6.havatahminim.core.data.R
 
 /**
- * The single place the typed error taxonomy becomes a user-facing message — the last mile of the
- * [ApiResult] envelope. Taxonomy cases with an app-wide meaning map globally (no connection,
- * rate-limited, server down); everything else falls back to the screen's own context message
- * ("couldn't fetch the daily forecast"), which callers pass in.
- *
- * Lives in `:core:data` next to the shared error strings it resolves to. ViewModels call this
- * instead of hand-picking an error string, so a Network failure reads as "check your connection"
- * on every screen — never as a generic fetch error.
+ * Maps the error taxonomy to a user-facing message. Errors with an app-wide meaning (offline,
+ * rate-limited, server down) map to shared strings; everything else uses the screen's own
+ * [fallbackRes].
  */
 @StringRes
 fun ApiResult.Error.userMessageRes(

@@ -22,11 +22,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.yield
 
 /*
- * Fake rules (apply to every fake in this package):
- *  1. Every suspending function starts with `yield()` — the dispatch point that lets Turbine
- *     observe intermediate StateFlow emissions instead of seeing them conflated.
- *  2. Fakes honor the interface's KDoc CONTRACT, not just its signature (e.g. a successful
- *     refresh publishes into currentWeather; setActiveLocation updates the state flow).
+ * Conventions for every fake in this package:
+ *  1. Suspending functions start with yield(), so Turbine can observe intermediate StateFlow
+ *     emissions instead of seeing them conflated.
+ *  2. Fakes honor the interface's documented contract, not just its signature.
  */
 
 class FakeLocationRepository : LocationRepository {
@@ -77,8 +76,7 @@ class FakeWeatherRepository : WeatherRepository {
     val currentWeatherState = MutableStateFlow<CurrentWeatherBaseResponse?>(null)
     override val currentWeather: StateFlow<CurrentWeatherBaseResponse?> = currentWeatherState.asStateFlow()
 
-    // Handler hooks (not fixed fields) so tests can gate a call on awaitCancellation() to prove
-    // transformLatest cancels the stale request.
+    // Handlers instead of fixed fields, so tests can gate a call on awaitCancellation().
     var refreshHandler: suspend (Double, Double) -> ApiResult<CurrentWeatherBaseResponse> =
         { _, _ -> ApiResult.Error.Unknown(null) }
     var hourlyHandler: suspend (Double, Double) -> ApiResult<HourlyForecastBaseResponse> =
@@ -142,7 +140,7 @@ class FakeAirQualityRepository : AirQualityRepository {
 class FakeAllergenRepository : AllergenRepository {
     val prefs = MutableStateFlow<Set<PollenType>>(emptySet())
 
-    /** When set, the flow throws before emitting — exercises consumers' .catch paths. */
+    /** When set, the flow throws before emitting. */
     var flowError: Throwable? = null
     val setPreferenceCalls = mutableListOf<Pair<PollenType, Boolean>>()
 
