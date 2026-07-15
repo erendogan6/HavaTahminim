@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     id 'com.autonomousapps.dependency-analysis'
+    alias(libs.plugins.detekt)
     alias(libs.plugins.kover)
 }
 
@@ -59,6 +60,8 @@ android {
 }
 
 dependencies {
+    detektPlugins libs.detekt.formatting
+
     implementation libs.timber
     implementation project(':feature:weather')
     implementation project(':core:designsystem')

@@ -1,0 +1,22 @@
+# Extra rules for the UI modules (:app, :feature:weather) on top of config/detekt/detekt.yml.
+
+style:
+  ForbiddenImport:
+    active: true
+    imports:
+      - value: 'android.util.Log'
+        reason: 'Log through Timber; unplanted trees keep JVM tests free of android.util.Log.'
+      - value: 'androidx.compose.material3.Text'
+        reason: 'Use the WeatherText base component.'
+      - value: 'androidx.compose.material3.TextField'
+        reason: 'Use the WeatherTextField base component.'
+      - value: 'androidx.compose.material3.OutlinedTextField'
+        reason: 'Use the WeatherTextField base component.'
+      - value: 'androidx.compose.material3.Card'
+        reason: 'Use the WeatherCard base component.'
+      - value: 'androidx.compose.material3.AlertDialog'
+        reason: 'Use the WeatherDialog base component.'
+      - value: 'androidx.compose.material3.IconButton'
+        reason: 'Use the WeatherIconButton base component.'
+      - value: 'java.text.SimpleDateFormat'
+        reason: 'Use the formatters in :core:common (toDayName / toHourMinute).'

@@ -3,6 +3,7 @@ plugins {
     id 'com.android.library'
     alias(libs.plugins.kotlin.compose)
     id 'com.autonomousapps.dependency-analysis'
+    id 'io.gitlab.arturbosch.detekt'
 }
 
 android {
@@ -23,6 +24,8 @@ android {
 }
 
 dependencies {
+    detektPlugins libs.detekt.formatting
+
     implementation platform(libs.androidx.compose.bom)
     // Base components expose ui/ui-graphics types (Modifier, TextStyle, Color, Shape) in their signatures.
     api libs.androidx.ui

@@ -1,3 +1,6 @@
+// Lookup tables: the raw WMO codes / band edges are the domain data itself.
+@file:Suppress("MagicNumber")
+
 package com.erendogan6.havatahminim.util
 
 import com.erendogan6.havatahminim.core.common.R
@@ -19,6 +22,7 @@ object WmoWeather {
             else -> "Clouds"
         }
 
+    @Suppress("CyclomaticComplexMethod") // Flat one-branch-per-code table.
     fun descriptionRes(code: Int): Int =
         when (code) {
             0 -> R.string.wmo_clear_sky

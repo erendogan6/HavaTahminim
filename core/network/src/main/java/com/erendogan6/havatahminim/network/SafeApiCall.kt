@@ -11,6 +11,7 @@ import java.io.IOException
  * HttpException to Http, the rest to Unknown). [CancellationException] is rethrown.
  * [dispatcher] has no default so tests can't accidentally fall back to the real Dispatchers.IO.
  */
+@Suppress("TooGenericExceptionCaught", "SwallowedException") // The whole point: map everything to the taxonomy.
 suspend fun <T> safeApiCall(
     dispatcher: CoroutineDispatcher,
     block: suspend () -> T,
