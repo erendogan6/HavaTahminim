@@ -2,4 +2,7 @@
 <resources>
     <string name="error_fetching_weather_data">Error fetching weather data</string>
     <string name="error_fetching_daily_forecast">Error fetching daily weather data</string>
+    <string name="error_no_internet">No internet connection. Please check your connection and try again.</string>
+    <string name="error_server">The service is temporarily unavailable. Please try again later.</string>
+    <string name="error_rate_limited">Too many requests. Please try again in a moment.</string>
 </resources>
