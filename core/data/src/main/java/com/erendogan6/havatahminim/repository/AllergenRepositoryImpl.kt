@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.repository
 
-import android.util.Log
 import com.erendogan6.havatahminim.core.common.di.IoDispatcher
 import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.model.entity.AllergenPreferenceEntity
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import timber.log.Timber
 
 @Singleton
 class AllergenRepositoryImpl
@@ -41,11 +41,7 @@ class AllergenRepositoryImpl
         ) {
             withContext(ioDispatcher) {
                 runCatching { allergenPreferenceDao.setPreference(AllergenPreferenceEntity(type.name, sensitive)) }
-                    .onFailure { Log.e(TAG, "Failed to persist allergen preference", it) }
+                    .onFailure { Timber.e(it, "Failed to persist allergen preference") }
             }
-        }
-
-        private companion object {
-            const val TAG = "AllergenRepository"
         }
     }

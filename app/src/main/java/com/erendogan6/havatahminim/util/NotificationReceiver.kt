@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -28,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import timber.log.Timber
 
 @AndroidEntryPoint
 class NotificationReceiver : BroadcastReceiver() {
@@ -56,7 +56,7 @@ class NotificationReceiver : BroadcastReceiver() {
             } catch (e: Exception) {
                 // This is a root scope with no exception handler: anything escaping it would hit
                 // the default handler and crash the app. A missed notification is the better deal.
-                Log.e(TAG, "Daily notification failed", e)
+                Timber.e(e, "Daily notification failed")
             } finally {
                 NotificationUtils.scheduleDailyNotification(context)
                 pendingResult.finish()
@@ -93,10 +93,6 @@ class NotificationReceiver : BroadcastReceiver() {
             alarming.joinToString(", ") { context.getString(PollenLevel.typeNameRes(it.type)) }
         return context.getString(R.string.pollen_alert_title) to
             context.getString(R.string.pollen_alert_text, allergenList)
-    }
-
-    private companion object {
-        const val TAG = "NotificationReceiver"
     }
 
     private fun sendNotification(
