@@ -5,6 +5,8 @@ import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import java.util.Calendar
 
+private const val MILLIS_PER_SECOND = 1000L
+
 /** Icon-category to drawable mapping; categories come from [com.erendogan6.havatahminim.util.WmoWeather]. */
 @DrawableRes
 internal fun weatherIconRes(
@@ -24,6 +26,6 @@ internal fun weatherIconRes(
 
 /** Whether "now" falls between this forecast's sunrise and sunset. */
 internal fun CurrentWeatherBaseResponse.isDayTime(): Boolean {
-    val now = Calendar.getInstance().timeInMillis / 1000
+    val now = Calendar.getInstance().timeInMillis / MILLIS_PER_SECOND
     return now in sys.sunrise..sys.sunset
 }

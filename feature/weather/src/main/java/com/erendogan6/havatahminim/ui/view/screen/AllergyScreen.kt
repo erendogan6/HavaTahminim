@@ -1,7 +1,6 @@
 package com.erendogan6.havatahminim.ui.view.screen
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,48 +26,42 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import com.erendogan6.havatahminim.ui.component.WeatherCard
-import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.erendogan6.havatahminim.extension.toDayName
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
 import com.erendogan6.havatahminim.model.airquality.DailyPollenForecast
-import com.erendogan6.havatahminim.extension.toDayName
 import com.erendogan6.havatahminim.model.airquality.PollenReading
 import com.erendogan6.havatahminim.model.airquality.PollenRisk
+import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.model.airquality.relevantTo
 import com.erendogan6.havatahminim.model.airquality.worst
-import com.erendogan6.havatahminim.model.airquality.PollenType
+import com.erendogan6.havatahminim.ui.component.WeatherCard
+import com.erendogan6.havatahminim.ui.component.WeatherText
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 import com.erendogan6.havatahminim.ui.view.component.ChartLegend
 import com.erendogan6.havatahminim.ui.view.component.PollenDayChart
 import com.erendogan6.havatahminim.ui.view.component.SplashScreen
 import com.erendogan6.havatahminim.ui.view.component.aqiColor
 import com.erendogan6.havatahminim.ui.view.component.riskColor
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.erendogan6.havatahminim.ui.viewModel.AllergyViewModel
 import com.erendogan6.havatahminim.util.AqiLevel
 import com.erendogan6.havatahminim.util.PollenLevel
@@ -207,7 +199,8 @@ private fun AllergenSelector(
                     selected = isSelected,
                     onClick = { onToggle(type, !isSelected) },
                     label = { WeatherText(stringResource(PollenLevel.typeNameRes(type))) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = WeatherTheme.colors.cardSurface),
+                    colors =
+                        FilterChipDefaults.filterChipColors(selectedContainerColor = WeatherTheme.colors.cardSurface),
                 )
             }
         }
@@ -376,8 +369,6 @@ private fun DailyDayCard(
         }
     }
 }
-
-
 
 @Composable
 private fun AirQualityCard(info: AirQualityInfo) {

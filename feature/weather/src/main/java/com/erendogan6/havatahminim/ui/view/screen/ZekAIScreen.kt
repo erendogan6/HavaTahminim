@@ -17,9 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import com.erendogan6.havatahminim.ui.component.WeatherText
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,10 +28,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.ui.component.CenteredColumn
+import com.erendogan6.havatahminim.ui.component.WeatherText
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.erendogan6.havatahminim.ui.viewModel.ZekAiViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 

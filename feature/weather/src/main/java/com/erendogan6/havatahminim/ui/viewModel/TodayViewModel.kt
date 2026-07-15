@@ -2,7 +2,6 @@ package com.erendogan6.havatahminim.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erendogan6.havatahminim.core.data.R as DataR
 import com.erendogan6.havatahminim.network.onError
 import com.erendogan6.havatahminim.network.onSuccess
 import com.erendogan6.havatahminim.network.userMessageRes
@@ -16,8 +15,9 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
-import javax.inject.Inject
 import timber.log.Timber
+import javax.inject.Inject
+import com.erendogan6.havatahminim.core.data.R as DataR
 
 /**
  * Today tab. A location change restarts the pipeline (transformLatest cancels the stale fetch);
@@ -54,7 +54,9 @@ class TodayViewModel
                         }.onError {
                             Timber.e("Weather fetch failed: $it")
                             lastCoords = null
-                            emit(TodayUiState(isLoading = false, error = resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_weather_data))))
+                            val message =
+                                resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_weather_data))
+                            emit(TodayUiState(isLoading = false, error = message))
                         }
                 }.stateIn(
                     scope = viewModelScope,
