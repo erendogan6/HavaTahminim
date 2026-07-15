@@ -13,7 +13,6 @@ import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filterNotNull
@@ -76,12 +75,11 @@ class TodayViewModel
                         }
                 }.stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+                    started = WhileUiSubscribed,
                     initialValue = TodayUiState.Loading,
                 )
 
         private companion object {
             const val TAG = "TodayViewModel"
-            const val STOP_TIMEOUT_MILLIS = 5_000L
         }
     }
