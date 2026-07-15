@@ -4,6 +4,7 @@ import com.erendogan6.havatahminim.model.weather.openmeteo.GeoSearchResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+/** Open-Meteo geocoding: free-text city search, localized via the `language` param. */
 interface CityApiService {
     @GET("v1/search")
     suspend fun getCities(

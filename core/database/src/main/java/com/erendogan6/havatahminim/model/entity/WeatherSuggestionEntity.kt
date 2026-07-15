@@ -3,6 +3,7 @@ package com.erendogan6.havatahminim.model.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/** Cached ZekAI suggestion with the coordinates/time/language it was generated for. */
 @Entity(tableName = "weather_suggestions")
 data class WeatherSuggestionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
