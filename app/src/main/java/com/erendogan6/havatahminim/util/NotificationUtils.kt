@@ -7,6 +7,8 @@ import android.content.Intent
 import java.util.Calendar
 
 object NotificationUtils {
+    private const val NOTIFICATION_HOUR_OF_DAY = 12
+
     fun scheduleDailyNotification(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, NotificationReceiver::class.java)
@@ -27,8 +29,9 @@ object NotificationUtils {
     ) {
         val calendar =
             Calendar.getInstance().apply {
+                @Suppress("ForbiddenMethodCall") // Alarm scheduling needs real wall time.
                 timeInMillis = System.currentTimeMillis()
-                set(Calendar.HOUR_OF_DAY, 12)
+                set(Calendar.HOUR_OF_DAY, NOTIFICATION_HOUR_OF_DAY)
                 set(Calendar.MINUTE, 0)
                 set(Calendar.SECOND, 0)
                 if (before(Calendar.getInstance())) {

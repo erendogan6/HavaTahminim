@@ -1,7 +1,6 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
 import app.cash.turbine.test
-import com.erendogan6.havatahminim.core.data.R as DataR
 import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.network.ApiResult
 import com.erendogan6.havatahminim.testing.fixture.TestCoords
@@ -16,6 +15,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import com.erendogan6.havatahminim.core.data.R as DataR
 
 class DailyForecastViewModelTest {
     @get:Rule
@@ -50,7 +50,8 @@ class DailyForecastViewModelTest {
             viewModel().uiState.test {
                 assertThat(awaitItem()).isEqualTo(DailyUiState())
                 assertThat(awaitItem())
-                    .isEqualTo(DailyUiState(isLoading = false, error = "res:${DataR.string.error_server}")) // Http(500) maps globally
+                    // Http(500) maps globally to the server-error message.
+                    .isEqualTo(DailyUiState(isLoading = false, error = "res:${DataR.string.error_server}"))
             }
         }
 
@@ -71,7 +72,8 @@ class DailyForecastViewModelTest {
 
             advanceTimeBy(5_001)
             viewModel.uiState.test {
-                assertThat(awaitItem()).isEqualTo(DailyUiState(isLoading = false, forecast = forecast)) // replay, no Loading
+                // Replay, no interim loading.
+                assertThat(awaitItem()).isEqualTo(DailyUiState(isLoading = false, forecast = forecast))
                 advanceUntilIdle() // let the silent background re-fetch complete
                 expectNoEvents() // same data, nothing new emitted
             }

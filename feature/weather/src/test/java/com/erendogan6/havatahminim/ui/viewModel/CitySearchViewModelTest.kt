@@ -20,7 +20,8 @@ class CitySearchViewModelTest {
 
     private val locationRepository = FakeLocationRepository()
 
-    private fun viewModel(handle: SavedStateHandle = SavedStateHandle()) = CitySearchViewModel(locationRepository, handle)
+    private fun viewModel(handle: SavedStateHandle = SavedStateHandle()) =
+        CitySearchViewModel(locationRepository, handle)
 
     @Test
     fun `query restores from saved state`() =

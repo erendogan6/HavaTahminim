@@ -34,6 +34,7 @@ class FusedDeviceLocationSource
     ) : DeviceLocationSource {
         private val fusedLocationClient by lazy { LocationServices.getFusedLocationProviderClient(context) }
 
+        @Suppress("TooGenericExceptionCaught", "SwallowedException") // Any provider failure means "no fix".
         override suspend fun currentLocation(): DeviceLocation? {
             if (!hasLocationPermission() || !isLocationServiceEnabled()) return null
             return try {

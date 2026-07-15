@@ -250,7 +250,7 @@ private fun CurrentLocationCardContent(weatherState: CurrentWeatherBaseResponse)
     )
 
     WeatherText(
-        text = stringResource(id = R.string.feels_like_format, weatherState.main.feels_like.toInt()),
+        text = stringResource(id = R.string.feels_like_format, weatherState.main.feelsLike.toInt()),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Normal,
         modifier = Modifier.padding(vertical = 15.dp),

@@ -1,0 +1,76 @@
+# Project overrides on top of detekt's default config (buildUponDefaultConfig = true).
+# Only deviations from the defaults live here.
+
+complexity:
+  LongMethod:
+    ignoreAnnotated: ['Composable']
+  LongParameterList:
+    ignoreAnnotated: ['Composable']
+    functionThreshold: 7
+    ignoreDefaultParameters: true
+  CyclomaticComplexMethod:
+    ignoreAnnotated: ['Composable']
+  TooManyFunctions:
+    ignorePrivate: true
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+  # Legacy capitalized package segments (model.weather.CurrentForecast etc.); renaming them is a
+  # separate refactor, so the pattern tolerates one leading capital per segment.
+  PackageNaming:
+    packagePattern: '[a-z]+(\.[a-zA-Z][A-Za-z0-9]*)*'
+  ConstructorParameterNaming:
+    excludes: ['**/model/weather/**']
+
+exceptions:
+  SwallowedException:
+    ignoredExceptionTypes: ['CancellationException']
+
+style:
+  MaxLineLength:
+    maxLineLength: 120
+  DestructuringDeclarationWithTooManyEntries:
+    maxDestructuringEntries: 4
+  ReturnCount:
+    excludeGuardClauses: true
+  MagicNumber:
+    ignoreAnnotated: ['Composable']
+    ignorePropertyDeclaration: true
+    excludes:
+      - '**/test/**'
+      - '**/androidTest/**'
+      - '**/core/testing/**'
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Composable']
+  ForbiddenImport:
+    active: true
+    imports:
+      - value: 'android.util.Log'
+        reason: 'Log through Timber; unplanted trees keep JVM tests free of android.util.Log.'
+  ForbiddenMethodCall:
+    active: true
+    methods:
+      - value: 'java.lang.System.currentTimeMillis'
+        reason: 'Time-dependent logic reads the injected java.time.Clock so tests can pin it.'
+      - value: 'kotlin.io.print'
+        reason: 'Log through Timber.'
+      - value: 'kotlin.io.println'
+        reason: 'Log through Timber.'
+
+# The codebase has an established, consistent style (original ktlint CLI defaults with the deep
+# continuation indent on Hilt constructors). The tool adapts to the code, not the other way
+# around: re-style rules are off, hygiene rules (unused imports, final newlines, ordering) stay.
+formatting:
+  Indentation:
+    active: false
+  ArgumentListWrapping:
+    active: false
+  ParameterListWrapping:
+    active: false
+  Wrapping:
+    active: false
+  MaximumLineLength:
+    active: false # style > MaxLineLength above already enforces 120
+  PackageName:
+    active: false # same legacy packages as naming > PackageNaming

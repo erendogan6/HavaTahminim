@@ -2,6 +2,7 @@ plugins {
     // Unversioned: AGP is already on the root classpath via the app module's plugin alias.
     id 'com.android.library'
     id 'com.autonomousapps.dependency-analysis'
+    id 'io.gitlab.arturbosch.detekt'
     alias(libs.plugins.kover)
 }
 
@@ -19,6 +20,8 @@ android {
 }
 
 dependencies {
+    detektPlugins libs.detekt.formatting
+
     // Gson annotations (@SerializedName) on the DTOs.
     implementation libs.gson
 

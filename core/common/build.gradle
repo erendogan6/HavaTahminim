@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     id 'com.autonomousapps.dependency-analysis'
+    id 'io.gitlab.arturbosch.detekt'
     alias(libs.plugins.kover)
 }
 
@@ -21,6 +22,8 @@ android {
 }
 
 dependencies {
+    detektPlugins libs.detekt.formatting
+
     // PollenLevel maps model enums (PollenType/PollenRisk) to string resources.
     api project(':core:model')
 

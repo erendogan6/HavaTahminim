@@ -1,3 +1,6 @@
+// Lookup tables: the raw WMO codes / band edges are the domain data itself.
+@file:Suppress("MagicNumber")
+
 package com.erendogan6.havatahminim.util
 
 import com.erendogan6.havatahminim.core.common.R
