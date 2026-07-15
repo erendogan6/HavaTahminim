@@ -12,7 +12,6 @@ import com.erendogan6.havatahminim.repository.AllergenRepository
 import com.erendogan6.havatahminim.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChangedBy
@@ -45,7 +44,7 @@ class AllergyViewModel
                     emit(emptySet())
                 }.stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+                    started = WhileUiSubscribed,
                     initialValue = emptySet(),
                 )
 
@@ -60,7 +59,7 @@ class AllergyViewModel
                         .getOrNull()
                 }.stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+                    started = WhileUiSubscribed,
                     initialValue = null,
                 )
 
@@ -75,6 +74,5 @@ class AllergyViewModel
 
         private companion object {
             const val TAG = "AllergyViewModel"
-            const val STOP_TIMEOUT_MILLIS = 5_000L
         }
     }
