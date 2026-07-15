@@ -44,24 +44,24 @@ class TodayViewModel
                 .distinctUntilChangedBy { it.latitude to it.longitude }
                 .transformLatest { location ->
                     val coords = location.latitude to location.longitude
-                    if (coords != lastCoords) emit(TodayUiState.Loading)
+                    if (coords != lastCoords) emit(TodayUiState(isLoading = true))
                     weatherRepository
                         .refreshCurrentWeather(location.latitude, location.longitude)
                         .onSuccess { weather ->
                             lastCoords = coords
-                            emit(TodayUiState.Success(weather, hourly = null))
+                            emit(TodayUiState(isLoading = false, weather = weather))
                             weatherRepository
                                 .getHourlyWeather(location.latitude, location.longitude)
-                                .onSuccess { emit(TodayUiState.Success(weather, it)) }
+                                .onSuccess { emit(TodayUiState(isLoading = false, weather = weather, hourly = it)) }
                                 .onError { Timber.e("Hourly forecast failed: $it") }
                         }.onError {
                             Timber.e("Weather fetch failed: $it")
                             lastCoords = null
-                            emit(TodayUiState.Error(resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_weather_data))))
+                            emit(TodayUiState(isLoading = false, error = resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_weather_data))))
                         }
                 }.stateIn(
                     scope = viewModelScope,
                     started = WhileUiSubscribed,
-                    initialValue = TodayUiState.Loading,
+                    initialValue = TodayUiState(),
                 )
     }

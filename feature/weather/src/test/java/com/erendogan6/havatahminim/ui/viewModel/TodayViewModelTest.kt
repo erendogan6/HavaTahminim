@@ -44,9 +44,9 @@ class TodayViewModelTest {
             locationRepository.activeLocationState.value = locationEntityFixture()
 
             viewModel().uiState.test {
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Loading)
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = null))
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = hourly))
+                assertThat(awaitItem()).isEqualTo(TodayUiState())
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather))
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather, hourly = hourly))
             }
         }
 
@@ -58,8 +58,8 @@ class TodayViewModelTest {
             locationRepository.activeLocationState.value = locationEntityFixture()
 
             viewModel().uiState.test {
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Loading)
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = null))
+                assertThat(awaitItem()).isEqualTo(TodayUiState())
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather))
                 expectNoEvents()
             }
         }
@@ -71,9 +71,9 @@ class TodayViewModelTest {
             locationRepository.activeLocationState.value = locationEntityFixture()
 
             viewModel().uiState.test {
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Loading)
+                assertThat(awaitItem()).isEqualTo(TodayUiState())
                 assertThat(awaitItem())
-                    .isEqualTo(TodayUiState.Error("res:${DataR.string.error_no_internet}"))
+                    .isEqualTo(TodayUiState(isLoading = false, error = "res:${DataR.string.error_no_internet}"))
             }
         }
 
@@ -84,9 +84,9 @@ class TodayViewModelTest {
             locationRepository.activeLocationState.value = locationEntityFixture()
 
             viewModel().uiState.test {
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Loading)
+                assertThat(awaitItem()).isEqualTo(TodayUiState())
                 assertThat(awaitItem())
-                    .isEqualTo(TodayUiState.Error("res:${DataR.string.error_fetching_weather_data}"))
+                    .isEqualTo(TodayUiState(isLoading = false, error = "res:${DataR.string.error_fetching_weather_data}"))
             }
         }
 
@@ -97,15 +97,15 @@ class TodayViewModelTest {
             locationRepository.activeLocationState.value = locationEntityFixture()
 
             viewModel().uiState.test {
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Loading)
+                assertThat(awaitItem()).isEqualTo(TodayUiState())
                 advanceUntilIdle() // let the first fetch actually start (and hang in awaitCancellation)
 
                 seedHappyPath() // second location resolves normally
                 locationRepository.activeLocationState.value =
                     locationEntityFixture(latitude = TestCoords.ANKARA_LAT, longitude = TestCoords.ANKARA_LON)
 
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = null))
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = hourly))
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather))
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather, hourly = hourly))
             }
             assertThat(weatherRepository.refreshCallCount).isEqualTo(2)
         }
@@ -118,18 +118,18 @@ class TodayViewModelTest {
             val viewModel = viewModel()
 
             viewModel.uiState.test {
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Loading)
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = null))
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = hourly))
+                assertThat(awaitItem()).isEqualTo(TodayUiState())
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather))
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather, hourly = hourly))
             }
 
             advanceTimeBy(5_001) // let WhileSubscribed(5s) tear the upstream down
 
             viewModel.uiState.test {
                 // stateIn replays the last value; the silent re-fetch must not emit Loading.
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = hourly))
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather, hourly = hourly))
                 advanceUntilIdle()
-                expectMostRecentItem().let { assertThat(it).isInstanceOf(TodayUiState.Success::class.java) }
+                expectMostRecentItem().let { assertThat(it.weather).isNotNull() }
             }
             assertThat(weatherRepository.refreshCallCount).isEqualTo(2)
         }
@@ -158,7 +158,7 @@ class TodayViewModelTest {
 
             viewModel.uiState.test {
                 skipItems(1) // Loading
-                assertThat(awaitItem()).isInstanceOf(TodayUiState.Error::class.java)
+                assertThat(awaitItem().error).isNotNull()
             }
             advanceTimeBy(5_001)
             seedHappyPath()
@@ -166,8 +166,8 @@ class TodayViewModelTest {
             viewModel.uiState.test {
                 skipItems(1) // replayed Error
                 // lastCoords was reset on failure, so the retry legitimately re-shows Loading.
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Loading)
-                assertThat(awaitItem()).isEqualTo(TodayUiState.Success(weather, hourly = null))
+                assertThat(awaitItem()).isEqualTo(TodayUiState())
+                assertThat(awaitItem()).isEqualTo(TodayUiState(isLoading = false, weather = weather))
             }
         }
 }
