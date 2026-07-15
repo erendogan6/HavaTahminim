@@ -103,7 +103,7 @@ class GenerateWeatherSuggestionUseCaseTest {
     @Test
     fun `summary slices the next six hours starting from the fixed clock`() =
         runTest {
-            // hourlyTimes start exactly at TestTime — startIndex 0, next 6 values 0,10,...,50.
+            // hourlyTimes start exactly at TestTime: startIndex 0, next 6 values 0,10,...,50.
             airQualityRepository.result = ApiResult.Success(airQualityInfoFixture())
 
             invoke(allergens = setOf(PollenType.GRASS))

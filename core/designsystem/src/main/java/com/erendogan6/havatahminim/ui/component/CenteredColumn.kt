@@ -7,10 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-/**
- * Full-size column centering its content both ways — the app's standard host for
- * "centered state" content (splash, loading, error messages).
- */
+/** Full-size column centering its content both ways (splash, loading, error states). */
 @Composable
 fun CenteredColumn(
     modifier: Modifier = Modifier,

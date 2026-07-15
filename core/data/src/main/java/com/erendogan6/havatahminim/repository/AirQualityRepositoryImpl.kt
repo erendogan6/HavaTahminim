@@ -19,7 +19,7 @@ import java.time.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** All time/zone reads go through the injected [Clock]; the fetch runs on the injected dispatcher. */
+/** Maps the Open-Meteo air-quality response; day bucketing uses the injected [Clock]'s zone. */
 @Singleton
 class AirQualityRepositoryImpl
     @Inject
@@ -74,11 +74,7 @@ class AirQualityRepositoryImpl
             )
         }
 
-        /**
-         * Open-Meteo only forecasts pollen hourly, so we aggregate the hourly series into a per-day
-         * outlook by taking each day's **peak** concentration (worst case) per pollen type. Hours
-         * are bucketed into local calendar days.
-         */
+        /** Aggregates the hourly pollen series into per-day peaks, bucketed by local calendar day. */
         private fun buildDailyPollen(hourly: AirQualityHourly?): List<DailyPollenForecast> {
             if (hourly == null || hourly.time.isEmpty()) return emptyList()
             val zone = clock.zone

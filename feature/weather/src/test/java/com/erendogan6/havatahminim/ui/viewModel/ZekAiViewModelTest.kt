@@ -62,7 +62,7 @@ class ZekAiViewModelTest {
     fun `no generation happens until current weather is available`() =
         runTest {
             locationRepository.activeLocationState.value = locationEntityFixture()
-            // currentWeather deliberately left null.
+            // currentWeather stays null here.
 
             viewModel().suggestions.test {
                 assertThat(awaitItem()).isNull()

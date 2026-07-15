@@ -17,11 +17,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
-/**
- * Repository interfaces → implementations. The @Binds methods are unscoped on purpose: scoping
- * lives on the @Singleton impl classes, and the binding resolves to that singleton provider —
- * the SSOT StateFlows (activeLocation, currentWeather) depend on every consumer sharing them.
- */
+/** Repository interface bindings. Scoping lives on the @Singleton impl classes. */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DataModule {

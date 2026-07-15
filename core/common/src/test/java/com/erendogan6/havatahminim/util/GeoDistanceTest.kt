@@ -22,12 +22,7 @@ class GeoDistanceTest {
         assertThat(d).isWithin(349_000.0 * 0.01).of(349_000.0)
     }
 
-    /**
-     * Guard rail for the cache-radius thresholds: these latitude offsets are the exact fixture
-     * pairs the repository tests use to straddle 5 km and 10 km. If the haversine ever regresses
-     * (or someone reintroduces a platform distance that returns 0 under returnDefaultValues),
-     * this test fails loudly.
-     */
+    /** The exact fixture offsets the repository cache tests rely on to straddle 5 km and 10 km. */
     @Test
     fun `fixture offsets straddle the 5km and 10km thresholds`() {
         val lat = 41.0082

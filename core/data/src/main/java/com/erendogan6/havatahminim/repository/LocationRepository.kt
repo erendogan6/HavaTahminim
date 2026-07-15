@@ -17,9 +17,8 @@ interface LocationRepository {
     suspend fun startFromSavedLocation()
 
     /**
-     * Points the whole app at a new location. [persist] is false for the built-in fallback
-     * (Istanbul) so a guessed location never overwrites the user's real saved one. Persistence
-     * is best-effort: a DB write failure must not take the session location down with it.
+     * Points the whole app at a new location. [persist] is false for the Istanbul fallback so it
+     * can't overwrite the user's real saved location. Persistence is best-effort.
      */
     suspend fun setActiveLocation(
         latitude: Double,

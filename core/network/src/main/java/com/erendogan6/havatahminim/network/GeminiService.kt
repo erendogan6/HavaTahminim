@@ -9,7 +9,7 @@ import com.google.ai.client.generativeai.type.generationConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Gemini adapter behind [SuggestionGenerator] — thin SDK glue, exercised on device rather than in unit tests. */
+/** Gemini SDK adapter behind [SuggestionGenerator]. */
 @Singleton
 class GeminiService
     @Inject
@@ -25,9 +25,7 @@ class GeminiService
                 apiKey = GEMINI_API_KEY,
                 generationConfig =
                     generationConfig {
-                        // Tuned for Gemini 2.5 Flash, favouring coherent, detailed advice over
-                        // randomness. This is a one-shot, non-latency-critical call, so 2.5 Flash's
-                        // built-in reasoning is welcome; we only steer the sampling here.
+                        // Sampling tuned for coherent advice; latency is not critical here.
                         temperature = 0.9f
                         topK = 40
                         topP = 0.95f

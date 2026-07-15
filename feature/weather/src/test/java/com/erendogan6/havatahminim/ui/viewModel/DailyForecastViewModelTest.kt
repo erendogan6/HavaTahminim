@@ -73,7 +73,7 @@ class DailyForecastViewModelTest {
             viewModel.uiState.test {
                 assertThat(awaitItem()).isEqualTo(DailyUiState(isLoading = false, forecast = forecast)) // replay, no Loading
                 advanceUntilIdle() // let the silent background re-fetch complete
-                expectNoEvents() // same data — nothing new emitted
+                expectNoEvents() // same data, nothing new emitted
             }
             assertThat(weatherRepository.dailyCallCount).isEqualTo(3) // initial + change + silent refresh
         }

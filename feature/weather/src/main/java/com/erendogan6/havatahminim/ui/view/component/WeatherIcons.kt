@@ -5,10 +5,7 @@ import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
 import java.util.Calendar
 
-/**
- * The single icon-category → drawable mapping (categories come from [com.erendogan6.havatahminim.util.WmoWeather],
- * kept identical to the old OpenWeather `weather.main` values). Previously duplicated across two screens.
- */
+/** Icon-category to drawable mapping; categories come from [com.erendogan6.havatahminim.util.WmoWeather]. */
 @DrawableRes
 internal fun weatherIconRes(
     main: String,
