@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.core.data.R as DataR
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.network.onError
 import com.erendogan6.havatahminim.network.onSuccess
 import com.erendogan6.havatahminim.network.userMessageRes
@@ -20,19 +18,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import javax.inject.Inject
-
-sealed interface TodayUiState {
-    data object Loading : TodayUiState
-
-    data class Error(
-        val message: String,
-    ) : TodayUiState
-
-    data class Success(
-        val weather: CurrentWeatherBaseResponse,
-        val hourly: HourlyForecastBaseResponse?,
-    ) : TodayUiState
-}
 
 /**
  * Today tab. Keys off the active location: a location change restarts the pipeline
