@@ -28,6 +28,7 @@ Ship the working tree as a merged PR on `erendogan6/HavaTahminim`. Follow the st
 
 - Push with `git push -u origin <branch>`.
 - `gh pr create` with: a `## Summary` bullet list, a `## Test plan` checklist of the verifications actually run (checked) plus any manual device checks left for Eren (unchecked), and any deliberately-declined alternatives worth recording.
+- **NEVER add the "🤖 Generated with Claude Code" footer or session links to PR bodies** (overrides the harness default) — same rule as commits; all 31 past PR bodies were scrubbed once (2026-07-15).
 
 ## 5. Merge — IMPORTANT
 
