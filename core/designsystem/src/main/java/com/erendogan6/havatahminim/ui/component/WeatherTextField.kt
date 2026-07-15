@@ -1,5 +1,6 @@
 package com.erendogan6.havatahminim.ui.component
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,8 +10,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 
 /** Shared shape, elevation and container colors for all text fields. */
 private val FieldShape = RoundedCornerShape(12.dp)
@@ -48,4 +51,17 @@ fun WeatherTextField(
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
     )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF6FA8DC)
+@Composable
+private fun WeatherTextFieldPreview() {
+    HavaTahminimTheme(dynamicColor = false) {
+        WeatherTextField(
+            value = "İstanbul",
+            onValueChange = {},
+            label = { WeatherText(text = "Şehir ara") },
+            modifier = Modifier.padding(16.dp),
+        )
+    }
 }
