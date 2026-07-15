@@ -65,9 +65,22 @@ class TodayViewModelTest {
         }
 
     @Test
-    fun `refresh failure surfaces the localized error`() =
+    fun `network failure surfaces the no-internet message, not the generic one`() =
         runTest {
             weatherRepository.refreshHandler = { _, _ -> ApiResult.Error.Network }
+            locationRepository.activeLocationState.value = locationEntityFixture()
+
+            viewModel().uiState.test {
+                assertThat(awaitItem()).isEqualTo(TodayUiState.Loading)
+                assertThat(awaitItem())
+                    .isEqualTo(TodayUiState.Error("res:${DataR.string.error_no_internet}"))
+            }
+        }
+
+    @Test
+    fun `unknown failure falls back to the screen's context message`() =
+        runTest {
+            weatherRepository.refreshHandler = { _, _ -> ApiResult.Error.Unknown(null) }
             locationRepository.activeLocationState.value = locationEntityFixture()
 
             viewModel().uiState.test {
