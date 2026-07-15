@@ -11,7 +11,6 @@ import com.erendogan6.havatahminim.repository.LocationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -60,7 +59,7 @@ class CitySearchViewModel
                     }
                 }.stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+                    started = WhileUiSubscribed,
                     initialValue = emptyList(),
                 )
 
@@ -75,6 +74,5 @@ class CitySearchViewModel
             const val QUERY_KEY = "city_query"
             const val DEBOUNCE_MILLIS = 300L
             const val MIN_QUERY_LENGTH = 3
-            const val STOP_TIMEOUT_MILLIS = 5_000L
         }
     }
