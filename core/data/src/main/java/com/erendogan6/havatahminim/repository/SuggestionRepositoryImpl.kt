@@ -15,6 +15,7 @@ import java.time.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** Cache decisions use the injected [Clock]; the Gemini call runs on the injected dispatcher. */
 @Singleton
 class SuggestionRepositoryImpl
     @Inject

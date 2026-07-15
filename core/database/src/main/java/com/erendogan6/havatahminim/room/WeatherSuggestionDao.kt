@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.erendogan6.havatahminim.model.entity.WeatherSuggestionEntity
 
+/** Room access for the cached ZekAI suggestion (at most one row at a time). */
 @Dao
 interface WeatherSuggestionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
