@@ -37,14 +37,9 @@ import com.erendogan6.havatahminim.ui.viewModel.MainViewModel
 import com.erendogan6.havatahminim.util.NotificationUtils
 
 /**
- * The app's root composable: wires the persistent chrome (full-bleed background + navigation)
- * around the per-screen NavHost, and owns the runtime-permission UX.
- *
- * The permission launchers live here on purpose — [rememberLauncherForActivityResult] is bound to
- * the activity result registry and cannot move into a ViewModel — but their callbacks only *report*
- * the outcome to [MainViewModel], which owns every location/network decision. The composable holds
- * nothing but UI: permission-dialog visibility (rotation-surviving `rememberSaveable`) and the
- * navigation scaffold.
+ * Root composable: background, navigation chrome and the runtime-permission flow. The launchers
+ * must stay in the composition (they bind to the activity result registry); their callbacks just
+ * report the outcome to [MainViewModel].
  */
 @Composable
 fun HavaTahminimApp() {
@@ -53,14 +48,11 @@ fun HavaTahminimApp() {
         val context = LocalContext.current
         val navController = rememberNavController()
 
-        // Activity chrome keys off the shared current weather: the full-bleed background swaps from
-        // the splash photo, and the nav bar/rail appears, once the first weather arrives.
+        // The photo background and the nav bar appear once the first weather arrives.
         val weatherState by mainViewModel.currentWeather.collectAsStateWithLifecycle()
         val weatherReady = weatherState != null
         val showNoInternetDialog by mainViewModel.showNoInternetDialog.collectAsStateWithLifecycle()
 
-        // Permission-dialog visibility is genuine UI state (must survive rotation); the work each
-        // grant unlocks lives in the ViewModel.
         var locationPermissionGranted by rememberSaveable { mutableStateOf(false) }
         var notificationPermissionGranted by rememberSaveable { mutableStateOf(false) }
         var showPermissionRationale by rememberSaveable { mutableStateOf(false) }
@@ -86,8 +78,7 @@ fun HavaTahminimApp() {
                 }
             }
 
-        // Today screen's "my location" icon: use the fix if permission is already held, otherwise
-        // ask for it — the grant callback above resumes the flow.
+        // If permission is missing, the grant callback above resumes the flow.
         val onUseMyLocation: () -> Unit = {
             if (hasLocationPermission(context)) {
                 mainViewModel.useCurrentLocation()
@@ -126,19 +117,16 @@ fun HavaTahminimApp() {
             NoInternetDialog { mainViewModel.dismissNoInternetDialog() }
         }
 
-        // Compact height (landscape phone): navigation moves from the bottom bar to a side rail so
-        // the content keeps its vertical space.
+        // Landscape phones get a side rail instead of the bottom bar.
         val compactHeight = isCompactHeight()
 
         Box(modifier = Modifier.fillMaxSize()) {
-            // Full-bleed background drawn behind the transparent system bars. The per-screen content
-            // (below) stays inset via the Scaffold's innerPadding.
+            // Full-bleed photo behind the transparent system bars; content stays inset.
             BackgroundImage(weatherState)
 
             Scaffold(
                 containerColor = Color.Transparent,
-                // safeDrawing (systemBars + display cutout) keeps content clear of the side nav bar
-                // and camera cutout in landscape.
+                // Keeps content clear of the nav bar and camera cutout in landscape.
                 contentWindowInsets = WindowInsets.safeDrawing,
                 bottomBar = {
                     if (weatherReady && !compactHeight) {

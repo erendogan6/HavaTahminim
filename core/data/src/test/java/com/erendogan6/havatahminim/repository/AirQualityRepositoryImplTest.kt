@@ -77,7 +77,7 @@ class AirQualityRepositoryImplTest {
     @Test
     fun `hourly series bucket into local days with per-type peaks`() =
         runTest {
-            // 12 hours starting 22:00 Istanbul on Jul 15 — crosses local midnight into Jul 16.
+            // 12 hours starting 22:00 Istanbul on Jul 15, crossing local midnight into Jul 16.
             val start =
                 LocalDate
                     .of(2026, 7, 15)

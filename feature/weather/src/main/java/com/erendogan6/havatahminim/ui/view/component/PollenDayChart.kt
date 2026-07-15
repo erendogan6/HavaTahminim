@@ -66,7 +66,7 @@ internal fun PollenDayChart(
     }
     val axisMax = (peakValue * 1.15).takeIf { it > 0.0 } ?: 1.0 // headroom so the peak isn't clipped
 
-    // A Canvas is invisible to TalkBack; describe the one insight the chart encodes (the peak).
+    // A Canvas is invisible to TalkBack; describe the peak in words.
     val chartDescription =
         peakType?.let { pt ->
             stringResource(R.string.a11y_pollen_chart) + ". " +

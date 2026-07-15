@@ -19,21 +19,13 @@ data class DeviceLocation(
     val longitude: Double,
 )
 
-/**
- * The seam over the platform's positioning stack: keeps `Context` and Play services out of
- * [com.erendogan6.havatahminim.ui.viewModel.MainViewModel], so the start-up orchestration
- * (GPS vs saved vs default) stays JVM-testable.
- */
+/** Device positioning behind an interface, for testability. */
 interface DeviceLocationSource {
-    /**
-     * One high-accuracy fix, or null when it cannot be produced (permission missing, location
-     * providers disabled, or the provider fails). Callers own the fallback decision, not this
-     * layer.
-     */
+    /** One high-accuracy fix, or null (permission missing, providers off, lookup failed). */
     suspend fun currentLocation(): DeviceLocation?
 }
 
-/** Fused-provider implementation — pure platform glue, exercised on device rather than in unit tests. */
+/** Fused-provider implementation. */
 @Singleton
 class FusedDeviceLocationSource
     @Inject

@@ -51,7 +51,7 @@ fun DailyForecastScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-        // Fixed precedence over the flat state (see DailyUiState KDoc): loading > error > content.
+        // Precedence: loading > error > content.
         val state = uiState
         when {
             state.isLoading -> SplashScreen()
@@ -103,7 +103,7 @@ private fun DailyForecastItem(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            // One node per day: "Monday, partly cloudy, 30°C" in a single swipe.
+            // TalkBack reads each day as one node.
             modifier =
                 Modifier
                     .padding(start = 12.dp, top = 8.dp, bottom = 8.dp)

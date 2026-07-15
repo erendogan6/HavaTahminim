@@ -42,8 +42,7 @@ fun ZekAIScreen(
     modifier: Modifier = Modifier,
     viewModel: ZekAiViewModel = hiltViewModel(),
 ) {
-    // Subscribing IS the trigger: the ViewModel's WhileSubscribed pipeline generates/refreshes
-    // the suggestion whenever this tab is open and its inputs (location, allergens) changed.
+    // Subscribing is the trigger: the pipeline regenerates when the tab is open and inputs changed.
     val weatherSuggestions by viewModel.suggestions.collectAsStateWithLifecycle()
 
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {

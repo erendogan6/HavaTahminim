@@ -3,12 +3,8 @@ package com.erendogan6.havatahminim.model.weather.openmeteo
 import com.google.gson.annotations.SerializedName
 
 /**
- * Raw response of the Open-Meteo forecast endpoint (https://api.open-meteo.com/v1/forecast).
- *
- * All time fields are requested with `timeformat=unixtime`, so they arrive as epoch seconds (UTC)
- * and map directly onto the [Long] timestamps the domain models expect. The repository converts
- * these blocks into the app's domain models (CurrentWeatherBaseResponse / HourlyForecastBaseResponse /
- * DailyForecastBaseResponse).
+ * Raw Open-Meteo forecast response. Time fields arrive as epoch seconds (`timeformat=unixtime`);
+ * the repository maps these blocks into the domain models.
  */
 data class OpenMeteoResponse(
     @SerializedName("current") val current: CurrentBlock? = null,

@@ -33,8 +33,7 @@ fun BottomNavigationBar(
     NavigationBar(modifier = modifier, containerColor = WeatherTheme.colors.cardSurfaceFaint) {
         TopLevelDestination.entries.forEach { destination ->
             NavigationBarItem(
-                // The label already announces the destination; a CD on the icon would make
-                // TalkBack read every item twice.
+                // The label already announces the destination to TalkBack.
                 icon = { Icon(destination.icon, contentDescription = null) },
                 label = { WeatherText(stringResource(id = destination.labelRes)) },
                 selected = currentDestination.isOn(destination),
@@ -44,10 +43,7 @@ fun BottomNavigationBar(
     }
 }
 
-/**
- * Side rail for compact-height (landscape) windows, where a bottom bar would eat too much
- * vertical space. Insets are zeroed because the host applies them via the Scaffold padding.
- */
+/** Side rail for compact-height (landscape) windows. Insets are zeroed; the host applies them. */
 @Composable
 fun WeatherNavigationRail(
     navController: NavHostController,
@@ -80,19 +76,11 @@ private fun ColumnScope.CenteredRailContent(content: @Composable ColumnScope.() 
     Spacer(Modifier.weight(1f))
 }
 
-/**
- * True when [destination]'s route sits anywhere in the current back-stack hierarchy — checked
- * through `hierarchy` rather than an exact-route equality so a highlighted tab survives being
- * nested under a graph later.
- */
+/** True when [destination]'s route is anywhere in the current back-stack hierarchy. */
 private fun NavDestination?.isOn(destination: TopLevelDestination): Boolean =
     this?.hierarchy?.any { it.hasRoute(destination.route::class) } == true
 
-/**
- * Switches tabs with the canonical bottom-nav back-stack behaviour: pop back to the start
- * destination saving its state, keep a single copy of each tab, and restore a tab's own saved
- * state (e.g. scroll position) when it's reselected.
- */
+/** Standard bottom-nav behaviour: single copy per tab, state saved and restored across switches. */
 private fun NavHostController.navigateToTopLevel(destination: TopLevelDestination) {
     navigate(destination.route) {
         popUpTo(graph.findStartDestination().id) { saveState = true }

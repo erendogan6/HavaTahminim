@@ -3,10 +3,8 @@ package com.erendogan6.havatahminim.util
 import kotlinx.coroutines.yield
 
 /**
- * Hand-written fakes for the two app-level platform seams, mirroring the zero-mock convention of
- * `:core:testing` (every suspending fake starts with `yield()` so ordered StateFlow emissions
- * aren't conflated under `StandardTestDispatcher`). They live in `:app`'s test source set because
- * the interfaces themselves are `:app`-only.
+ * Fakes for the app's platform seams, following the :core:testing conventions (suspending fakes
+ * start with yield()). They live here because the interfaces are app-only.
  */
 class FakeDeviceLocationSource : DeviceLocationSource {
     var fix: DeviceLocation? = null

@@ -20,7 +20,7 @@ internal fun ErrorMessage(
         text = message,
         color = MaterialTheme.colorScheme.error,
         style = MaterialTheme.typography.titleSmall,
-        // Announce the error when it appears instead of waiting for focus to reach it.
+        // Announced by TalkBack as soon as it appears.
         modifier =
             modifier
                 .padding(vertical = 20.dp)
