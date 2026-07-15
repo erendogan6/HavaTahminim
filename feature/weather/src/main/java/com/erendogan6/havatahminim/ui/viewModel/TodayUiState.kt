@@ -4,11 +4,9 @@ import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherB
 import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
 
 /**
- * What the Today screen renders. Exactly one of loading / [error] / [weather] is active per
- * emission, and the screen resolves them in that order of precedence.
- *
- * [hourly] trails [weather] by one emission on purpose: the current-conditions card shows up as
- * soon as it's available instead of waiting for the hourly strip.
+ * What the Today screen renders. One of loading / [error] / [weather] is active per emission,
+ * resolved in that order. [hourly] arrives one emission after [weather], so the conditions card
+ * doesn't wait for the hourly strip.
  */
 data class TodayUiState(
     val isLoading: Boolean = true,

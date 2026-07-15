@@ -6,15 +6,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * JVM-testable view of "is the network up" for
- * [com.erendogan6.havatahminim.ui.viewModel.MainViewModel]'s offline branching.
- */
+/** Connectivity check behind an interface, for testability. */
 interface ConnectivityChecker {
     fun isOnline(): Boolean
 }
 
-/** Delegates to [NetworkUtils] — pure platform glue, exercised on device rather than in unit tests. */
+/** Delegates to [NetworkUtils]. */
 @Singleton
 class AndroidConnectivityChecker
     @Inject

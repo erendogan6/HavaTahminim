@@ -10,9 +10,8 @@ import com.erendogan6.havatahminim.network.WeatherApiService
 import kotlinx.coroutines.yield
 
 /*
- * Fake rules: every suspending function starts with `yield()` (dispatch point for ordered
- * StateFlow assertions); `nextError` is thrown once by whichever call comes next, letting tests
- * exercise the ApiResult error taxonomy end-to-end through the real repositories.
+ * Same conventions as the fake repositories: suspending functions start with yield();
+ * nextError is thrown once by whichever call comes next.
  */
 
 class FakeWeatherApiService : WeatherApiService {
@@ -126,10 +125,7 @@ class FakeAirQualityApiService : AirQualityApiService {
     }
 }
 
-/**
- * Scripted Gemini stand-in: each call consumes the next [Result] from [script] (the last entry
- * repeats once drained, so single-entry scripts behave like a fixed response).
- */
+/** Scripted Gemini stand-in: each call consumes the next [Result]; the last entry repeats once drained. */
 class FakeSuggestionGenerator : SuggestionGenerator {
     val requests = mutableListOf<String>()
     val script = ArrayDeque<Result<String?>>()

@@ -25,15 +25,9 @@ import javax.inject.Inject
 import timber.log.Timber
 
 /**
- * ZekAI tab. The suggestion is a function of (location, sensitive allergens): the pipeline is
- * keyed on exactly that pair, so
- *  - opening the tab the first time generates the suggestion (nothing is generated eagerly at
- *    app start — no wasted Gemini calls if the tab is never opened);
- *  - changing allergens on the Allergy tab does nothing immediately; the regeneration happens
- *    when this tab is next subscribed, with forceRefresh bypassing the repository cache;
- *  - a plain resubscribe (tab switch / background) with unchanged inputs re-runs the pipeline but
- *    hits the repository's 2h/5km suggestion cache, and the last suggestion stays on screen
- *    (no interim null) so there is no spinner flash.
+ * ZekAI tab. The pipeline is keyed on (location, allergens): nothing is generated until the tab
+ * is first opened, an allergen change forces a regeneration on the next visit, and a plain
+ * resubscribe hits the repository cache with the last suggestion kept on screen.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -46,8 +40,7 @@ class ZekAiViewModel
         private val generateSuggestion: GenerateWeatherSuggestionUseCase,
         private val resourcesProvider: ResourcesProvider,
     ) : ViewModel() {
-        // Main-thread confined (viewModelScope). lastPrefs detects "allergens changed since the
-        // last generation" across resubscribes.
+        // lastPrefs detects an allergen change across resubscribes.
         private var lastPrefs: Set<PollenType>? = null
         private var lastCoords: Pair<Double, Double>? = null
         private var lastSuggestion: String? = null
@@ -65,13 +58,11 @@ class ZekAiViewModel
                     val coords = location.latitude to location.longitude
                     val forceRefresh = lastPrefs != null && lastPrefs != prefs
                     if (coords != lastCoords || forceRefresh) {
-                        // Genuine input change: show the thinking state while regenerating.
-                        // lastSuggestion is deliberately kept — if the regeneration fails, the
-                        // previous suggestion is restored instead of an indefinite spinner.
+                        // Show the thinking state; keep lastSuggestion so a failed
+                        // regeneration can restore it instead of spinning forever.
                         emit(null)
                     }
-                    // The prompt needs the current conditions; wait until the Today pipeline (or a
-                    // previous session) has published them.
+                    // The prompt needs the current conditions; wait until they are published.
                     val weather = weatherRepository.currentWeather.filterNotNull().first()
                     generateSuggestion(
                         lat = location.latitude,

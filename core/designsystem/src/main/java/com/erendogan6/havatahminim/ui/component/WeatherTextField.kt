@@ -12,15 +12,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** The single source of the app's text-field look: shape, elevation, and container colors. */
+/** Shared shape, elevation and container colors for all text fields. */
 private val FieldShape = RoundedCornerShape(12.dp)
 private val FieldElevation = 4.dp
 
 /**
- * The app's base text field. All text input in `:app` and feature modules goes through this —
- * never call Material3 [TextField] directly outside the design system. Styling (rounded shape,
- * drop shadow, surface containers, primary/outline indicators) is fixed here so every field
- * looks the same; callers only wire value/label/keyboard behavior.
+ * Base text field; use this instead of Material3 [TextField] outside the design system.
+ * Styling is fixed here, callers only wire value/label/keyboard behavior.
  */
 @Composable
 fun WeatherTextField(

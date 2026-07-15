@@ -55,8 +55,7 @@ class WmoWeatherTest {
 
     @Test
     fun `every known WMO code resolves its own description`() {
-        // Exhaustive on purpose: coverage exposed that sampling a few codes left most of this
-        // mapping unexercised — a wrong copy-paste in any branch would have passed silently.
+        // Exhaustive: a wrong mapping in any single branch would otherwise pass silently.
         val expected =
             mapOf(
                 0 to R.string.wmo_clear_sky,

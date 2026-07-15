@@ -5,12 +5,9 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 /**
- * Open-Meteo forecast API (https://api.open-meteo.com/v1/forecast). No API key is required.
- *
- * All three calls hit the same endpoint with different variable sets so the repository can keep
- * fetching/caching current, hourly and daily data independently. `timeformat=unixtime` returns
- * epoch-second timestamps and `timezone=auto` aligns daily aggregations to the queried location's
- * local day.
+ * Open-Meteo forecast API (no key required). All three calls hit the same endpoint with different
+ * variable sets; `timeformat=unixtime` gives epoch-second timestamps, `timezone=auto` aligns
+ * daily aggregation to the location's local day.
  */
 interface WeatherApiService {
     @GET("v1/forecast")
