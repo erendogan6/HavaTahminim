@@ -20,14 +20,6 @@ android {
     defaultConfig {
         minSdk = 26
     }
-    testOptions {
-        unitTests {
-            // android.util.Log only. Platform *logic* (Location.distanceTo, icu Calendar) was
-            // removed from JVM-tested code in the testability refactor — do not reintroduce it
-            // and lean on default values (they return 0/false/null silently). See CLAUDE.md.
-            returnDefaultValues = true
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -35,6 +27,8 @@ android {
 }
 
 dependencies {
+    implementation libs.timber
+
     api project(':core:data')
     api project(':core:model')
     implementation project(':core:database')
