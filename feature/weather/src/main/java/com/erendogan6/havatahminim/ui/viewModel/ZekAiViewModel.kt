@@ -14,7 +14,6 @@ import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -92,12 +91,11 @@ class ZekAiViewModel
                     }
                 }.stateIn(
                     scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
+                    started = WhileUiSubscribed,
                     initialValue = null,
                 )
 
         private companion object {
             const val TAG = "ZekAiViewModel"
-            const val STOP_TIMEOUT_MILLIS = 5_000L
         }
     }
