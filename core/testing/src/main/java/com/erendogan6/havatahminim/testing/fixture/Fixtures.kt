@@ -15,10 +15,7 @@ import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
 
-/**
- * The suite's single notion of "now": a fixed clock. Every time-dependent assertion (cache TTLs,
- * "upcoming hour" cutoffs, day bucketing) is written against this instant, never wall time.
- */
+/** The suite's fixed "now"; every time-dependent assertion is written against this instant. */
 object TestTime {
     val INSTANT: Instant = Instant.parse("2026-07-15T12:00:00Z")
     val ZONE: ZoneId = ZoneId.of("Europe/Istanbul")
@@ -29,10 +26,7 @@ object TestTime {
     val EPOCH_MILLIS: Long = INSTANT.toEpochMilli()
 }
 
-/**
- * Coordinate set for cache-radius tests. The offsets are precomputed against the pure haversine
- * (1° latitude ≈ 111.19 km): each pair deliberately straddles the 5 km / 10 km thresholds.
- */
+/** Coordinates for cache-radius tests; the offsets straddle the 5 km and 10 km thresholds. */
 object TestCoords {
     const val ISTANBUL_LAT = 41.0082
     const val ISTANBUL_LON = 28.9784

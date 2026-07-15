@@ -11,11 +11,8 @@ import com.erendogan6.havatahminim.feature.weather.R
 import kotlinx.serialization.Serializable
 
 /*
- * Type-safe navigation routes: @Serializable keys matched by `composable<TodayRoute>` and
- * `navigate(TodayRoute)`, so destinations are compiler-checked instead of string-matched.
- * The four tabs take no arguments. Presentation metadata (icon + label) lives in
- * [TopLevelDestination], keeping the routes pure navigation keys. Internal: the feature
- * exposes [WeatherNavHost] and the nav bars, not the routes themselves.
+ * Type-safe navigation routes, matched by composable<TodayRoute> / navigate(TodayRoute).
+ * Icon and label metadata lives in [TopLevelDestination] so the routes stay pure keys.
  */
 @Serializable internal data object TodayRoute
 

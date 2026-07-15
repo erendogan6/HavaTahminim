@@ -5,11 +5,7 @@ import com.erendogan6.havatahminim.model.airquality.PollenRisk
 import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.ui.theme.WeatherColors
 
-/**
- * Maps the domain risk/species enums onto the design-system tokens. Lives in the feature (not
- * `:core:common`) so the common module stays free of Compose, and not in `:core:designsystem`
- * so the design system stays free of domain models.
- */
+/** Maps the domain risk/species enums onto the design-system color tokens. */
 internal fun WeatherColors.riskColor(risk: PollenRisk): Color =
     when (risk) {
         PollenRisk.NONE -> riskNone

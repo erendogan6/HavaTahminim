@@ -5,11 +5,9 @@ import com.erendogan6.havatahminim.model.airquality.PollenRisk
 import com.erendogan6.havatahminim.model.airquality.PollenType
 
 /**
- * Open-Meteo returns raw pollen concentrations (grains/m³) with no official risk scale, so we
- * classify them here — analogous to [WmoWeather] for weather codes. Thresholds differ per plant
- * group and are intentionally simple/tunable; values are widely-used European approximations.
- *
- * Also hosts the European AQI band interpretation.
+ * Risk classification for raw pollen concentrations (Open-Meteo provides no scale of its own).
+ * Thresholds are per plant group, using common European approximations. Also hosts the European
+ * AQI bands.
  */
 object PollenLevel {
     /** [low, moderate, high, veryHigh] grains/m³ cutoffs per plant group. */
@@ -38,11 +36,7 @@ object PollenLevel {
         }
     }
 
-    /**
-     * Bar fill fraction proportional to the actual concentration, scaled against this pollen's
-     * "very high" threshold (so the width reflects the real value, not just the risk bucket).
-     * Any positive value keeps a small visible sliver.
-     */
+    /** Bar fill fraction: concentration scaled against the "very high" threshold, clamped to a visible minimum. */
     fun fraction(
         type: PollenType,
         grains: Double?,

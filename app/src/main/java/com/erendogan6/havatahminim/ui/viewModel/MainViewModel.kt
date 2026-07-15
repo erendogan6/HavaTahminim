@@ -15,15 +15,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * App-level orchestration: seeds/steers the active location at start-up (GPS → saved → Istanbul
- * fallback), drives the offline dialog, and exposes the current weather for activity chrome (the
- * full-bleed background and the nav bar's visibility gate). Screen-specific state lives in the
- * per-screen ViewModels.
- *
- * The platform touchpoints — positioning and connectivity — sit behind the [DeviceLocationSource]
- * and [ConnectivityChecker] seams, so this whole start-up decision tree is plain JVM-testable code
- * rather than logic stranded in the Activity. The Compose layer only owns the permission launchers
- * (which are bound to the activity result registry) and reports their outcome here.
+ * Owns the start-up location decision (GPS, saved, or the Istanbul fallback), the offline dialog
+ * and the current weather used by the activity chrome. Positioning and connectivity sit behind
+ * [DeviceLocationSource] and [ConnectivityChecker]; the UI layer only reports permission results.
  */
 @HiltViewModel
 class MainViewModel
@@ -43,21 +37,17 @@ class MainViewModel
             _showNoInternetDialog.value = false
         }
 
-        /**
-         * Location permission is available (already held at launch, or just granted): resolve a GPS
-         * fix and point the whole app at it, falling back to the saved/default location when no fix
-         * can be obtained.
-         */
+        /** Resolves a GPS fix and makes it the active location; falls back to saved/default. */
         fun onLocationPermissionGranted() {
             viewModelScope.launch { resolveLocation() }
         }
 
-        /** Location permission denied: start from the saved location, or Istanbul. */
+        /** Starts from the saved location, or Istanbul. */
         fun onLocationPermissionDenied() {
             viewModelScope.launch { startFromSavedOrDefault() }
         }
 
-        /** The Today screen's "use my location" action, once permission is confirmed. */
+        /** "Use my location" action; assumes permission is already granted. */
         fun useCurrentLocation() {
             viewModelScope.launch {
                 if (!connectivityChecker.isOnline()) {
@@ -80,9 +70,8 @@ class MainViewModel
         }
 
         /**
-         * Fall back to the persisted location, or Istanbul as a last resort. The fallback is not
-         * persisted so it never overwrites a real saved location. Surfaces the offline dialog when
-         * there is no connection, since the resulting screen will be cache-only.
+         * Saved location, or Istanbul as a last resort. The fallback is not persisted so it can't
+         * overwrite a real saved location.
          */
         private suspend fun startFromSavedOrDefault() {
             if (!connectivityChecker.isOnline()) {
@@ -95,7 +84,6 @@ class MainViewModel
         }
 
         private companion object {
-            // Default location: Istanbul coordinates
             const val DEFAULT_LAT = 41.0082
             const val DEFAULT_LON = 28.9784
         }

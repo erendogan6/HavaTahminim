@@ -22,10 +22,9 @@ import javax.inject.Inject
 import timber.log.Timber
 
 /**
- * City search sheet. The query lives in SavedStateHandle (survives process death), the results
- * are a declarative pipeline: debounce -> flatMapLatest (a newer query cancels the in-flight
- * older one, so responses can't land out of order). Selecting a city updates the app-wide
- * active location — every screen reacts through the data layer.
+ * City search sheet. The query lives in SavedStateHandle; results run through debounce +
+ * flatMapLatest so a newer query cancels the in-flight one. Selecting a city updates the
+ * app-wide active location.
  */
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel

@@ -4,11 +4,7 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import java.util.TimeZone
 
-/**
- * Pins the JVM default time zone for tests exercising `SimpleDateFormat`-based formatting
- * (which reads the global default). Repository time logic never needs this — it goes through
- * the injected Clock's zone instead.
- */
+/** Pins the JVM default time zone for SimpleDateFormat-based formatting tests. */
 class FixedTimeZoneRule(
     private val zoneId: String = "Europe/Istanbul",
 ) : TestWatcher() {

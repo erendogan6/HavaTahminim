@@ -30,9 +30,8 @@ import javax.inject.Inject
 import timber.log.Timber
 
 /**
- * Fires the daily reminder. If a saved location exists and a relevant pollen level is alarming,
- * the notification becomes a pollen alert; otherwise it falls back to the generic reminder.
- * Always reschedules the next alarm, even when building the content fails.
+ * Fires the daily reminder, upgraded to a pollen alert when a relevant pollen level is alarming.
+ * Always reschedules the next alarm.
  */
 @AndroidEntryPoint
 class NotificationReceiver : BroadcastReceiver() {
@@ -49,8 +48,7 @@ class NotificationReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent,
     ) {
-        // The notification text depends on a network fetch, so keep the receiver alive with
-        // goAsync() while we resolve the pollen situation off the main thread.
+        // The text depends on a network fetch; goAsync() keeps the receiver alive meanwhile.
         val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -59,8 +57,7 @@ class NotificationReceiver : BroadcastReceiver() {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                // This is a root scope with no exception handler: anything escaping it would hit
-                // the default handler and crash the app. A missed notification is the better deal.
+                // An exception escaping this root scope would crash the app; log instead.
                 Timber.e(e, "Daily notification failed")
             } finally {
                 NotificationUtils.scheduleDailyNotification(context)
@@ -69,11 +66,7 @@ class NotificationReceiver : BroadcastReceiver() {
         }
     }
 
-    /**
-     * Returns a pollen-alert title/text when one of the user's relevant allergens is HIGH or
-     * VERY_HIGH today, otherwise the generic weather reminder. Falls back to the generic message on
-     * any failure (no saved location, pollen unavailable in region, network error).
-     */
+    /** Pollen-alert title/text when a relevant allergen is high today, the generic reminder otherwise. */
     private suspend fun buildNotificationContent(context: Context): Pair<String, String> {
         val generic =
             context.getString(R.string.notification_weather_title) to

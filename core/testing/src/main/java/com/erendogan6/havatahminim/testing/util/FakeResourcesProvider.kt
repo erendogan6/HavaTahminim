@@ -3,9 +3,8 @@ package com.erendogan6.havatahminim.testing.util
 import com.erendogan6.havatahminim.util.ResourcesProvider
 
 /**
- * Deterministic string resolution without Android resources. Convention (tests assert against it):
- * `getString(id)` → `"res:<id>"`, `getString(id, a, b)` → `"res:<id>:a,b"`. R constants are
- * available on unit-test compile classpaths, so assertions can reference the real ids.
+ * Deterministic string resolution without Android resources: getString(id) returns "res:<id>",
+ * with args "res:<id>:a,b". Tests assert against the real R constants.
  */
 class FakeResourcesProvider(
     var currentLanguage: String = "tr",

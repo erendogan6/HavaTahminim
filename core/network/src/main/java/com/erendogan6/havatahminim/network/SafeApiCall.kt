@@ -7,13 +7,9 @@ import retrofit2.HttpException
 import java.io.IOException
 
 /**
- * The single place exceptions become [ApiResult]s. Runs [block] on [dispatcher], maps the failure
- * taxonomy (IOException → Network, HttpException → Http, rest → Unknown) and — critically —
- * rethrows [CancellationException] so a cancelled pipeline is never mistaken for an error.
- *
- * There is intentionally no default for [dispatcher]: callers inject `@IoDispatcher`, so no call
- * site can silently escape a test's virtual-time scheduler by falling back to the real
- * Dispatchers.IO.
+ * Runs [block] on [dispatcher] and maps exceptions to [ApiResult] (IOException to Network,
+ * HttpException to Http, the rest to Unknown). [CancellationException] is rethrown.
+ * [dispatcher] has no default so tests can't accidentally fall back to the real Dispatchers.IO.
  */
 suspend fun <T> safeApiCall(
     dispatcher: CoroutineDispatcher,
