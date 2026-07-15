@@ -80,7 +80,7 @@ fun WeatherScreen(
         Box(modifier = Modifier.fillMaxSize()) {
             WeatherContent(uiState)
             // Only offer city search / my-location once data is loaded (hidden during the splash).
-            if (uiState is TodayUiState.Success) {
+            if (uiState.weather != null) {
                 TopActions(
                     modifier = Modifier.align(Alignment.TopEnd).padding(top = 8.dp, end = 12.dp),
                     onUseMyLocation = onUseMyLocation,
@@ -129,12 +129,15 @@ private fun TopActions(
 
 @Composable
 private fun WeatherContent(uiState: TodayUiState) {
-    when (uiState) {
-        is TodayUiState.Loading -> SplashScreen()
-        is TodayUiState.Error -> CenteredColumn { ErrorMessage(uiState.message) }
-        is TodayUiState.Success ->
+    // Fixed precedence over the flat state (see TodayUiState KDoc): loading > error > content.
+    val weather = uiState.weather
+    when {
+        uiState.isLoading -> SplashScreen()
+        uiState.error != null -> CenteredColumn { ErrorMessage(uiState.error) }
+        weather == null -> SplashScreen() // unreachable by contract; safe default
+        else ->
             if (isCompactHeight()) {
-                LandscapeWeatherContent(uiState.weather, uiState.hourly)
+                LandscapeWeatherContent(weather, uiState.hourly)
             } else {
                 Column(
                     modifier = Modifier
@@ -143,7 +146,7 @@ private fun WeatherContent(uiState: TodayUiState) {
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CurrentLocationCard(uiState.weather)
+                    CurrentLocationCard(weather)
                     Spacer(modifier = Modifier.height(30.dp))
                     uiState.hourly?.let { HourlyForecastCard(it) }
                     Spacer(modifier = Modifier.height(16.dp))
