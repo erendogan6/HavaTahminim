@@ -36,8 +36,8 @@ class DailyForecastViewModelTest {
             locationRepository.activeLocationState.value = locationEntityFixture()
 
             viewModel().uiState.test {
-                assertThat(awaitItem()).isEqualTo(DailyUiState.Loading)
-                assertThat(awaitItem()).isEqualTo(DailyUiState.Success(forecast))
+                assertThat(awaitItem()).isEqualTo(DailyUiState())
+                assertThat(awaitItem()).isEqualTo(DailyUiState(isLoading = false, forecast = forecast))
             }
         }
 
@@ -48,9 +48,9 @@ class DailyForecastViewModelTest {
             locationRepository.activeLocationState.value = locationEntityFixture()
 
             viewModel().uiState.test {
-                assertThat(awaitItem()).isEqualTo(DailyUiState.Loading)
+                assertThat(awaitItem()).isEqualTo(DailyUiState())
                 assertThat(awaitItem())
-                    .isEqualTo(DailyUiState.Error("res:${DataR.string.error_server}")) // Http(500) maps globally
+                    .isEqualTo(DailyUiState(isLoading = false, error = "res:${DataR.string.error_server}")) // Http(500) maps globally
             }
         }
 
@@ -65,13 +65,13 @@ class DailyForecastViewModelTest {
                 skipItems(2) // Loading + Success
                 locationRepository.activeLocationState.value =
                     locationEntityFixture(latitude = TestCoords.ANKARA_LAT, longitude = TestCoords.ANKARA_LON)
-                assertThat(awaitItem()).isEqualTo(DailyUiState.Loading) // genuine input change
-                assertThat(awaitItem()).isEqualTo(DailyUiState.Success(forecast))
+                assertThat(awaitItem()).isEqualTo(DailyUiState()) // genuine input change
+                assertThat(awaitItem()).isEqualTo(DailyUiState(isLoading = false, forecast = forecast))
             }
 
             advanceTimeBy(5_001)
             viewModel.uiState.test {
-                assertThat(awaitItem()).isEqualTo(DailyUiState.Success(forecast)) // replay, no Loading
+                assertThat(awaitItem()).isEqualTo(DailyUiState(isLoading = false, forecast = forecast)) // replay, no Loading
                 advanceUntilIdle() // let the silent background re-fetch complete
                 expectNoEvents() // same data — nothing new emitted
             }
