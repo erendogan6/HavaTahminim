@@ -10,6 +10,7 @@ kotlin = "2.4.0"
 dagp = "3.16.1"
 kover = "0.9.8"
 lottie = "6.7.1"
+timber = "5.0.1"
 coreKtx = "1.19.0"
 kotlinxCoroutinesAndroid = "1.11.0"
 kotlinxCoroutinesPlayServices = "1.11.0"
@@ -61,6 +62,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 chucker-debug = { module = "com.github.chuckerteam.chucker:library", version.ref = "chucker" }

@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.core.data.R as DataR
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import javax.inject.Inject
+import timber.log.Timber
 
 /** Daily tab. Same location-keyed pipeline as [TodayViewModel]; the repository's per-day Room cache keeps refetches cheap. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -44,7 +44,7 @@ class DailyForecastViewModel
                             lastCoords = coords
                             emit(DailyUiState.Success(it))
                         }.onError {
-                            Log.e(TAG, "Daily forecast failed: $it")
+                            Timber.e("Daily forecast failed: $it")
                             lastCoords = null
                             emit(DailyUiState.Error(resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_daily_forecast))))
                         }
@@ -53,8 +53,4 @@ class DailyForecastViewModel
                     started = WhileUiSubscribed,
                     initialValue = DailyUiState.Loading,
                 )
-
-        private companion object {
-            const val TAG = "DailyForecastViewModel"
-        }
     }

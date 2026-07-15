@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.domain
 
-import android.util.Log
 import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
 import com.erendogan6.havatahminim.model.airquality.PollenType
@@ -13,6 +12,7 @@ import com.erendogan6.havatahminim.util.PollenLevel
 import com.erendogan6.havatahminim.util.ResourcesProvider
 import java.time.Clock
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * The one genuine use case in the app: generating a ZekAI suggestion is an orchestration across
@@ -39,7 +39,7 @@ class GenerateWeatherSuggestionUseCase
             val airQuality =
                 airQualityRepository
                     .getAirQuality(lat, lon)
-                    .onError { Log.e(TAG, "Air quality for prompt failed: $it") }
+                    .onError { Timber.e("Air quality for prompt failed: $it") }
                     .getOrNull()
             return suggestionRepository.getSuggestions(
                 lat = lat,
@@ -78,9 +78,5 @@ class GenerateWeatherSuggestionUseCase
                             .joinToString(", ") { it.toInt().toString() }
                     "$name: $currentRisk ($currentValue $unit); $nextLabel: $next6 $unit"
                 }
-        }
-
-        private companion object {
-            const val TAG = "GenerateSuggestionUC"
         }
     }

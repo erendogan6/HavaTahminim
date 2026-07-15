@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.repository
 
-import android.util.Log
 import com.erendogan6.havatahminim.core.common.di.IoDispatcher
 import com.erendogan6.havatahminim.model.LocationDao
 import com.erendogan6.havatahminim.model.entity.LocationEntity
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import timber.log.Timber
 
 /** @Singleton is load-bearing: [activeLocation] is only meaningful if every consumer sees the same one. */
 @Singleton
@@ -49,7 +49,7 @@ class LocationRepositoryImpl
             if (persist) {
                 withContext(ioDispatcher) {
                     runCatching { locationDao.insertLocation(LocationEntity(latitude = latitude, longitude = longitude)) }
-                        .onFailure { Log.e(TAG, "Failed to persist location", it) }
+                        .onFailure { Timber.e(it, "Failed to persist location") }
                 }
             }
         }
@@ -68,8 +68,4 @@ class LocationRepositoryImpl
             lat: Double,
             lon: Double,
         ): String = reverseGeocoder.resolve(lat, lon, language)
-
-        private companion object {
-            const val TAG = "LocationRepository"
-        }
     }

@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * Allergy tab. Two independent slices: the Room-backed allergen selection (cold upstream shared
@@ -40,7 +40,7 @@ class AllergyViewModel
             allergenRepository
                 .sensitiveAllergensFlow()
                 .catch { e ->
-                    Log.e(TAG, "Failed to observe allergen preferences", e)
+                    Timber.e(e, "Failed to observe allergen preferences")
                     emit(emptySet())
                 }.stateIn(
                     scope = viewModelScope,
@@ -55,7 +55,7 @@ class AllergyViewModel
                 .mapLatest { location ->
                     airQualityRepository
                         .getAirQuality(location.latitude, location.longitude)
-                        .onError { Log.e(TAG, "Air quality fetch failed: $it") }
+                        .onError { Timber.e("Air quality fetch failed: $it") }
                         .getOrNull()
                 }.stateIn(
                     scope = viewModelScope,
@@ -70,9 +70,5 @@ class AllergyViewModel
             viewModelScope.launch {
                 allergenRepository.setAllergenPreference(type, sensitive)
             }
-        }
-
-        private companion object {
-            const val TAG = "AllergyViewModel"
         }
     }
