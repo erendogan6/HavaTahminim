@@ -12,6 +12,7 @@ android {
     compileSdk = 37
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     defaultConfig {
@@ -38,14 +39,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    testOptions {
-        unitTests {
-            // android.util.Log only. Platform *logic* (Location.distanceTo, icu Calendar) was
-            // removed from JVM-tested code in the testability refactor — do not reintroduce it
-            // and lean on default values (they return 0/false/null silently). See CLAUDE.md.
-            returnDefaultValues = true
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -66,6 +59,7 @@ android {
 }
 
 dependencies {
+    implementation libs.timber
     implementation project(':feature:weather')
     implementation project(':core:designsystem')
     implementation project(':core:data')

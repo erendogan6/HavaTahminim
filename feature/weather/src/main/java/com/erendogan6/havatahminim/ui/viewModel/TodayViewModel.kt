@@ -1,6 +1,5 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.erendogan6.havatahminim.core.data.R as DataR
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import javax.inject.Inject
+import timber.log.Timber
 
 /**
  * Today tab. Keys off the active location: a location change restarts the pipeline
@@ -53,9 +53,9 @@ class TodayViewModel
                             weatherRepository
                                 .getHourlyWeather(location.latitude, location.longitude)
                                 .onSuccess { emit(TodayUiState.Success(weather, it)) }
-                                .onError { Log.e(TAG, "Hourly forecast failed: $it") }
+                                .onError { Timber.e("Hourly forecast failed: $it") }
                         }.onError {
-                            Log.e(TAG, "Weather fetch failed: $it")
+                            Timber.e("Weather fetch failed: $it")
                             lastCoords = null
                             emit(TodayUiState.Error(resourcesProvider.getString(it.userMessageRes(DataR.string.error_fetching_weather_data))))
                         }
@@ -64,8 +64,4 @@ class TodayViewModel
                     started = WhileUiSubscribed,
                     initialValue = TodayUiState.Loading,
                 )
-
-        private companion object {
-            const val TAG = "TodayViewModel"
-        }
     }
