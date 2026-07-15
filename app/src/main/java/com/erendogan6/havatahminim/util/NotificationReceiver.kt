@@ -29,6 +29,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import timber.log.Timber
 
+/**
+ * Fires the daily reminder. If a saved location exists and a relevant pollen level is alarming,
+ * the notification becomes a pollen alert; otherwise it falls back to the generic reminder.
+ * Always reschedules the next alarm, even when building the content fails.
+ */
 @AndroidEntryPoint
 class NotificationReceiver : BroadcastReceiver() {
     @Inject

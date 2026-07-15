@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.erendogan6.havatahminim.model.entity.LocationEntity
 
+/** Room access for the single saved location (last GPS fix or picked city). */
 @Dao
 interface LocationDao {
     @Query("SELECT * FROM location LIMIT 1")

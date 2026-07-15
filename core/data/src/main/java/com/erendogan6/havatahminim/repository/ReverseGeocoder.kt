@@ -23,7 +23,7 @@ interface ReverseGeocoder {
 /**
  * Open-Meteo's forecast endpoint does not return a place name, so we reverse-geocode the
  * coordinates with the platform [Geocoder]. Falls back gracefully when geocoding is unavailable
- * or returns nothing. Deliberately untested platform shim.
+ * or returns nothing. Pure platform glue, exercised on device rather than in unit tests.
  */
 @Singleton
 class AndroidReverseGeocoder

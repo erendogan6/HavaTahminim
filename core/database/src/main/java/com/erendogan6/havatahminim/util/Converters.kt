@@ -5,6 +5,7 @@ import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
+/** Gson-serializes the daily forecast into a single TEXT column. */
 class Converters {
 
     private val gson = Gson()

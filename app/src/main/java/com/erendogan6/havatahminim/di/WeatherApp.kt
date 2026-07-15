@@ -5,13 +5,13 @@ import com.erendogan6.havatahminim.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
+/** Hilt root. Also plants the app's only Timber tree (debug builds). */
 @HiltAndroidApp
 class WeatherApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Debug builds get the auto-tagging tree; release plants nothing, so every Timber call
-        // is a no-op there. JVM unit tests also plant nothing — which is exactly what lets the
-        // tested modules live without returnDefaultValues (no android.util.Log is ever touched).
+        // Only debug builds get a tree; with nothing planted, Timber calls are no-ops in
+        // release builds and in JVM unit tests (no android.util.Log involved).
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
