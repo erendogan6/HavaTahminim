@@ -51,10 +51,13 @@ fun DailyForecastScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.background.copy(alpha = 0f)) {
-        when (val state = uiState) {
-            is DailyUiState.Loading -> SplashScreen()
-            is DailyUiState.Error -> CenteredColumn { ErrorMessage(state.message) }
-            is DailyUiState.Success -> DailyForecastCard(state.forecast)
+        // Fixed precedence over the flat state (see DailyUiState KDoc): loading > error > content.
+        val state = uiState
+        when {
+            state.isLoading -> SplashScreen()
+            state.error != null -> CenteredColumn { ErrorMessage(state.error) }
+            state.forecast != null -> DailyForecastCard(state.forecast)
+            else -> SplashScreen() // unreachable by contract; safe default
         }
     }
 }
