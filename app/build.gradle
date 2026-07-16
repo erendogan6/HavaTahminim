@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     id 'com.autonomousapps.dependency-analysis'
     alias(libs.plugins.detekt)
+    alias(libs.plugins.baselineprofile)
     alias(libs.plugins.kover)
 }
 
@@ -61,6 +62,9 @@ android {
 
 dependencies {
     detektPlugins libs.detekt.formatting
+
+    runtimeOnly libs.androidx.profileinstaller
+    baselineProfile project(':baselineprofile')
 
     implementation libs.timber
     implementation project(':feature:weather')
