@@ -1,7 +1,6 @@
 package com.erendogan6.havatahminim.ui.component
 
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -9,10 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 
 /** The app's standard card corner radius. */
@@ -51,25 +48,5 @@ fun WeatherCard(
             elevation = cardElevation,
             content = content,
         )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF6FA8DC)
-@Composable
-private fun WeatherCardPreview() {
-    HavaTahminimTheme(dynamicColor = false) {
-        WeatherCard(modifier = Modifier.padding(16.dp)) {
-            WeatherText(text = "Bugün", modifier = Modifier.padding(16.dp))
-        }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF6FA8DC)
-@Composable
-private fun WeatherCardClickablePreview() {
-    HavaTahminimTheme(dynamicColor = false) {
-        WeatherCard(onClick = {}, modifier = Modifier.padding(16.dp)) {
-            WeatherText(text = "Tıklanabilir kart", modifier = Modifier.padding(16.dp))
-        }
     }
 }

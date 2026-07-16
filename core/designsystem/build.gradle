@@ -4,9 +4,11 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id 'com.autonomousapps.dependency-analysis'
     id 'io.gitlab.arturbosch.detekt'
+    alias(libs.plugins.screenshot)
 }
 
 android {
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
     namespace = 'com.erendogan6.havatahminim.core.designsystem'
     compileSdk = 37
 
@@ -24,15 +26,23 @@ android {
 }
 
 dependencies {
+    screenshotTestImplementation platform(libs.androidx.compose.bom)
+    screenshotTestImplementation libs.androidx.compose.material.icons.core
+    screenshotTestImplementation libs.androidx.ui.tooling
+    screenshotTestImplementation libs.androidx.ui.tooling.preview
+
     detektPlugins libs.detekt.formatting
 
     implementation platform(libs.androidx.compose.bom)
-    implementation libs.androidx.compose.material.icons.core
-    implementation libs.androidx.ui.tooling.preview
-    debugImplementation platform(libs.androidx.compose.bom)
-    debugImplementation libs.androidx.ui.tooling
     // Base components expose ui/ui-graphics types (Modifier, TextStyle, Color, Shape) in their signatures.
     api libs.androidx.ui
     api libs.androidx.ui.graphics
     api libs.androidx.material3
+}
+
+// SPIKE workaround: point the alpha screenshot plugin at AGP 9's built-in-Kotlin class output.
+tasks.matching { it.name == 'updateDebugScreenshotTest' || it.name == 'validateDebugScreenshotTest' }.configureEach {
+    if (it instanceof Test) {
+        it.testClassesDirs = files(it.testClassesDirs, layout.buildDirectory.dir('intermediates/built_in_kotlinc/debugScreenshotTest/compileDebugScreenshotTestKotlin/classes'))
+    }
 }

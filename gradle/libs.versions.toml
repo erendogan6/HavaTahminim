@@ -9,6 +9,7 @@ hiltNavigationCompose = "1.4.0"
 kotlin = "2.4.0"
 dagp = "3.16.1"
 detekt = "1.23.8"
+screenshot = "0.0.1-alpha15"
 kover = "0.9.8"
 lottie = "6.7.1"
 timber = "5.0.1"
@@ -82,6 +83,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dagp" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
