@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -34,7 +33,6 @@ import com.erendogan6.havatahminim.feature.weather.R
 import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
 import com.erendogan6.havatahminim.ui.component.CenteredColumn
 import com.erendogan6.havatahminim.ui.component.WeatherText
-import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 import com.erendogan6.havatahminim.ui.theme.WeatherTheme
 
 /** Animated loading state shown by every tab until its data slice arrives. */
@@ -109,13 +107,5 @@ private fun LoadingDots() {
                     .background(ink.copy(alpha = alpha))
             )
         }
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF6FA8DC, heightDp = 480)
-@Composable
-private fun SplashScreenPreview() {
-    HavaTahminimTheme(dynamicColor = false) {
-        SplashScreen()
     }
 }
