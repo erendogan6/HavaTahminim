@@ -2,19 +2,15 @@ package com.erendogan6.havatahminim.ui.view.component
 
 import androidx.annotation.RawRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.erendogan6.havatahminim.feature.weather.R
-import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 
 /**
  * The Today screen's hero condition icon: a looping Lottie animation when one exists for the
@@ -59,19 +55,3 @@ internal fun weatherAnimationRes(
         "Mist" -> R.raw.anim_mist
         else -> null
     }
-
-@Preview(showBackground = true, backgroundColor = 0xFF6FA8DC)
-@Composable
-private fun WeatherConditionIconAnimatedPreview() {
-    HavaTahminimTheme(dynamicColor = false) {
-        WeatherConditionIcon(main = "Clear", isDayTime = true, modifier = Modifier.size(96.dp))
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF6FA8DC)
-@Composable
-private fun WeatherConditionIconStaticFallbackPreview() {
-    HavaTahminimTheme(dynamicColor = false) {
-        WeatherConditionIcon(main = "Unknown", isDayTime = true, modifier = Modifier.size(96.dp))
-    }
-}

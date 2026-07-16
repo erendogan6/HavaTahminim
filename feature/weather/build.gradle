@@ -7,10 +7,12 @@ plugins {
     alias(libs.plugins.hilt.android)
     id 'com.autonomousapps.dependency-analysis'
     id 'io.gitlab.arturbosch.detekt'
+    alias(libs.plugins.screenshot)
     alias(libs.plugins.kover)
 }
 
 android {
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
     namespace = 'com.erendogan6.havatahminim.feature.weather'
     compileSdk = 37
 
@@ -41,9 +43,10 @@ dependencies {
     api project(':core:network')
 
     implementation platform(libs.androidx.compose.bom)
-    implementation libs.androidx.ui.tooling.preview
-    debugImplementation platform(libs.androidx.compose.bom)
-    debugImplementation libs.androidx.ui.tooling
+    screenshotTestImplementation libs.screenshot.validation.api
+    screenshotTestImplementation platform(libs.androidx.compose.bom)
+    screenshotTestImplementation libs.androidx.ui.tooling
+    screenshotTestImplementation libs.androidx.ui.tooling.preview
     api libs.androidx.ui
     api libs.androidx.ui.graphics
     implementation libs.androidx.material3
