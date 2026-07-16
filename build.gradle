@@ -29,6 +29,24 @@ plugins {
 // Kotlin Android Gradle plugin this repo deliberately never applies, and produced empty reports).
 // Kotlin-aware measurement + built-in merging + koverVerify thresholds for CI later.
 // ---------------------------------------------------------------------------------------------
+// Coverage regression gate for CI (koverVerify): thresholds sit safely under the current
+// ~98% line / ~81% branch baseline, so they catch backsliding without blocking honest work.
+kover {
+    reports {
+        verify {
+            rule("line coverage") {
+                minBound(95)
+            }
+            rule("branch coverage") {
+                bound {
+                    coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.BRANCH
+                    minValue = 75
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     kover project(':app')
     kover project(':feature:weather')

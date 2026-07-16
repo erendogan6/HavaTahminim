@@ -1,0 +1,119 @@
+name: Deep scans (weekly)
+
+on:
+  schedule:
+    - cron: '0 3 * * 3' # Wednesdays 06:00 TRT
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mobsf-full:
+    name: MobSF full APK analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      mobsf:
+        image: opensecurity/mobile-security-framework-mobsf:latest
+        ports:
+          - 8000:8000
+        env:
+          MOBSF_API_KEY: ci-mobsf-key # ephemeral container, fixed key is fine
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-placeholder-key' }}
+      MOBSF_URL: http://localhost:8000
+      MOBSF_KEY: ci-mobsf-key
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease
+
+      - name: Wait for MobSF
+        run: |
+          for i in $(seq 1 36); do
+            curl -sf "$MOBSF_URL" > /dev/null && exit 0
+            sleep 5
+          done
+          echo "MobSF did not become ready in 3 minutes" && exit 1
+
+      - name: Upload + scan APK
+        run: |
+          APK=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          echo "Scanning $APK"
+          RESP=$(curl -sf -F "file=@$APK" "$MOBSF_URL/api/v1/upload" -H "X-Mobsf-Api-Key: $MOBSF_KEY")
+          HASH=$(echo "$RESP" | jq -r .hash)
+          echo "HASH=$HASH" >> "$GITHUB_ENV"
+          curl -sf -X POST "$MOBSF_URL/api/v1/scan" --data "hash=$HASH" \
+            -H "X-Mobsf-Api-Key: $MOBSF_KEY" -o /dev/null
+
+      - name: Fetch reports
+        run: |
+          curl -sf -X POST "$MOBSF_URL/api/v1/report_json" --data "hash=$HASH" \
+            -H "X-Mobsf-Api-Key: $MOBSF_KEY" -o mobsf-report.json
+          curl -sf -X POST "$MOBSF_URL/api/v1/download_pdf" --data "hash=$HASH" \
+            -H "X-Mobsf-Api-Key: $MOBSF_KEY" -o mobsf-report.pdf
+          curl -sf -X POST "$MOBSF_URL/api/v1/scorecard" --data "hash=$HASH" \
+            -H "X-Mobsf-Api-Key: $MOBSF_KEY" -o mobsf-scorecard.json
+          echo "## MobSF security score" >> "$GITHUB_STEP_SUMMARY"
+          jq -r '"Score: \(.security_score)/100 — high: \(.high | length), warnings: \(.warning | length)"' \
+            mobsf-scorecard.json >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Upload MobSF reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobsf-reports
+          retention-days: 30
+          path: |
+            mobsf-report.json
+            mobsf-report.pdf
+            mobsf-scorecard.json
+
+  baseline-profile:
+    name: Refresh baseline profile (GMD)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-placeholder-key' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable KVM for the managed emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
+
+      - name: Generate baseline profile
+        run: ./gradlew :app:generateBaselineProfile
+
+      # Deliberately no auto-commit: the diff is reviewed and landed by a human.
+      - name: Show drift against the committed profile
+        run: git diff --stat app/src/release/generated/baselineProfiles/ || true
+
+      - name: Upload regenerated profiles
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline-profiles
+          retention-days: 30
+          path: app/src/release/generated/baselineProfiles/
