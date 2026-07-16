@@ -1,7 +1,7 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
 import app.cash.turbine.test
-import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.dailyforecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.network.ApiResult
 import com.erendogan6.havatahminim.testing.fixture.TestCoords
 import com.erendogan6.havatahminim.testing.fixture.locationEntityFixture

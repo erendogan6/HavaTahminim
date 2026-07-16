@@ -3,7 +3,7 @@ package com.erendogan6.havatahminim.repository
 import com.erendogan6.havatahminim.core.common.di.IoDispatcher
 import com.erendogan6.havatahminim.model.LocationDao
 import com.erendogan6.havatahminim.model.entity.LocationEntity
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.model.weather.dailyforecast.City
 import com.erendogan6.havatahminim.network.ApiResult
 import com.erendogan6.havatahminim.network.CityApiService
 import com.erendogan6.havatahminim.network.safeApiCall

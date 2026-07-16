@@ -1,6 +1,6 @@
-package com.erendogan6.havatahminim.model.weather.CurrentForecast
+package com.erendogan6.havatahminim.model.weather.currentforecast
 
-import com.erendogan6.havatahminim.model.weather.Common.Weather
+import com.erendogan6.havatahminim.model.weather.common.Weather
 
 data class CurrentWeatherBaseResponse(
     val weather: List<Weather>,
