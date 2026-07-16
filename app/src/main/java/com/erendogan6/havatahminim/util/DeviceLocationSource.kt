@@ -44,6 +44,9 @@ class FusedDeviceLocationSource
                     ?.let { DeviceLocation(it.latitude, it.longitude) }
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: SecurityException) {
+                // Permission revoked between our check and the provider call.
+                null
             } catch (e: Exception) {
                 null
             }

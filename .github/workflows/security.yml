@@ -19,6 +19,10 @@ jobs:
     name: CodeQL (java-kotlin)
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    # 2026-07-17: even the newest CLI (2.26.1) caps Kotlin support strictly below 2.4.10, one
+    # release behind this toolchain. Non-blocking until the extractor catches up; tools: latest
+    # below means the job flips back to a real gate on its own. Remove this line then.
+    continue-on-error: true
     permissions:
       contents: read
       security-events: write
@@ -36,10 +40,13 @@ jobs:
         with:
           cache-read-only: true
 
+      # tools: latest — the runner-bundled CLI's Kotlin ceiling lagged one release behind the
+      # toolchain (2.26.0 rejected Kotlin 2.4.10); the newest bundle tracks Kotlin faster.
       - uses: github/codeql-action/init@v3
         with:
           languages: java-kotlin
           build-mode: manual
+          tools: latest
 
       # Manual build: the CodeQL Kotlin extractor traces the real compilation.
       - name: Build for extraction
