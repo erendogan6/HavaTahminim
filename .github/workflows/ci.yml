@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: write # Kover coverage comment
+    env:
+      # Real key not needed to compile; the secret takes over when configured.
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-placeholder-key' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Static analysis (detekt + ktlint rules)
+        run: ./gradlew detekt
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Coverage report + regression gate
+        run: ./gradlew koverXmlReport :koverVerify
+
+      - name: Android Lint
+        run: ./gradlew lint
+
+      - name: Release build (R8, lintVital, Compose mapping)
+        run: ./gradlew assembleRelease
+
+      - name: Screenshot tests (goldens)
+        run: ./gradlew validateDebugScreenshotTest
+
+      - name: Coverage comment on PR
+        if: github.event_name == 'pull_request'
+        uses: mi-kas/kover-report@v2.5
+        with:
+          path: build/reports/kover/report.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: Coverage (merged)
+          update-comment: true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          retention-days: 14
+          path: |
+            **/build/reports/detekt/
+            **/build/reports/tests/testDebugUnitTest/
+            build/reports/kover/
+            app/build/reports/lint-results-release.html
+            **/build/reports/screenshotTest/

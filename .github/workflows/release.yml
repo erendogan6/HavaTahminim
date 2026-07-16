@@ -1,0 +1,69 @@
+# Tag-driven release: push a `v*` tag (after bumping versionCode/versionName in app/build.gradle)
+# to build the signed AAB, attach it to a GitHub Release, and roll it to the Play internal track.
+#
+# Required repository secrets:
+#   GEMINI_API_KEY              real key baked into the shipped BuildConfig
+#   RELEASE_KEYSTORE_BASE64     `base64 -i keystore.jks` output
+#   RELEASE_KEYSTORE_PASSWORD / RELEASE_KEY_ALIAS / RELEASE_KEY_PASSWORD
+#   PLAY_SERVICE_ACCOUNT_JSON   Play Console service-account JSON (optional; skips Play upload if absent)
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write # GitHub Release creation
+
+jobs:
+  release:
+    name: Signed AAB → GitHub Release → Play (internal)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      HAS_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
+      HAS_PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: true
+
+      - name: Gates before shipping
+        run: ./gradlew detekt testDebugUnitTest
+
+      - name: Decode keystore
+        if: env.HAS_KEYSTORE == 'true'
+        run: |
+          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "RELEASE_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - name: Build AAB
+        env:
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: ./gradlew bundleRelease
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          files: app/build/outputs/bundle/release/*.aab
+          generate_release_notes: true
+
+      - name: Upload to Play (internal track)
+        if: env.HAS_KEYSTORE == 'true' && env.HAS_PLAY_JSON == 'true'
+        uses: r0adkll/upload-google-play@v1.1.5
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.erendogan6.havatahminim
+          releaseFiles: app/build/outputs/bundle/release/*.aab
+          track: internal
+          status: completed
