@@ -7,10 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.erendogan6.havatahminim.ui.component.WeatherText
-import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 
 /** Full-screen-friendly error line, shared by the tab screens' Error states. */
 @Composable
@@ -28,12 +26,4 @@ internal fun ErrorMessage(
                 .padding(vertical = 20.dp)
                 .semantics { liveRegion = LiveRegionMode.Polite },
     )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF6FA8DC)
-@Composable
-private fun ErrorMessagePreview() {
-    HavaTahminimTheme(dynamicColor = false) {
-        ErrorMessage(message = "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edip tekrar deneyin.")
-    }
 }
