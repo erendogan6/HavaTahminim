@@ -2,7 +2,7 @@ package com.erendogan6.havatahminim.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.currentforecast.CurrentWeatherBaseResponse
 import com.erendogan6.havatahminim.repository.LocationRepository
 import com.erendogan6.havatahminim.repository.WeatherRepository
 import com.erendogan6.havatahminim.util.ConnectivityChecker

@@ -1,6 +1,6 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
-import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.dailyforecast.DailyForecastBaseResponse
 
 /**
  * What the Daily screen renders. Exactly one of loading / [error] / [forecast] is active per

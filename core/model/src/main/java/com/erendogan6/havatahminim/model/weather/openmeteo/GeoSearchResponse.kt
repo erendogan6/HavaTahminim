@@ -1,6 +1,6 @@
 package com.erendogan6.havatahminim.model.weather.openmeteo
 
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.model.weather.dailyforecast.City
 import com.google.gson.annotations.SerializedName
 
 /**
