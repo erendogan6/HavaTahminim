@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
+import com.android.tools.screenshot.PreviewTest
 
 /*
  * Golden corpus for the design-system base components: each @Preview here is rendered by
@@ -19,6 +20,7 @@ import com.erendogan6.havatahminim.ui.theme.HavaTahminimTheme
 
 private const val SKY_BACKGROUND = 0xFF6FA8DC
 
+@PreviewTest
 @Preview(showBackground = true, backgroundColor = SKY_BACKGROUND)
 @Composable
 fun WeatherTextPreview() {
@@ -27,6 +29,7 @@ fun WeatherTextPreview() {
     }
 }
 
+@PreviewTest
 @Preview(showBackground = true, backgroundColor = SKY_BACKGROUND)
 @Composable
 fun WeatherCardPreview() {
@@ -37,6 +40,7 @@ fun WeatherCardPreview() {
     }
 }
 
+@PreviewTest
 @Preview(showBackground = true, backgroundColor = SKY_BACKGROUND)
 @Composable
 fun WeatherCardClickablePreview() {
@@ -47,6 +51,7 @@ fun WeatherCardClickablePreview() {
     }
 }
 
+@PreviewTest
 @Preview(showBackground = true, backgroundColor = SKY_BACKGROUND)
 @Composable
 fun WeatherTextFieldPreview() {
@@ -60,6 +65,7 @@ fun WeatherTextFieldPreview() {
     }
 }
 
+@PreviewTest
 @Preview
 @Composable
 fun WeatherDialogPreview() {
@@ -76,6 +82,7 @@ fun WeatherDialogPreview() {
     }
 }
 
+@PreviewTest
 @Preview(showBackground = true, backgroundColor = SKY_BACKGROUND)
 @Composable
 fun WeatherIconButtonPreview() {
@@ -84,6 +91,7 @@ fun WeatherIconButtonPreview() {
     }
 }
 
+@PreviewTest
 @Preview(showBackground = true, backgroundColor = SKY_BACKGROUND, heightDp = 200)
 @Composable
 fun CenteredColumnPreview() {
