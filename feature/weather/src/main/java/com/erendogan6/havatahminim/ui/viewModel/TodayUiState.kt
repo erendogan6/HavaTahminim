@@ -1,7 +1,7 @@
 package com.erendogan6.havatahminim.ui.viewModel
 
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.currentforecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.hourlyforecast.HourlyForecastBaseResponse
 
 /**
  * What the Today screen renders. One of loading / [error] / [weather] is active per emission,

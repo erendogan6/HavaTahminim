@@ -30,8 +30,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.erendogan6.havatahminim.extension.capitalizeWords
 import com.erendogan6.havatahminim.extension.toDayName
 import com.erendogan6.havatahminim.feature.weather.R
-import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecast
-import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.dailyforecast.DailyForecast
+import com.erendogan6.havatahminim.model.weather.dailyforecast.DailyForecastBaseResponse
 import com.erendogan6.havatahminim.ui.component.CenteredColumn
 import com.erendogan6.havatahminim.ui.component.WeatherCard
 import com.erendogan6.havatahminim.ui.component.WeatherText

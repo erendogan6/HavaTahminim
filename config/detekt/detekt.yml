@@ -16,12 +16,6 @@ complexity:
 naming:
   FunctionNaming:
     ignoreAnnotated: ['Composable']
-  # Legacy capitalized package segments (model.weather.CurrentForecast etc.); renaming them is a
-  # separate refactor, so the pattern tolerates one leading capital per segment.
-  PackageNaming:
-    packagePattern: '[a-z]+(\.[a-zA-Z][A-Za-z0-9]*)*'
-  ConstructorParameterNaming:
-    excludes: ['**/model/weather/**']
 
 exceptions:
   SwallowedException:
@@ -73,5 +67,3 @@ formatting:
     active: false
   MaximumLineLength:
     active: false # style > MaxLineLength above already enforces 120
-  PackageName:
-    active: false # same legacy packages as naming > PackageNaming

@@ -2,7 +2,7 @@ package com.erendogan6.havatahminim.ui.view.component
 
 import androidx.annotation.DrawableRes
 import com.erendogan6.havatahminim.feature.weather.R
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.currentforecast.CurrentWeatherBaseResponse
 import java.util.Calendar
 
 private const val MILLIS_PER_SECOND = 1000L
