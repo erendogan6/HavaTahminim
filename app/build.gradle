@@ -29,6 +29,19 @@ android {
         }
     }
 
+    // Release signing comes from CI secrets via env vars; absent locally, the release build
+    // stays unsigned exactly as before.
+    def releaseKeystorePath = System.getenv('RELEASE_KEYSTORE_PATH')
+    signingConfigs {
+        if (releaseKeystorePath) {
+            release {
+                storeFile file(releaseKeystorePath)
+                storePassword System.getenv('RELEASE_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('RELEASE_KEY_ALIAS')
+                keyPassword System.getenv('RELEASE_KEY_PASSWORD')
+            }
+        }
+    }
     buildTypes {
         debug {
             minifyEnabled = true
@@ -39,6 +52,9 @@ android {
             minifyEnabled = true
             shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (releaseKeystorePath) {
+                signingConfig signingConfigs.release
+            }
         }
     }
     compileOptions {

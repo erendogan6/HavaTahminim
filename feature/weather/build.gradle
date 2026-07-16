@@ -29,6 +29,12 @@ android {
     }
 }
 
+// Linux CI rasterizes fonts slightly differently than the macOS-generated goldens;
+// tolerate sub-1% pixel drift, still far below any real visual regression.
+screenshotTests {
+    imageDifferenceThreshold = 0.01f
+}
+
 dependencies {
     detektPlugins libs.detekt.formatting
 
