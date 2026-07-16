@@ -1,0 +1,28 @@
+version: 2
+updates:
+  # Gradle: version catalog (libs.versions.toml) + build scripts.
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Istanbul
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      # Minor+patch bumps arrive as one reviewable PR; majors stay individual.
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  # CI workflow actions (takes effect once workflows land).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Istanbul
+    commit-message:
+      prefix: "chore(ci)"
