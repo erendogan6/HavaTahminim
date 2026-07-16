@@ -26,8 +26,6 @@ jobs:
     permissions:
       contents: read
       security-events: write
-    env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-placeholder-key' }}
     steps:
       - uses: actions/checkout@v4
 

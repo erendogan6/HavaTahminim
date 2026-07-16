@@ -6,6 +6,7 @@ plugins {
     id 'com.autonomousapps.dependency-analysis'
     alias(libs.plugins.detekt)
     alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.google.services)
     alias(libs.plugins.kover)
 }
 
@@ -78,6 +79,10 @@ android {
 
 dependencies {
     detektPlugins libs.detekt.formatting
+
+    implementation platform(libs.firebase.bom)
+    implementation libs.firebase.appcheck.playintegrity
+    debugImplementation libs.firebase.appcheck.debug
 
     runtimeOnly libs.androidx.profileinstaller
     baselineProfile project(':baselineprofile')

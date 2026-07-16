@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "297680844041",
+    "project_id": "havatahminim",
+    "storage_bucket": "havatahminim.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297680844041:android:0745b6760dde65bbd0cfd8",
+        "android_client_info": {
+          "package_name": "com.erendogan6.havatahminim"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgyHgWTk6hbg1bX22CJD9eywbQUuhsSEc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

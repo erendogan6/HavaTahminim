@@ -3,7 +3,6 @@ agp = "9.3.0"
 kotlinMetadataJvm = "2.4.10"
 ksp = "2.3.10"
 converterGson = "3.0.0"
-generativeai = "0.9.0"
 hiltAndroidGradlePlugin = "2.60.1"
 hiltNavigationCompose = "1.4.0"
 kotlin = "2.4.10"
@@ -12,6 +11,8 @@ doctor = "0.12.1"
 detekt = "1.23.8"
 screenshot = "0.0.1-alpha15"
 benchmark = "1.5.0-alpha07"
+googleServices = "4.5.0"
+firebaseBom = "34.16.0"
 uiautomator = "2.4.0"
 profileinstaller = "1.4.1"
 androidxTestRunner = "1.7.0"
@@ -54,7 +55,10 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
-generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeai" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-ai = { module = "com.google.firebase:firebase-ai" }
+firebase-appcheck-playintegrity = { module = "com.google.firebase:firebase-appcheck-playintegrity" }
+firebase-appcheck-debug = { module = "com.google.firebase:firebase-appcheck-debug" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidGradlePlugin" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidGradlePlugin" }
@@ -98,6 +102,7 @@ gradle-doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

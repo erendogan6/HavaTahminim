@@ -2,7 +2,6 @@
 # to build the signed AAB, attach it to a GitHub Release, and roll it to the Play internal track.
 #
 # Required repository secrets:
-#   GEMINI_API_KEY              real key baked into the shipped BuildConfig
 #   RELEASE_KEYSTORE_BASE64     `base64 -i keystore.jks` output
 #   RELEASE_KEYSTORE_PASSWORD / RELEASE_KEY_ALIAS / RELEASE_KEY_PASSWORD
 #   PLAY_SERVICE_ACCOUNT_JSON   Play Console service-account JSON (optional; skips Play upload if absent)
@@ -21,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       HAS_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
       HAS_PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
     steps:
