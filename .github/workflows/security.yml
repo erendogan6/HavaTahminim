@@ -36,10 +36,13 @@ jobs:
         with:
           cache-read-only: true
 
+      # tools: latest — the runner-bundled CLI's Kotlin ceiling lagged one release behind the
+      # toolchain (2.26.0 rejected Kotlin 2.4.10); the newest bundle tracks Kotlin faster.
       - uses: github/codeql-action/init@v3
         with:
           languages: java-kotlin
           build-mode: manual
+          tools: latest
 
       # Manual build: the CodeQL Kotlin extractor traces the real compilation.
       - name: Build for extraction
