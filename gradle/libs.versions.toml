@@ -8,6 +8,7 @@ hiltAndroidGradlePlugin = "2.60.1"
 hiltNavigationCompose = "1.4.0"
 kotlin = "2.4.0"
 dagp = "3.16.1"
+doctor = "0.12.0"
 detekt = "1.23.8"
 screenshot = "0.0.1-alpha15"
 benchmark = "1.5.0-alpha07"
@@ -93,6 +94,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dagp" }
+gradle-doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
