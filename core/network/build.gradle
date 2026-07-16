@@ -8,9 +8,16 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+// local.properties locally, the GEMINI_API_KEY env var on CI; missing in both = hard fail.
+def localPropsFile = rootProject.file("local.properties")
 def localProperties = new Properties()
-localProperties.load(new FileInputStream(rootProject.file("local.properties")))
-def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY")
+if (localPropsFile.exists()) {
+    localPropsFile.withInputStream { localProperties.load(it) }
+}
+def geminiApiKey = localProperties.getProperty("GEMINI_API_KEY") ?: System.getenv("GEMINI_API_KEY")
+if (geminiApiKey == null) {
+    throw new GradleException("GEMINI_API_KEY missing: set it in local.properties or as an environment variable.")
+}
 
 android {
     namespace = 'com.erendogan6.havatahminim.core.network'
