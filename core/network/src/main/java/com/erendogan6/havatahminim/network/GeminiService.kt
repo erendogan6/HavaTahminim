@@ -1,15 +1,20 @@
 package com.erendogan6.havatahminim.network
 
-import com.erendogan6.havatahminim.core.network.BuildConfig.GEMINI_API_KEY
 import com.erendogan6.havatahminim.core.network.R
 import com.erendogan6.havatahminim.util.ResourcesProvider
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.content
-import com.google.ai.client.generativeai.type.generationConfig
+import com.google.firebase.Firebase
+import com.google.firebase.ai.GenerativeModel
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.content
+import com.google.firebase.ai.type.generationConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** Gemini SDK adapter behind [SuggestionGenerator]. */
+/**
+ * Gemini adapter behind [SuggestionGenerator], through Firebase AI Logic: no API key ships in the
+ * app, and App Check (Play Integrity) gates who may call the backend.
+ */
 @Singleton
 class GeminiService
     @Inject
@@ -20,9 +25,8 @@ class GeminiService
             get() = resourcesProvider.getString(R.string.weather_assistant_instruction)
 
         private val model: GenerativeModel by lazy {
-            GenerativeModel(
-                "gemini-2.5-flash",
-                apiKey = GEMINI_API_KEY,
+            Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
+                modelName = "gemini-2.5-flash",
                 generationConfig =
                     generationConfig {
                         // Sampling tuned for coherent advice; latency is not critical here.
