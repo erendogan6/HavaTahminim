@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.dependency.analysis)
+    alias(libs.plugins.gradle.doctor)
     alias(libs.plugins.kover)
 }
 
@@ -70,6 +71,19 @@ def koverExcludedClasses = [
     'com.erendogan6.havatahminim.util.DefaultResourcesProvider*',
     'com.erendogan6.havatahminim.util.Converters*',
 ]
+
+// Gradle Doctor: build-health watchdog. Warnings only; the useful signals here are the
+// JAVA_HOME/daemon checks (the classic two-daemons-on-mac trap) and the slow-task report
+// that surfaces regressions as the build grows and moves onto CI runners.
+doctor {
+    javaHome {
+        ensureJavaHomeIsSet = true
+        ensureJavaHomeMatches = true
+        failOnError = false
+    }
+    warnWhenNotUsingParallelGC = false // JDK 17 G1 is fine at this build size
+    failOnEmptyDirectories = false     // AGP 9 variants legitimately leave empty source dirs
+}
 
 // Detekt (incl. the ktlint formatting ruleset) runs per module; configuration is centralized
 // here, mirroring the Kover injection below. UI modules get the base-component import bans on
