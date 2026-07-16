@@ -3,10 +3,10 @@ package com.erendogan6.havatahminim.testing.repository
 import com.erendogan6.havatahminim.model.airquality.AirQualityInfo
 import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.model.entity.LocationEntity
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
-import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
-import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.currentforecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.dailyforecast.City
+import com.erendogan6.havatahminim.model.weather.dailyforecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.hourlyforecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.network.ApiResult
 import com.erendogan6.havatahminim.repository.AirQualityRepository
 import com.erendogan6.havatahminim.repository.AllergenRepository

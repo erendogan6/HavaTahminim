@@ -48,8 +48,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.erendogan6.havatahminim.extension.capitalizeWords
 import com.erendogan6.havatahminim.extension.toHourMinute
 import com.erendogan6.havatahminim.feature.weather.R
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.currentforecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.hourlyforecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.ui.adaptive.isCompactHeight
 import com.erendogan6.havatahminim.ui.component.CenteredColumn
 import com.erendogan6.havatahminim.ui.component.WeatherIconButton

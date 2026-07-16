@@ -1,4 +1,4 @@
-package com.erendogan6.havatahminim.model.weather.DailyForecast
+package com.erendogan6.havatahminim.model.weather.dailyforecast
 
 import com.google.gson.annotations.SerializedName
 

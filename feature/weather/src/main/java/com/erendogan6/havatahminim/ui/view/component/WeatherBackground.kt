@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.erendogan6.havatahminim.feature.weather.R
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.currentforecast.CurrentWeatherBaseResponse
 
 /** Full-bleed photo backdrop drawn behind the transparent Scaffold in :app. */
 @Composable

@@ -6,11 +6,11 @@ import com.erendogan6.havatahminim.model.airquality.PollenRisk
 import com.erendogan6.havatahminim.model.airquality.PollenType
 import com.erendogan6.havatahminim.model.entity.LocationEntity
 import com.erendogan6.havatahminim.model.entity.WeatherSuggestionEntity
-import com.erendogan6.havatahminim.model.weather.Common.Weather
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.Main
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.Sys
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.model.weather.common.Weather
+import com.erendogan6.havatahminim.model.weather.currentforecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.currentforecast.Main
+import com.erendogan6.havatahminim.model.weather.currentforecast.Sys
+import com.erendogan6.havatahminim.model.weather.dailyforecast.City
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId

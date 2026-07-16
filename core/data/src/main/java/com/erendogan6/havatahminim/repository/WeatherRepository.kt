@@ -1,8 +1,8 @@
 package com.erendogan6.havatahminim.repository
 
-import com.erendogan6.havatahminim.model.weather.CurrentForecast.CurrentWeatherBaseResponse
-import com.erendogan6.havatahminim.model.weather.DailyForecast.DailyForecastBaseResponse
-import com.erendogan6.havatahminim.model.weather.HourlyForecast.HourlyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.currentforecast.CurrentWeatherBaseResponse
+import com.erendogan6.havatahminim.model.weather.dailyforecast.DailyForecastBaseResponse
+import com.erendogan6.havatahminim.model.weather.hourlyforecast.HourlyForecastBaseResponse
 import com.erendogan6.havatahminim.network.ApiResult
 import kotlinx.coroutines.flow.StateFlow
 

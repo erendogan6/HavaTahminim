@@ -3,7 +3,7 @@ package com.erendogan6.havatahminim.ui.viewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.erendogan6.havatahminim.model.weather.DailyForecast.City
+import com.erendogan6.havatahminim.model.weather.dailyforecast.City
 import com.erendogan6.havatahminim.network.getOrNull
 import com.erendogan6.havatahminim.network.onError
 import com.erendogan6.havatahminim.repository.LocationRepository
