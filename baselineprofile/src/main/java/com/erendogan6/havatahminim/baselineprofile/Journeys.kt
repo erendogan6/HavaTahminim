@@ -3,6 +3,7 @@ package com.erendogan6.havatahminim.baselineprofile
 import android.Manifest
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import java.util.regex.Pattern
@@ -13,6 +14,7 @@ private const val TAB_TIMEOUT_MS = 10_000L
 private const val SWIPE_STEPS = 20
 private const val SWIPE_TOP_FRACTION = 0.25
 private const val SWIPE_BOTTOM_FRACTION = 0.75
+private const val GESTURE_MARGIN_DIVISOR = 5
 
 // Nav labels in both locales; the emulator's locale decides which one renders.
 private val TAB_DAILY = Pattern.compile("Daily|Günlük")
@@ -61,4 +63,21 @@ private fun UiDevice.clickTab(label: Pattern) {
     waitForIdle()
     // Let the tab's pipeline emit before moving on.
     wait(Until.hasObject(By.text(label)), TAB_TIMEOUT_MS)
+}
+
+/** Opens the Daily tab; its LazyColumn is the app's clearest vertical-scroll surface. */
+internal fun MacrobenchmarkScope.openDaily() {
+    device.clickTab(TAB_DAILY)
+}
+
+/** Flings the first scrollable list down and up [times] times, waiting for idle between. */
+internal fun MacrobenchmarkScope.flingList(times: Int) {
+    val list = device.findObject(By.scrollable(true)) ?: return
+    list.setGestureMargin(device.displayWidth / GESTURE_MARGIN_DIVISOR)
+    repeat(times) {
+        list.fling(Direction.DOWN)
+        device.waitForIdle()
+        list.fling(Direction.UP)
+        device.waitForIdle()
+    }
 }
