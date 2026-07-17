@@ -21,7 +21,6 @@ jobs:
         env:
           MOBSF_API_KEY: ci-mobsf-key # ephemeral container, fixed key is fine
     env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-placeholder-key' }}
       MOBSF_URL: http://localhost:8000
       MOBSF_KEY: ci-mobsf-key
     steps:
@@ -83,8 +82,6 @@ jobs:
     name: Refresh baseline profile (GMD)
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-placeholder-key' }}
     steps:
       - uses: actions/checkout@v4
 
