@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,20 +51,24 @@ internal fun PollenDayChart(
     val locale = LocalConfiguration.current.locales[0]
     val colors = WeatherTheme.colors
 
-    // Global peak across the shown species: what peaks, when and how much.
-    var peakType: PollenType? = null
-    var peakIndex = 0
-    var peakValue = 0.0
-    series.forEach { s ->
-        s.values.forEachIndexed { i, v ->
-            val value = v ?: 0.0
-            if (value > peakValue) {
-                peakValue = value
-                peakType = s.type
-                peakIndex = i
+    // Peak across the shown species (type, index, value); recomputed only when the series changes.
+    val (peakType, peakIndex, peakValue) =
+        remember(series) {
+            var type: PollenType? = null
+            var index = 0
+            var value = 0.0
+            series.forEach { s ->
+                s.values.forEachIndexed { i, v ->
+                    val vv = v ?: 0.0
+                    if (vv > value) {
+                        value = vv
+                        type = s.type
+                        index = i
+                    }
+                }
             }
+            Triple(type, index, value)
         }
-    }
     val axisMax = (peakValue * 1.15).takeIf { it > 0.0 } ?: 1.0 // headroom so the peak isn't clipped
 
     // A Canvas is invisible to TalkBack; describe the peak in words.

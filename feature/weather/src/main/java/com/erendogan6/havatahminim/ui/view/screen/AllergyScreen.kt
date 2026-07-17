@@ -29,6 +29,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -116,7 +117,11 @@ private fun AllergyContent(
             Spacer(Modifier.size(20.dp))
             SectionTitle(stringResource(R.string.pollen_section_title))
             Spacer(Modifier.size(8.dp))
-            airQuality.pollen.relevantTo(selectedAllergens).forEach { reading ->
+            val relevantPollen =
+                remember(airQuality.pollen, selectedAllergens) {
+                    airQuality.pollen.relevantTo(selectedAllergens)
+                }
+            relevantPollen.forEach { reading ->
                 PollenBarRow(reading, highlighted = reading.type in selectedAllergens)
             }
 
