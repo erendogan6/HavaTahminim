@@ -26,7 +26,8 @@ class GeminiService
 
         private val model: GenerativeModel by lazy {
             Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
-                modelName = "gemini-2.5-flash",
+                // gemini-2.5-flash is closed to new API users; 3.5-flash is its GA successor.
+                modelName = "gemini-3.5-flash",
                 generationConfig =
                     generationConfig {
                         // Sampling tuned for coherent advice; latency is not critical here.
