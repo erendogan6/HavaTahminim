@@ -131,3 +131,14 @@ dependencies {
     testImplementation libs.kotlinx.coroutines.test
     testImplementation libs.turbine
 }
+
+composeCompiler {
+    stabilityConfigurationFiles.add(
+        rootProject.layout.projectDirectory.file("config/compose/stability-config.conf"),
+    )
+    // Opt-in metrics/reports: ./gradlew assembleRelease -PcomposeReports
+    if (project.hasProperty("composeReports")) {
+        reportsDestination = layout.buildDirectory.dir("compose_reports")
+        metricsDestination = layout.buildDirectory.dir("compose_reports")
+    }
+}
