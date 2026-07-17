@@ -52,7 +52,10 @@ jobs:
         run: ./gradlew validateDebugScreenshotTest
 
       - name: Coverage comment on PR
+        # Informational only — the real coverage gate is :koverVerify above. Never fail the
+        # build here: this action can't post from fork PRs and hits transient GitHub 5xx.
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         uses: mi-kas/kover-report@v2.5
         with:
           path: build/reports/kover/report.xml
