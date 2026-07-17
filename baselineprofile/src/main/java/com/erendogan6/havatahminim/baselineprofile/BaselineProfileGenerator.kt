@@ -6,15 +6,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Generates baseline-prof.txt by walking the critical user journey (cold start + all four tabs)
- * and recording every class/method ART touches. Run with:
- *
- *   ./gradlew :app:generateBaselineProfile
- *
- * The result lands in app/src/release/generated/baselineProfiles/ and is committed, so every
- * install gets ahead-of-time compilation of the startup path.
- */
+/** Generates the baseline profile by walking the critical journey (cold start + all four tabs). */
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileGenerator {
     @get:Rule

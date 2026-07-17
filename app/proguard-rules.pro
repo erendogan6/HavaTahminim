@@ -6,7 +6,7 @@
 -keepattributes *Annotation*
 -keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations
 -keepattributes EnclosingMethod,InnerClasses
-# Readable Crashlytics stack traces: keep line numbers, hide the original source file name.
+# Readable Crashlytics stack traces.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 

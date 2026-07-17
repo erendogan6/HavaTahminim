@@ -14,11 +14,9 @@ import timber.log.Timber
 class WeatherApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Debug logs to logcat; release forwards warnings/errors to Crashlytics. JVM tests plant
-        // nothing (Application.onCreate never runs there), so logging stays a no-op.
+        // Debug logs to logcat; release forwards to Crashlytics.
         Timber.plant(if (BuildConfig.DEBUG) Timber.DebugTree() else CrashReportingTree())
-        // App Check attests the caller to Firebase AI Logic; the factory comes from the
-        // debug/release source sets (debug provider vs Play Integrity).
+        // App Check factory comes from the debug/release source sets.
         Firebase.appCheck.installAppCheckProviderFactory(appCheckProviderFactory())
     }
 }

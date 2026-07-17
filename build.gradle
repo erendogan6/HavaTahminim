@@ -27,7 +27,7 @@ plugins {
 // Merged unit-test coverage: ./gradlew koverHtmlReportDebug  (HTML: build/reports/kover/htmlDebug)
 //                            ./gradlew koverXmlReportDebug   (XML for CI: build/reports/kover/reportDebug.xml)
 //
-// Kover 0.9.8+ supports AGP 9's built-in Kotlin (0.9.1 did not — it located variants through the
+// Kover 0.9.8+ supports AGP 9's built-in Kotlin (0.9.1 did not: it located variants through the
 // Kotlin Android Gradle plugin this repo deliberately never applies, and produced empty reports).
 // Kotlin-aware measurement + built-in merging + koverVerify thresholds for CI later.
 // ---------------------------------------------------------------------------------------------
@@ -60,8 +60,8 @@ dependencies {
 
 // Coverage measures the logic layers; DI wiring, generated code, Compose UI, and the
 // deliberately-untested platform shims are excluded so the percentage
-// isn't diluted by shells. NOTE: Kover applies filters in the module that OWNS the classes —
-// root-level reports.filters only cover root's (nonexistent) classes — so the same filter set
+// isn't diluted by shells. NOTE: Kover applies filters in the module that OWNS the classes;
+// root-level reports.filters only cover root's (nonexistent) classes, so the same filter set
 // is injected into every Kover-applying project below.
 def koverExcludedAnnotations = [
     'dagger.Module',
@@ -84,7 +84,7 @@ def koverExcludedClasses = [
     'com.erendogan6.havatahminim.ui.component.*',
     'com.erendogan6.havatahminim.util.Notification*',
     'com.erendogan6.havatahminim.util.BootReceiver*',
-    'com.erendogan6.havatahminim.util.CrashReportingTree*', // Firebase Crashlytics shim, no unit surface
+    'com.erendogan6.havatahminim.util.CrashReportingTree*',
     'com.erendogan6.havatahminim.util.LocationUtils*',
     'com.erendogan6.havatahminim.extension.NetworkUtils*',
     'com.erendogan6.havatahminim.network.GeminiService*',

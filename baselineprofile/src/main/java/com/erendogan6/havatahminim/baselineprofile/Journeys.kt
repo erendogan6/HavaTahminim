@@ -20,10 +20,7 @@ private val TAB_ALLERGY = Pattern.compile("Allergy|Alerji")
 private val TAB_ZEKAI = Pattern.compile("ZekAI")
 private val TAB_TODAY = Pattern.compile("Today|Bugün")
 
-/**
- * Grants the runtime permissions up front so no system dialog blocks the journey. Without a GPS
- * fix the app falls back to Istanbul, which still exercises the full startup pipeline.
- */
+/** Grants the runtime permissions up front so no system dialog blocks the journey. */
 internal fun MacrobenchmarkScope.grantPermissions() {
     val permissions =
         listOf(
@@ -40,10 +37,7 @@ internal fun MacrobenchmarkScope.startUntilContent() {
     device.wait(Until.hasObject(By.text(TAB_DAILY)), CONTENT_TIMEOUT_MS)
 }
 
-/**
- * The critical user journey: visit every tab the way a user would. Each visit composes the tab's
- * screen and runs its ViewModel pipeline, which is exactly the code worth ahead-of-time compiling.
- */
+/** The critical user journey: visit every tab, scrolling the allergy screen. */
 internal fun MacrobenchmarkScope.visitAllTabs() {
     device.clickTab(TAB_DAILY)
     device.clickTab(TAB_ALLERGY)
@@ -65,6 +59,6 @@ private fun UiDevice.clickTab(label: Pattern) {
     wait(Until.hasObject(By.text(label)), TAB_TIMEOUT_MS)
     findObject(By.text(label))?.click()
     waitForIdle()
-    // Give the tab's pipeline a moment to emit so its rendering path is captured too.
+    // Let the tab's pipeline emit before moving on.
     wait(Until.hasObject(By.text(label)), TAB_TIMEOUT_MS)
 }
