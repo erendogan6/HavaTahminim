@@ -9,12 +9,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * Measures cold-start time with and without the baseline profile, so the profile's benefit is a
- * number instead of a claim. Run with:
- *
- *   ./gradlew :baselineprofile:connectedBenchmarkReleaseAndroidTest
- */
+/** Cold-start benchmark: None vs Partial (baseline-profile) compilation. */
 @RunWith(AndroidJUnit4::class)
 class StartupBenchmark {
     @get:Rule
