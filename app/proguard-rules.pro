@@ -6,6 +6,9 @@
 -keepattributes *Annotation*
 -keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations
 -keepattributes EnclosingMethod,InnerClasses
+# Readable Crashlytics stack traces: keep line numbers, hide the original source file name.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
 # --- App data models (serialized/deserialized by Gson via reflection) ---
 -keep class com.erendogan6.havatahminim.model.** { *; }
@@ -30,10 +33,6 @@
 # --- Gson ---
 -dontwarn sun.misc.**
 -keep class com.google.gson.** { *; }
-
-# --- Google Generative AI (Gemini) SDK ---
--keep class com.google.ai.client.generativeai.** { *; }
--dontwarn com.google.ai.client.generativeai.**
 
 # Kotlin enums are accessed by name (PollenType.valueOf); keep their synthetic accessors.
 -keepclassmembers enum * {

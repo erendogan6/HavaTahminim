@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.kover)
 }
 
@@ -81,6 +82,8 @@ dependencies {
     detektPlugins libs.detekt.formatting
 
     implementation platform(libs.firebase.bom)
+    implementation libs.firebase.analytics
+    implementation libs.firebase.crashlytics
     implementation libs.firebase.appcheck.playintegrity
     debugImplementation libs.firebase.appcheck.debug
 
