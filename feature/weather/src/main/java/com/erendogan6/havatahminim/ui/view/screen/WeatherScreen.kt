@@ -31,6 +31,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -196,6 +197,7 @@ private fun HourlyForecastCard(hourlyForecast: HourlyForecastBaseResponse) {
             text = stringResource(id = R.string.hourly_forecast),
             style = MaterialTheme.typography.headlineSmall
         )
+        val hourly = remember(hourlyForecast) { hourlyForecast.list.take(24) }
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -204,7 +206,7 @@ private fun HourlyForecastCard(hourlyForecast: HourlyForecastBaseResponse) {
                 .padding(10.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(hourlyForecast.list.take(24)) { forecast ->
+            items(hourly, key = { it.dt }) { forecast ->
                 HourlyForecastItem(forecast)
             }
         }

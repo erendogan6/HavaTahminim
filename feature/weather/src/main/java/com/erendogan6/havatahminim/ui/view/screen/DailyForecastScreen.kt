@@ -81,7 +81,7 @@ private fun DailyForecastCard(dailyForecast: DailyForecastBaseResponse) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            items(dailyForecast.list) { forecast ->
+            items(dailyForecast.list, key = { it.dt }) { forecast ->
                 DailyForecastItem(forecast, maxWidth * 10f)
             }
         }

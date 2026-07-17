@@ -74,7 +74,7 @@ fun CitySearchScreen(
             modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp).padding(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(cityState) { city ->
+            items(cityState, key = { "${it.latitude},${it.longitude}" }) { city ->
                 CityCard(
                     city = city,
                     onCitySelected = {
