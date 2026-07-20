@@ -69,7 +69,7 @@ jobs:
             mobsf-scorecard.json >> "$GITHUB_STEP_SUMMARY" || true
 
       - name: Upload MobSF reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mobsf-reports
           retention-days: 30
@@ -109,7 +109,7 @@ jobs:
         run: git diff --stat app/src/release/generated/baselineProfiles/ || true
 
       - name: Upload regenerated profiles
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: baseline-profiles
           retention-days: 30
