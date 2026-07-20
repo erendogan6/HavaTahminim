@@ -18,7 +18,7 @@ jobs:
       security-events: write # SARIF upload
       id-token: write        # publish_results signed attestation
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
