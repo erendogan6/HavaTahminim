@@ -40,7 +40,7 @@ jobs:
 
       # tools: latest, because the runner-bundled CLI's Kotlin ceiling lagged one release behind the
       # toolchain (2.26.0 rejected Kotlin 2.4.10); the newest bundle tracks Kotlin faster.
-      - uses: github/codeql-action/init@v3
+      - uses: github/codeql-action/init@v4
         with:
           languages: java-kotlin
           build-mode: manual
@@ -50,7 +50,7 @@ jobs:
       - name: Build for extraction
         run: ./gradlew assembleDebug
 
-      - uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@v4
         with:
           category: codeql
 
@@ -71,7 +71,7 @@ jobs:
         with:
           args: '. --sarif --output mobsfscan.sarif || true'
 
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: mobsfscan.sarif
           category: mobsfscan
