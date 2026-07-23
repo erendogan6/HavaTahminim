@@ -32,18 +32,20 @@ plugins {
 // Kotlin Android Gradle plugin this repo deliberately never applies, and produced empty reports).
 // Kotlin-aware measurement + built-in merging + koverVerify thresholds for CI later.
 // ---------------------------------------------------------------------------------------------
-// Coverage regression gate for CI (koverVerify): thresholds sit safely under the current
-// ~98% line / ~81% branch baseline, so they catch backsliding without blocking honest work.
+// Coverage regression gate for CI (koverVerify): thresholds sit just under the current
+// ~99% line / ~83% branch baseline, so they catch backsliding without blocking honest work.
+// The residual gap is synthetic (compiler null-intrinsics, default-parameter dispatch), not
+// untested logic — every degradation path has a test; platform shims/generated code are excluded.
 kover {
     reports {
         verify {
             rule("line coverage") {
-                minBound(95)
+                minBound(98)
             }
             rule("branch coverage") {
                 bound {
                     coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.BRANCH
-                    minValue = 75
+                    minValue = 80
                 }
             }
         }
@@ -86,6 +88,10 @@ def koverExcludedClasses = [
     'com.erendogan6.havatahminim.util.Notification*',
     'com.erendogan6.havatahminim.util.BootReceiver*',
     'com.erendogan6.havatahminim.util.CrashReportingTree*',
+    'com.erendogan6.havatahminim.util.FusedDeviceLocationSource*', // platform shim: fused location
+    'com.erendogan6.havatahminim.util.AndroidConnectivityChecker*', // platform shim: connectivity
+    'com.erendogan6.havatahminim.util.AppCheckProvider*', // platform shim: App Check factory (source sets)
+    '*Hilt_*', // generated Hilt entry-point base classes
     'com.erendogan6.havatahminim.util.JankStatsReporter*', // platform shim: JankStats on the window
     'com.erendogan6.havatahminim.util.LocationUtils*',
     'com.erendogan6.havatahminim.extension.NetworkUtils*',
