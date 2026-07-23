@@ -86,6 +86,7 @@ def koverExcludedClasses = [
     'com.erendogan6.havatahminim.util.Notification*',
     'com.erendogan6.havatahminim.util.BootReceiver*',
     'com.erendogan6.havatahminim.util.CrashReportingTree*',
+    'com.erendogan6.havatahminim.util.JankStatsReporter*', // platform shim: JankStats on the window
     'com.erendogan6.havatahminim.util.LocationUtils*',
     'com.erendogan6.havatahminim.extension.NetworkUtils*',
     'com.erendogan6.havatahminim.network.GeminiService*',
