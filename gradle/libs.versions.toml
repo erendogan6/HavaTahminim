@@ -14,6 +14,8 @@ benchmark = "1.5.0-alpha07"
 googleServices = "4.5.0"
 firebaseBom = "34.16.0"
 firebaseCrashlyticsGradle = "3.0.7"
+firebasePerfGradle = "2.0.2"
+androidxMetricsPerformance = "1.0.0"
 uiautomator = "2.4.0"
 profileinstaller = "1.4.1"
 androidxTestRunner = "1.7.0"
@@ -62,6 +64,8 @@ firebase-appcheck-playintegrity = { module = "com.google.firebase:firebase-appch
 firebase-appcheck-debug = { module = "com.google.firebase:firebase-appcheck-debug" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-perf = { module = "com.google.firebase:firebase-perf" }
+androidx-metrics-performance = { module = "androidx.metrics:metrics-performance", version.ref = "androidxMetricsPerformance" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidGradlePlugin" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidGradlePlugin" }
@@ -107,6 +111,7 @@ screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsGradle" }
+firebase-perf = { id = "com.google.firebase.firebase-perf", version.ref = "firebasePerfGradle" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
