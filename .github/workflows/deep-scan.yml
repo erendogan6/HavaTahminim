@@ -13,38 +13,43 @@ jobs:
     name: MobSF full APK analysis
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    services:
-      mobsf:
-        image: opensecurity/mobile-security-framework-mobsf:latest
-        ports:
-          - 8000:8000
-        env:
-          MOBSF_API_KEY: ci-mobsf-key # ephemeral container, fixed key is fine
+    permissions:
+      contents: read
     env:
       MOBSF_URL: http://localhost:8000
       MOBSF_KEY: ci-mobsf-key
+      # Pinned tag, run manually below: the services: block gated the whole job on the image's
+      # own HEALTHCHECK, which the heavy MobSF image failed to pass in time (flaky "unhealthy").
+      MOBSF_IMAGE: opensecurity/mobile-security-framework-mobsf:v4.5.1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
           java-version: 17
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-read-only: true
 
       - name: Build release APK
         run: ./gradlew assembleRelease
 
+      - name: Start MobSF
+        run: docker run -d --name mobsf -p 8000:8000 -e MOBSF_API_KEY="$MOBSF_KEY" "$MOBSF_IMAGE"
+
       - name: Wait for MobSF
         run: |
-          for i in $(seq 1 36); do
-            curl -sf "$MOBSF_URL" > /dev/null && exit 0
+          for i in $(seq 1 60); do
+            if curl -sf "$MOBSF_URL" > /dev/null 2>&1; then
+              echo "MobSF ready after $((i * 5))s" && exit 0
+            fi
             sleep 5
           done
-          echo "MobSF did not become ready in 3 minutes" && exit 1
+          echo "MobSF did not become ready in 5 minutes"
+          docker logs mobsf 2>&1 | tail -50
+          exit 1
 
       - name: Upload + scan APK
         run: |
@@ -69,7 +74,7 @@ jobs:
             mobsf-scorecard.json >> "$GITHUB_STEP_SUMMARY" || true
 
       - name: Upload MobSF reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: mobsf-reports
           retention-days: 30
@@ -82,8 +87,10 @@ jobs:
     name: Refresh baseline profile (GMD)
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Enable KVM for the managed emulator
         run: |
@@ -92,12 +99,12 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
           java-version: 17
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-read-only: true
 
@@ -109,7 +116,7 @@ jobs:
         run: git diff --stat app/src/release/generated/baselineProfiles/ || true
 
       - name: Upload regenerated profiles
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: baseline-profiles
           retention-days: 30
