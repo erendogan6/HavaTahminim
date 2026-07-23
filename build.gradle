@@ -16,6 +16,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.crashlytics) apply false
+    alias(libs.plugins.firebase.perf) apply false
     alias(libs.plugins.dependency.analysis)
     alias(libs.plugins.gradle.doctor)
     alias(libs.plugins.kover)
@@ -85,6 +86,7 @@ def koverExcludedClasses = [
     'com.erendogan6.havatahminim.util.Notification*',
     'com.erendogan6.havatahminim.util.BootReceiver*',
     'com.erendogan6.havatahminim.util.CrashReportingTree*',
+    'com.erendogan6.havatahminim.util.JankStatsReporter*', // platform shim: JankStats on the window
     'com.erendogan6.havatahminim.util.LocationUtils*',
     'com.erendogan6.havatahminim.extension.NetworkUtils*',
     'com.erendogan6.havatahminim.network.GeminiService*',
