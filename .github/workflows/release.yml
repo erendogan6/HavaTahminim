@@ -12,13 +12,15 @@ on:
     tags: ['v*']
 
 permissions:
-  contents: write # GitHub Release creation
+  contents: read
 
 jobs:
   release:
     name: Signed AAB → GitHub Release → Play (internal)
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write # GitHub Release creation
     env:
       HAS_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
       HAS_PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
