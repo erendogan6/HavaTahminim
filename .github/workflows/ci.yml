@@ -21,14 +21,14 @@ jobs:
       contents: read
       pull-requests: write # Kover coverage comment
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
           java-version: 17
 
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           validate-wrappers: true
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
@@ -56,7 +56,7 @@ jobs:
         # build here: this action can't post from fork PRs and hits transient GitHub 5xx.
         if: github.event_name == 'pull_request'
         continue-on-error: true
-        uses: mi-kas/kover-report@v2.5
+        uses: mi-kas/kover-report@ea8425161dd880a7dea9e76b3c89cf168b1d1162 # v2.5
         with:
           path: build/reports/kover/report.xml
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -65,7 +65,7 @@ jobs:
 
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: reports
           retention-days: 14
