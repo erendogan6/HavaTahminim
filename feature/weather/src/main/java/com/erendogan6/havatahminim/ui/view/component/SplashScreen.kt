@@ -20,9 +20,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -57,7 +57,10 @@ internal fun SplashScreen(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .size(if (compact) 118.dp else 180.dp)
-                    .scale(pulse)
+                    .graphicsLayer {
+                        scaleX = pulse
+                        scaleY = pulse
+                    }
                     .clip(CircleShape)
                     .background(
                         Brush.radialGradient(
@@ -90,7 +93,7 @@ private fun LoadingDots() {
     val ink = WeatherTheme.colors.ink
     Row {
         repeat(3) { index ->
-            val alpha by transition.animateFloat(
+            val dotAlpha by transition.animateFloat(
                 initialValue = 0.25f,
                 targetValue = 1f,
                 animationSpec = infiniteRepeatable(
@@ -103,8 +106,9 @@ private fun LoadingDots() {
                 modifier = Modifier
                     .padding(horizontal = 5.dp)
                     .size(11.dp)
+                    .graphicsLayer { alpha = dotAlpha }
                     .clip(CircleShape)
-                    .background(ink.copy(alpha = alpha))
+                    .background(ink)
             )
         }
     }
