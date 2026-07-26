@@ -83,6 +83,43 @@ jobs:
             mobsf-report.pdf
             mobsf-scorecard.json
 
+  ui-tests:
+    name: Compose UI tests (GMD)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Enable KVM for the managed emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
+        with:
+          cache-read-only: true
+
+      # Deliberately not on every PR: booting an emulator would add minutes to the merge gate.
+      - name: Run Compose interaction tests
+        run: ./gradlew :feature:weather:pixel6Api34DebugAndroidTest
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ui-test-report
+          retention-days: 30
+          path: feature/weather/build/reports/androidTests/
+
   baseline-profile:
     name: Refresh baseline profile (GMD)
     runs-on: ubuntu-latest
